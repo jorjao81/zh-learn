@@ -1,1 +1,3 @@
 pydub
+pysub-parser
+jieba
