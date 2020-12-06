@@ -4,18 +4,24 @@ import sys
 import re
 from pysubparser.util import time_to_millis
 
+to_extract = [
+"永不凋谢",
+"不应该呀", 
+"好的",  
+"他发烧了" 
+"你吃完饭赶紧回家去", 
+"不用了",
+"吃药", 
+"小顾", 
+"秋风起", 
+"喂", 
+"下雪了", 
+"给", 
+"没有", 
+"怎么了", 
+"司徒末"
 
-
-def to_milissecond(srt_time):
-    ## 00:02:35,639
-    components = re.split("[:,]", srt_time)
-
-    hours = int(components[0])
-    minutes = int(components[1])
-    seconds = int(components[2])
-    milisseconds = int(components[3])
-
-    return (((hours * 60) + minutes) * 60 + seconds) * 1000 + milisseconds
+]
 
 
 audio_filename = sys.argv[1]
@@ -29,14 +35,17 @@ def extract(input, subtitle):
     print(subtitle.text + " " + str(start) + " to " +  str(end))
 
     cut = song[start:end]
-    cut.export("out/" + subtitle.text + ".mp3", format="mp3")
+    cut.export("out/" + subtitle.text + "_" + str(subtitle.index) + ".mp3", format="mp3")
 
 
 song = AudioSegment.from_mp3(audio_filename)
 subtitles = parser.parse(subtitle_filename)
 
+i = 0
 for subtitle in subtitles:
-    extract(song, subtitle)
+    i += 1
+    if subtitle.text in to_extract:
+        extract(song, subtitle)
 
 
 
