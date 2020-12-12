@@ -1,5 +1,6 @@
 from pydub import AudioSegment
 import sys
+from os import path
 
 TARGET_DBFS=-15.0
 
@@ -8,7 +9,7 @@ def match_target_amplitude(sound, target_dBFS):
     return sound.apply_gain(change_in_dBFS)
 
 for filename in sys.argv[1:]:
-    if not filename.endswith("_normalized.mp3"):
+    if (not filename.endswith("_normalized.mp3")) and (not path.exists(filename[0:-4] + "_normalized.mp3")):
         sound = AudioSegment.from_mp3(filename)
         normalized_sound = match_target_amplitude(sound, TARGET_DBFS)
         new_filename = filename[0:-4] + "_normalized" ".mp3"
