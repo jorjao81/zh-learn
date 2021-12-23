@@ -1,1 +1,9 @@
-ignore/
+meaning_trees.txt
+Chinese.txt
+skritter-export.tsv
+
+venv/
+.swp
+.DS_store
+*.swp
+*.sw*
