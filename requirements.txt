@@ -1,3 +1,4 @@
 pydub
 pysub-parser
 jieba
+hanzidentifier
