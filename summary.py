@@ -1,4 +1,4 @@
-from pysubparser import parser
+#from pysubparser import parser
 import jieba
 import sys
 import csv
@@ -80,7 +80,7 @@ for w, count in sorted_missing[-21:-1]:
 
 
 
-tsv_file = open("HSK3.txt")
+tsv_file = open("HSK4.txt")
 read_tsv = csv.reader(tsv_file, delimiter="\t")
 
 hsk = {}
@@ -104,5 +104,5 @@ print("\nMissing words HSK: {}".format(len(missing_words_hsk)))
 
 sorted_missing = sorted(missing_words_hsk.items(), key=lambda kv: kv[1])
 
-for w, count in sorted_missing[-21:-1]:
+for w, count in sorted_missing[-41:-1]:
     print(w)
