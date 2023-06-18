@@ -3,7 +3,7 @@ import {PlecoExport} from './types';
 import {AnkiCard} from './anki-card';
 
 test('adds 1 + 2 to equal 3', () => {
-  let t : PlecoExport = {
+  const t : PlecoExport = {
     hanzi: '悄无声息',
     pinyin_numbered: 'qiao3wu2sheng1xi1',
     definition: '1 quietly 2 noiselessly'
@@ -16,32 +16,17 @@ test('adds 1 + 2 to equal 3', () => {
 
 });
 
-// describe("format definition", () => {
-//   test("removes examples", () => {
-//     expect(new AnkiCard({
-//       hanzi: "打鱼",
-//       pinyin_numbered:	"da3//yu2",
-//       definition:	"verb catch fish; fish 打鱼为生 dǎyú wéishēng fish for a living"
-//     })).toEqual({
-//           hanzi: "打鱼",
-//           pinyin: "dǎ//yú",
-//           definition: "verb catch fish; fish"
-//         }
-//     )
-//   })
-// })
-
-describe("semantics", () => {
-  test("adds definition to characters", () => {
+describe('semantics', () => {
+  test('adds definition to characters', () => {
     expect(new AnkiCard({
-      hanzi: "打鱼",
-      pinyin_numbered:	"da3//yu2",
-      definition:	""
+      hanzi: '打鱼',
+      pinyin_numbered:	'da3//yu2',
+      definition:	''
     })).toEqual({
-          hanzi: "打鱼",
-          pinyin: "dǎyú",
-          definition: "",
-          semantic: "打(to beat) + 鱼(fish)"
+          hanzi: '打鱼',
+          pinyin: 'dǎyú',
+          definition: '',
+          semantic: '打(to beat) + 鱼(fish)'
         }
     )
   })

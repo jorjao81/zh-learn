@@ -4,7 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse';
 import {PlecoExport} from './types';
-import {AnkiCard} from "./anki-card";
+import {AnkiCard} from './anki-card';
+
+import {createObjectCsvWriter as createCsvWriter} from 'csv-writer';
 
 (() => {
   const csvFilePath = path.resolve('flash.txt');
@@ -12,8 +14,6 @@ import {AnkiCard} from "./anki-card";
   const headers = ['hanzi', 'pinyin_numbered', 'definition'];
 
   const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
-
-  const createCsvWriter = require('csv-writer').createObjectCsvWriter;
   const csvWriter = createCsvWriter({
     path: 'processed.csv',
     header: [
@@ -37,11 +37,11 @@ import {AnkiCard} from "./anki-card";
     relax_column_count: true,
     relax_quotes: true
   }, (error, result: PlecoExport[]) => {
-    if (error) {
+    if (error != undefined) {
       console.error(error);
     }
 
-    let anki = result.map((e) => new AnkiCard(e))
+    const anki = result.map((e) => new AnkiCard(e))
     csvWriter.writeRecords(anki)       // returns a promise
     .then(() => {
       console.log('...Done');
