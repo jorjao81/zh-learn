@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "429",
+    "message": "Requests to the Analyze Operation under Computer Vision API (2023-02-01-preview) have exceeded call rate limit of your current ComputerVision F0 pricing tier. Please retry after 12 seconds. To increase your rate limit switch to a paid tier."
+  }
+}
