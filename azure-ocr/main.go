@@ -2,8 +2,18 @@ package main
 
 import (
 	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
+	"github.com/fogleman/gg"
+	"github.com/urfave/cli/v2"
+	"image"
+	_ "image/jpeg"
 	"io"
 	"log"
 	"math"
@@ -157,11 +167,9 @@ func findFrameType(r *AiVisionResponse) FrameType {
 
 // [716.0,450.0,801.0,447.0,804.0,497.0,720.0,499.0]
 func parseScreenshot(filename string) (*Frame, error) {
-	client := NewAiVisionClient("https://chinese-learning-jorjao81.cognitiveservices.azure.com/", os.Getenv("AZURE_VISION_API_KEY"))
-
-	r, err := client.Analyse(filename)
-	if err != nil {
-		return nil, err
+	r, err2 := getOcr(filename)
+	if err2 != nil {
+		return nil, err2
 	}
 
 	f := NewFrame()
@@ -189,6 +197,12 @@ func parseScreenshot(filename string) (*Frame, error) {
 	}
 
 	return f, nil
+}
+
+func getOcr(filename string) (*AiVisionResponse, error) {
+	client := NewAiVisionClient("https://chinese-learning-jorjao81.cognitiveservices.azure.com/", os.Getenv("AZURE_VISION_API_KEY"))
+
+	return client.Analyse(filename)
 }
 
 type errorJson struct {
@@ -275,6 +289,138 @@ func (c *AiVisionClient) Analyse(filename string) (*AiVisionResponse, error) {
 }
 
 func main() {
+	app := &cli.App{
+		Name:  "cyberpunk-ocr",
+		Usage: "parse chinese text in Cyberpunk 2077 screenshots",
+		Commands: []*cli.Command{
+			{
+				Name:    "generate-frame-training",
+				Aliases: []string{""},
+				Usage:   "generates frame training data",
+				Action: func(cCtx *cli.Context) error {
+					return generateFrameTrainingData(cCtx.Args().Slice())
+				},
+			},
+			{
+				Name:    "annotate",
+				Aliases: []string{""},
+				Usage:   "annotate data",
+				Action: func(cCtx *cli.Context) error {
+					return annotate(cCtx.Args().Slice())
+				},
+			},
+		},
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func annotate(args []string) error {
+	filename := args[0]
+
+	a := app.New()
+	w := a.NewWindow("Hello")
+
+	reader, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer reader.Close()
+
+	screenshot, _, err := image.Decode(reader)
+
+	f, err := getOcr(filename)
+
+	var vBox *fyne.Container
+
+	line := 0
+	moveToNext := func() {
+		marked2 := markImage(screenshot, f.ReadResult.Pages[0].Lines[line].BoundingBox)
+		img2 := canvas.NewImageFromImage(marked2)
+		img2.FillMode = canvas.ImageFillContain
+		img2.SetMinSize(fyne.NewSize(800, 600))
+		vBox.Objects[0] = img2
+		vBox.Refresh()
+		line++
+		if line >= len(f.ReadResult.Pages[0].Lines) {
+			w.Close()
+		}
+	}
+
+	hBox := container.NewHBox(
+		widget.NewButton("Subtitle", func() {
+			fmt.Printf("%v\t%v\n", "subtitle", f.ReadResult.Pages[0].Lines[line-1].Content)
+			moveToNext()
+		}),
+		widget.NewButton("Mission goal", func() {
+			fmt.Printf("%v\t%v\n", "mission", f.ReadResult.Pages[0].Lines[line-1].Content)
+			moveToNext()
+		}),
+		widget.NewButton("Other", func() {
+			fmt.Printf("%v\t%v\n", "other", f.ReadResult.Pages[0].Lines[line-1].Content)
+			moveToNext()
+		}),
+		widget.NewButton("Terminal", func() {
+			fmt.Printf("%v\t%v\n", "terminal", f.ReadResult.Pages[0].Lines[line-1].Content)
+			moveToNext()
+		}),
+		widget.NewButton("Information", func() {
+			fmt.Printf("%v\t%v\n", "information", f.ReadResult.Pages[0].Lines[line-1].Content)
+			moveToNext()
+		}),
+	)
+
+	vBox = container.NewVBox(
+		widget.NewLabel("bla"),
+		hBox,
+	)
+	moveToNext()
+
+	w.SetContent(vBox)
+
+	w.ShowAndRun()
+
+	return nil
+
+}
+
+func markImage(screenshot image.Image, bbox BoundingBox) image.Image {
+	dc := gg.NewContextForImage(screenshot)
+
+	dc.SetRGB255(0, 255, 0)
+	dc.SetLineWidth(5)
+
+	dc.DrawLine(bbox[0], bbox[1], bbox[2], bbox[3])
+	dc.DrawLine(bbox[4], bbox[5], bbox[6], bbox[7])
+	dc.Stroke()
+
+	marked := dc.Image()
+	return marked
+}
+
+func generateFrameTrainingData(args []string) error {
+	w := csv.NewWriter(os.Stdout)
+
+	for _, filename := range args {
+		f, err := parseScreenshot(filename)
+		if err != nil {
+			return err
+		}
+
+		t := "bla"
+		if f.frameType == Normal {
+			t = "normal"
+		}
+
+		w.Write([]string{filename, t})
+	}
+	w.Flush()
+	return nil
+}
+
+func main_old() {
 	dialogSeen := make(map[string]bool)
 	//choicesSeen := make(map[string]bool)
 	//missionSeen := make(map[string]bool)
