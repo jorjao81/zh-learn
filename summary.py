@@ -80,7 +80,7 @@ for w, count in sorted_missing[-21:-1]:
 
 
 
-tsv_file = open("HSK4.txt")
+tsv_file = open("HSK5.txt")
 read_tsv = csv.reader(tsv_file, delimiter="\t")
 
 hsk = {}

@@ -99,6 +99,7 @@ type Frame struct {
 	dialogs   []readResultLines
 	mission   []readResultLines
 	choices   []readResultLines
+	other     []readResultLines
 	frameType FrameType
 }
 
@@ -125,6 +126,7 @@ func NewFrame() *Frame {
 		dialogs: make([]readResultLines, 0),
 		mission: make([]readResultLines, 0),
 		choices: make([]readResultLines, 0),
+		other:   make([]readResultLines, 0),
 	}
 }
 
@@ -155,7 +157,7 @@ func findFrameType(r *AiVisionResponse) FrameType {
 
 // [716.0,450.0,801.0,447.0,804.0,497.0,720.0,499.0]
 func parseScreenshot(filename string) (*Frame, error) {
-	client := NewAiVisionClient("https://learn-zh-jorjao81.cognitiveservices.azure.com", os.Getenv("AZURE_VISION_API_KEY"))
+	client := NewAiVisionClient("https://chinese-learning-jorjao81.cognitiveservices.azure.com/", os.Getenv("AZURE_VISION_API_KEY"))
 
 	r, err := client.Analyse(filename)
 	if err != nil {
@@ -178,6 +180,9 @@ func parseScreenshot(filename string) (*Frame, error) {
 				f.choices = append(f.choices, line)
 				break
 			case Other:
+				if containsChinese(line.Content) {
+					f.other = append(f.other, line)
+				}
 				break
 			}
 		}
@@ -271,8 +276,9 @@ func (c *AiVisionClient) Analyse(filename string) (*AiVisionResponse, error) {
 
 func main() {
 	dialogSeen := make(map[string]bool)
-	choicesSeen := make(map[string]bool)
+	//choicesSeen := make(map[string]bool)
 	//missionSeen := make(map[string]bool)
+	//otherSeen := make(map[string]bool)
 
 	os.Getenv("AZURE_VISION_API_KEY")
 
@@ -299,12 +305,19 @@ func main() {
 			//	fmt.Println(line.Content)
 			//}
 			//
-			for _, line := range f.choices {
-				if !choicesSeen[line.Content] {
-					choicesSeen[line.Content] = true
-					fmt.Printf("CHOICE: %s\n", line.Content)
-				}
-			}
+			//for _, line := range f.choices {
+			//	if !choicesSeen[line.Content] {
+			//		choicesSeen[line.Content] = true
+			//		fmt.Printf("CHOICE: %s\n", line.Content)
+			//	}
+			//}
+			//
+			//for _, line := range f.other {
+			//	if !otherSeen[line.Content] {
+			//		otherSeen[line.Content] = true
+			//		fmt.Printf("CHOICE: %s\n", line.Content)
+			//	}
+			//}
 		}
 
 	}
