@@ -323,51 +323,64 @@ func annotate(args []string) error {
 	a := app.New()
 	w := a.NewWindow("Hello")
 
-	reader, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer reader.Close()
-
-	screenshot, _, err := image.Decode(reader)
-
-	f, err := getOcr(filename)
-
 	var vBox *fyne.Container
 
 	line := 0
+	fileIndex := 0
+
+	screenshot, lines := getScreenshot(filename)
+	annotation, _ := os.Create(fmt.Sprintf("%v.annotation", filename))
+
 	moveToNext := func() {
-		marked2 := markImage(screenshot, f.ReadResult.Pages[0].Lines[line].BoundingBox)
+		if line >= len(lines) {
+			fileIndex++
+			line = 0
+			if fileIndex >= len(args) {
+				w.Close()
+			} else {
+				filename = args[fileIndex]
+				screenshot, lines = getScreenshot(filename)
+			}
+		}
+		marked2 := markImage(screenshot, lines[line].BoundingBox)
 		img2 := canvas.NewImageFromImage(marked2)
 		img2.FillMode = canvas.ImageFillContain
 		img2.SetMinSize(fyne.NewSize(800, 600))
 		vBox.Objects[0] = img2
 		vBox.Refresh()
 		line++
-		if line >= len(f.ReadResult.Pages[0].Lines) {
-			w.Close()
-		}
+
 	}
 
 	hBox := container.NewHBox(
 		widget.NewButton("Subtitle", func() {
-			fmt.Printf("%v\t%v\n", "subtitle", f.ReadResult.Pages[0].Lines[line-1].Content)
+			fmt.Printf("%v\t%v\n", "subtitle", lines[line-1].Content)
+			annotation.WriteString(fmt.Sprintf("%v\t%v\n", "subtitle", lines[line-1].Content))
+
 			moveToNext()
 		}),
 		widget.NewButton("Mission goal", func() {
-			fmt.Printf("%v\t%v\n", "mission", f.ReadResult.Pages[0].Lines[line-1].Content)
+			fmt.Printf("%v\t%v\n", "mission", lines[line-1].Content)
+			annotation.WriteString(fmt.Sprintf("%v\t%v\n", "mission", lines[line-1].Content))
+
 			moveToNext()
 		}),
 		widget.NewButton("Other", func() {
-			fmt.Printf("%v\t%v\n", "other", f.ReadResult.Pages[0].Lines[line-1].Content)
+			fmt.Printf("%v\t%v\n", "other", lines[line-1].Content)
+			annotation.WriteString(fmt.Sprintf("%v\t%v\n", "other", lines[line-1].Content))
+
 			moveToNext()
 		}),
 		widget.NewButton("Terminal", func() {
-			fmt.Printf("%v\t%v\n", "terminal", f.ReadResult.Pages[0].Lines[line-1].Content)
+			fmt.Printf("%v\t%v\n", "terminal", lines[line-1].Content)
+			annotation.WriteString(fmt.Sprintf("%v\t%v\n", "terminal", lines[line-1].Content))
+
 			moveToNext()
 		}),
 		widget.NewButton("Information", func() {
-			fmt.Printf("%v\t%v\n", "information", f.ReadResult.Pages[0].Lines[line-1].Content)
+			fmt.Printf("%v\t%v\n", "information", lines[line-1].Content)
+			annotation.WriteString(fmt.Sprintf("%v\t%v\n", "information", lines[line-1].Content))
+
 			moveToNext()
 		}),
 	)
@@ -384,6 +397,21 @@ func annotate(args []string) error {
 
 	return nil
 
+}
+
+func getScreenshot(filename string) (image.Image, []readResultLines) {
+	reader, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer reader.Close()
+
+	screenshot, err := gg.LoadImage(filename)
+
+	f, err := getOcr(filename)
+	lines := f.ReadResult.Pages[0].Lines
+
+	return screenshot, lines
 }
 
 func markImage(screenshot image.Image, bbox BoundingBox) image.Image {
