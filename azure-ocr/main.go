@@ -19,6 +19,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"unicode"
 )
@@ -309,12 +310,75 @@ func main() {
 					return annotate(cCtx.Args().Slice())
 				},
 			},
+			{
+				Name:    "generate-training",
+				Aliases: []string{""},
+				Usage:   "generates training data based on annotation",
+				Action: func(cCtx *cli.Context) error {
+					return generateTraining()
+				},
+			},
 		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func generateTraining() error {
+	files, err := filepath.Glob("./training/*.jpg")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file, _ := os.Create("training.csv")
+
+	w := csv.NewWriter(file)
+
+	w.Write([]string{"content", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "class"})
+
+	for _, f := range files {
+		if _, err := os.Stat(f + ".annotation"); err == nil {
+			ocr, _ := getOcr(f)
+
+			annotations, _ := getAnnotation(f)
+
+			for i, line := range ocr.ReadResult.Pages[0].Lines {
+				if annotations[i][1] != line.Content {
+					log.Fatal(fmt.Sprintf("Lines are different!\n%v\n%v\n", annotations[i][0], line.Content))
+				}
+
+				x1 := fmt.Sprintf("%v", line.BoundingBox[0])
+				y1 := fmt.Sprintf("%v", line.BoundingBox[1])
+				x2 := fmt.Sprintf("%v", line.BoundingBox[2])
+				y2 := fmt.Sprintf("%v", line.BoundingBox[3])
+
+				x3 := fmt.Sprintf("%v", line.BoundingBox[4])
+				y3 := fmt.Sprintf("%v", line.BoundingBox[5])
+				x4 := fmt.Sprintf("%v", line.BoundingBox[6])
+				y4 := fmt.Sprintf("%v", line.BoundingBox[7])
+
+				w.Write([]string{line.Content, x1, y1, x2, y2, x3, y3, x4, y4, annotations[i][0]})
+			}
+		}
+	}
+	w.Flush()
+
+	return nil
+}
+
+func getAnnotation(filename string) ([][]string, error) {
+	f, err := os.Open(filename + ".annotation")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// remember to close the file at the end of the program
+	defer f.Close()
+	csvReader := csv.NewReader(f)
+	csvReader.Comma = '\t'
+	return csvReader.ReadAll()
 }
 
 func annotate(args []string) error {
