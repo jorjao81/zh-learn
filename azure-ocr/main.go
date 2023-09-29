@@ -404,6 +404,7 @@ func annotate(args []string) error {
 			} else {
 				filename = args[fileIndex]
 				screenshot, lines = getScreenshot(filename)
+				annotation, _ = os.Create(fmt.Sprintf("%v.annotation", filename))
 			}
 		}
 		marked2 := markImage(screenshot, lines[line].BoundingBox)
