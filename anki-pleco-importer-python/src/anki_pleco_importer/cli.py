@@ -15,12 +15,13 @@ def main(tsv_file: Path) -> None:
         parser = PlecoTSVParser()
         try:
             collection = parser.parse_file(tsv_file)
-            click.echo(f"Parsed {len(collection)} entries from {tsv_file}:\n")
+            click.echo(click.style(f"Parsed {len(collection)} entries from {tsv_file}:", fg="green", bold=True))
+            click.echo()
             
             for i, entry in enumerate(collection, 1):
-                click.echo(f"{i:2d}. {entry.chinese}")
-                click.echo(f"    Pinyin: {entry.pinyin}")
-                click.echo(f"    Definition: {entry.definition}")
+                click.echo(click.style(f"{i:2d}. {entry.chinese}", fg="cyan", bold=True))
+                click.echo(f"    {click.style('Pinyin:', fg='yellow', bold=True)} {entry.pinyin}")
+                click.echo(f"    {click.style('Definition:', fg='yellow', bold=True)} {entry.definition}")
                 click.echo()
                 
         except Exception as e:
