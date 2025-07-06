@@ -43,3 +43,12 @@ class AnkiCard(BaseModel):
     passive: bool = False
     alternate_pronunciations: Optional[List[str]] = None
     nohearing: bool = False
+
+
+def pleco_to_anki(pleco_entry: PlecoEntry) -> AnkiCard:
+    """Convert a PlecoEntry to an AnkiCard."""
+    return AnkiCard(
+        pinyin=pleco_entry.pinyin,
+        simplified=pleco_entry.chinese,
+        meaning=pleco_entry.definition
+    )

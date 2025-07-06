@@ -4,10 +4,10 @@ Feature: Command Line Interface
   So that I can convert Pleco files easily from the terminal
 
 
-  Scenario: Parse and display TSV file
+  Scenario: Parse and display TSV file as Anki cards
     Given I have the sample TSV file "import.tsv"
     When I run the command "anki-pleco-importer features/examples/import.tsv"
     Then the output should contain "Parsed 6 entries from features/examples/import.tsv:"
     And the output should contain "1. 迷上"
     And the output should contain "Pinyin: mi2shang4"
-    And the output should contain "Definition: to become fascinated with; to become obsessed with"
+    And the output should contain "Meaning: to become fascinated with; to become obsessed with"

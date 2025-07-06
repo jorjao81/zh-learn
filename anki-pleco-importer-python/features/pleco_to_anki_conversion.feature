@@ -1,51 +1,47 @@
-Feature: Convert Pleco flashcard exports to Anki format
+Feature: Convert Pleco entries to Anki cards
   As a Chinese language learner
-  I want to convert my Pleco flashcard exports to Anki format
-  So that I can use spaced repetition study in Anki
+  I want to convert Pleco flashcard entries to Anki cards
+  So that I can use them in Anki with proper field mapping
 
   Background:
-    Given I have the anki-pleco-importer application
+    Given the pleco_to_anki conversion function is available
 
-  Scenario: Convert a simple Pleco export file
-    Given I have a Pleco export file with the following content:
-      """
-      你好\thello\tnǐ hǎo
-      谢谢\tthank you\txiè xie
-      """
-    When I convert the file to Anki format
-    Then the output should be a valid Anki CSV file
-    And the output should contain the following cards:
-      | Front | Back | Pinyin |
-      | 你好 | hello | nǐ hǎo |
-      | 谢谢 | thank you | xiè xie |
+  Scenario: Convert multiple Pleco entries to Anki cards
+    Given I have the following Pleco entries:
+      | chinese    | pinyin              | definition                                                      |
+      | 迷上       | mi2shang4           | to become fascinated with; to become obsessed with             |
+      | 瞬间转移   | shun4jian1zhuan3yi2 | teleportation                                                   |
+      | 讨人喜欢   | tao3ren2xi3huan5    | 1 to attract people's affection 2 charming 3 delightful        |
+      | 算无遗策   | suan4wu2yi2ce4      | F.E. make a well-conceived plan                                 |
+      | 吟唱       | yin2chang4          | verb sing (a verse); chant                                      |
+    When I convert them to Anki cards
+    Then I should get the following Anki cards:
+      | pinyin              | simplified | meaning                                                         |
+      | mi2shang4           | 迷上       | to become fascinated with; to become obsessed with             |
+      | shun4jian1zhuan3yi2 | 瞬间转移   | teleportation                                                   |
+      | tao3ren2xi3huan5    | 讨人喜欢   | 1 to attract people's affection 2 charming 3 delightful        |
+      | suan4wu2yi2ce4      | 算无遗策   | F.E. make a well-conceived plan                                 |
+      | yin2chang4          | 吟唱       | verb sing (a verse); chant                                      |
 
-  Scenario: Handle empty Pleco export file
-    Given I have an empty Pleco export file
-    When I convert the file to Anki format
-    Then I should get an error message "No flashcards found in input file"
+  Scenario: Convert Pleco entry with complex definition and examples
+    Given I have the following Pleco entry:
+      | chinese | pinyin    | definition                                                                                                                                                                                       |
+      | 动弹    | dong4tan5 | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
+    When I convert it to an Anki card
+    Then I should get the following Anki card:
+      | pinyin    | simplified | meaning                                                                                                                                                                                          |
+      | dong4tan5 | 动弹       | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
 
-  Scenario: Validate output file format
-    Given I have a valid Pleco export file
-    When I convert the file to Anki format
-    Then the output file should have CSV headers
-    And the output file should be properly formatted for Anki import
-
-  Scenario: Handle malformed Pleco export data
-    Given I have a Pleco export file with malformed data:
-      """
-      你好\thello
-      谢谢\tthank you\txiè xie\textra_field
-      """
-    When I convert the file to Anki format
-    Then I should get a warning about inconsistent data format
-    And the conversion should still proceed with available data
-
-  Scenario: Convert file with special characters
-    Given I have a Pleco export file with special characters:
-      """
-      "你好"\t"Hello, world!"\t"nǐ hǎo"
-      书籍\tbook (formal)\tshū jí
-      """
-    When I convert the file to Anki format
-    Then the output should preserve all special characters correctly
-    And the quotes should be handled properly in the CSV format
+  Scenario: Verify optional fields have default values
+    Given I have a Pleco entry with chinese "迷上", pinyin "mi2shang4", and definition "to become fascinated with"
+    When I convert it to an Anki card
+    Then the Anki card should have the following default values:
+      | field                   | value |
+      | pronunciation           | None  |
+      | examples                | None  |
+      | phonetic_component      | None  |
+      | semantic_component      | None  |
+      | similar_characters      | None  |
+      | passive                 | False |
+      | alternate_pronunciations| None  |
+      | nohearing               | False |

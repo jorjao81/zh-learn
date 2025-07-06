@@ -4,6 +4,7 @@ import click
 from pathlib import Path
 
 from .parser import PlecoTSVParser
+from .models import pleco_to_anki
 
 
 @click.command()
@@ -19,9 +20,10 @@ def main(tsv_file: Path) -> None:
             click.echo()
             
             for i, entry in enumerate(collection, 1):
-                click.echo(click.style(f"{i:2d}. {entry.chinese}", fg="cyan", bold=True))
-                click.echo(f"    {click.style('Pinyin:', fg='yellow', bold=True)} {entry.pinyin}")
-                click.echo(f"    {click.style('Definition:', fg='yellow', bold=True)} {entry.definition}")
+                anki_card = pleco_to_anki(entry)
+                click.echo(click.style(f"{i:2d}. {anki_card.simplified}", fg="cyan", bold=True))
+                click.echo(f"    {click.style('Pinyin:', fg='yellow', bold=True)} {anki_card.pinyin}")
+                click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)} {anki_card.meaning}")
                 click.echo()
                 
         except Exception as e:
