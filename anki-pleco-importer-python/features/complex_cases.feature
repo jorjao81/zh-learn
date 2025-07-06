@@ -35,7 +35,7 @@ Feature: Handle complex Pleco entries with detailed definitions
     When I convert them to Anki cards
     Then I should get the following Anki cards:
       | simplified | pinyin       | meaning                                                   |
-      | 寡不敌众   | guǎbùdízhòng | idiom hopelessly outnumbered; fight against hopeless odds |
+      | 寡不敌众   | guǎbùdízhòng | <b>idiom</b> hopelessly outnumbered; fight against hopeless odds |
       | 以泪洗面   | yǐlèixǐmiàn  | <b>idiom</b> to bathe one's face in tears                 |
       | 遵循       | zūnxún     | <b>verb</b> follow; abide by; adhere to                   |
 

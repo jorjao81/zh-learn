@@ -230,23 +230,21 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
         combined_meaning = re.sub(r"\s*\(idiom\)\s*", "", combined_meaning, flags=re.IGNORECASE)
         combined_meaning = "<b>idiom</b> " + combined_meaning.strip()
 
-    # Handle other special abbreviations in parentheses
-    combined_meaning = re.sub(
-        r"\(fig\.\)", '<span color="red">figurative</span>', combined_meaning, flags=re.IGNORECASE
-    )
-
     # Handle subject/domain markers
-    combined_meaning = re.sub(r"\bphysics\b", '<span color="red">physics</span>', combined_meaning, flags=re.IGNORECASE)
-    combined_meaning = re.sub(r"\bLIT\b", '<span color="red">literary</span>', combined_meaning)
+    domain_markers = {
+        r"\(fig\.\)": "figurative",
+        r"\bphysics\b": "physics",
+        r"\bphilosophy\b": "philosophy",
+        r"\bLIT\b": "literary",
+    }
 
-    # Handle full parts of speech - but NOT "idiom" at the beginning of the line
-    # Also skip if already inside HTML tags
+    for pattern, display_text in domain_markers.items():
+        replacement = f'<span color="red">{display_text}</span>'
+        combined_meaning = re.sub(pattern, replacement, combined_meaning, flags=re.IGNORECASE)
+
+    # Handle full parts of speech - skip if already inside HTML tags
     for pos in parts_of_speech:
-        if pos == "idiom":
-            # Only format idiom if it's not at the beginning of the line and not already in HTML tags
-            pattern = rf"(?<!^)(?<!<b>)\b{pos}\b(?!</b>)"
-        else:
-            pattern = rf"(?<!<b>)\b{pos}\b(?!</b>)"
+        pattern = rf"(?<!<b>)\b{pos}\b(?!</b>)"
         combined_meaning = re.sub(pattern, f"<b>{pos}</b>", combined_meaning, flags=re.IGNORECASE)
 
     return combined_meaning, examples if examples else None
