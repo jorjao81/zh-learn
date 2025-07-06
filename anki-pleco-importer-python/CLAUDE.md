@@ -43,3 +43,5 @@ This is a Python application that converts Pleco flashcard exports to Anki-compa
 - Follow a test-first strategy
 - Avoid handling to many errors, let exceptions bubble up and crash the application
 - Avoid generalising to much, keep the application simple instead
+- Always confirm commit message and changes before commiting
+- Always push after committing

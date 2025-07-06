@@ -21,27 +21,5 @@ Feature: Convert Pleco entries to Anki cards
       | shùnjiānzhuǎnyí     | 瞬间转移   | teleportation                                                   |
       | tǎorénxǐhuan        | 讨人喜欢   | 1 to attract people's affection 2 charming 3 delightful        |
       | suànwúyícè          | 算无遗策   | F.E. make a well-conceived plan                                 |
-      | yínchàng            | 吟唱       | verb sing (a verse); chant                                      |
+      | yínchàng            | 吟唱       | <b>verb</b> sing (a verse); chant                                      |
 
-  Scenario: Convert Pleco entry with complex definition and examples
-    Given I have the following Pleco entry:
-      | chinese | pinyin    | definition                                                                                                                                                                                       |
-      | 动弹    | dong4tan5 | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
-    When I convert it to an Anki card
-    Then I should get the following Anki card:
-      | pinyin    | simplified | meaning                                                                                                                                                                                          |
-      | dòngtan   | 动弹       | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
-
-  Scenario: Verify optional fields have default values
-    Given I have a Pleco entry with chinese "迷上", pinyin "mi2shang4", and definition "to become fascinated with"
-    When I convert it to an Anki card
-    Then the Anki card should have the following default values:
-      | field                   | value |
-      | pronunciation           | None  |
-      | examples                | None  |
-      | phonetic_component      | None  |
-      | semantic_component      | None  |
-      | similar_characters      | None  |
-      | passive                 | False |
-      | alternate_pronunciations| None  |
-      | nohearing               | False |

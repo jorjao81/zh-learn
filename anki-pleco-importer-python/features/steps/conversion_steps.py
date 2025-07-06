@@ -269,9 +269,22 @@ def step_verify_anki_card(context):
     expected_simplified = row["simplified"]
     expected_meaning = row["meaning"]
     
+    # Handle escaped newlines in expected meaning
+    expected_meaning = expected_meaning.replace('\\n', '\n')
+    
     assert context.anki_card.pinyin == expected_pinyin, f"Expected pinyin '{expected_pinyin}', got '{context.anki_card.pinyin}'"
     assert context.anki_card.simplified == expected_simplified, f"Expected simplified '{expected_simplified}', got '{context.anki_card.simplified}'"
     assert context.anki_card.meaning == expected_meaning, f"Expected meaning '{expected_meaning}', got '{context.anki_card.meaning}'"
+    
+    # Check examples field if present in the table
+    if "examples" in row:
+        expected_examples = row["examples"]
+        if expected_examples:
+            # Convert list to newline-separated string for comparison
+            actual_examples = "\n".join(context.anki_card.examples) if context.anki_card.examples else None
+            # Handle escaped newlines in expected examples
+            expected_examples = expected_examples.replace('\\n', '\n')
+            assert actual_examples == expected_examples, f"Expected examples '{expected_examples}', got '{actual_examples}'"
 
 
 @then("the Anki card should have the following default values")

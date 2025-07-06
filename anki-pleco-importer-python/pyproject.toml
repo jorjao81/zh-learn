@@ -49,11 +49,18 @@ where = ["src"]
 "" = "src"
 
 [tool.black]
-line-length = 88
+line-length = 120
 target-version = ['py38']
+
+[tool.flake8]
+max-line-length = 120
 
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "pandas"
+ignore_missing_imports = true

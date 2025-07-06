@@ -18,14 +18,14 @@ def main(tsv_file: Path) -> None:
             collection = parser.parse_file(tsv_file)
             click.echo(click.style(f"Parsed {len(collection)} entries from {tsv_file}:", fg="green", bold=True))
             click.echo()
-            
+
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry)
                 click.echo(click.style(f"{i:2d}. {anki_card.simplified}", fg="cyan", bold=True))
                 click.echo(f"    {click.style('Pinyin:', fg='yellow', bold=True)} {anki_card.pinyin}")
                 click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)} {anki_card.meaning}")
                 click.echo()
-                
+
         except Exception as e:
             click.echo(f"Error parsing file: {e}", err=True)
             raise click.Abort()
