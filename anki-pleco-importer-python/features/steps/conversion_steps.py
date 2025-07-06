@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 from behave import given, when, then
 from anki_pleco_importer.cli import main
+from anki_pleco_importer.models import PlecoEntry, pleco_to_anki
 
 
 @given("I have the anki-pleco-importer application")
@@ -182,3 +183,109 @@ def step_verify_quotes_handling(context):
             for cell in row:
                 # The CSV reader should handle quotes correctly
                 assert cell is not None, "Cell should not be None"
+
+
+# New step definitions for pleco_to_anki conversion
+
+@given("the pleco_to_anki conversion function is available")
+def step_conversion_function_available(context):
+    """Verify the pleco_to_anki conversion function is available."""
+    context.conversion_available = True
+
+
+@given("I have the following Pleco entries")
+def step_have_pleco_entries(context):
+    """Create Pleco entries from table data."""
+    context.pleco_entries = []
+    for row in context.table:
+        entry = PlecoEntry(
+            chinese=row["chinese"],
+            pinyin=row["pinyin"], 
+            definition=row["definition"]
+        )
+        context.pleco_entries.append(entry)
+
+
+@given("I have the following Pleco entry")
+def step_have_pleco_entry(context):
+    """Create a single Pleco entry from table data."""
+    row = context.table[0]
+    context.pleco_entry = PlecoEntry(
+        chinese=row["chinese"],
+        pinyin=row["pinyin"],
+        definition=row["definition"]
+    )
+
+
+@given('I have a Pleco entry with chinese "{chinese}", pinyin "{pinyin}", and definition "{definition}"')
+def step_have_pleco_entry_with_values(context, chinese, pinyin, definition):
+    """Create a Pleco entry with specific values."""
+    context.pleco_entry = PlecoEntry(
+        chinese=chinese,
+        pinyin=pinyin,
+        definition=definition
+    )
+
+
+@when("I convert them to Anki cards")
+def step_convert_entries_to_anki(context):
+    """Convert multiple Pleco entries to Anki cards."""
+    context.anki_cards = []
+    for entry in context.pleco_entries:
+        anki_card = pleco_to_anki(entry)
+        context.anki_cards.append(anki_card)
+
+
+@when("I convert it to an Anki card")
+def step_convert_entry_to_anki(context):
+    """Convert a single Pleco entry to an Anki card."""
+    context.anki_card = pleco_to_anki(context.pleco_entry)
+
+
+@then("I should get the following Anki cards")
+def step_verify_anki_cards(context):
+    """Verify the converted Anki cards match expected values."""
+    expected_cards = []
+    for row in context.table:
+        expected_cards.append({
+            "pinyin": row["pinyin"],
+            "simplified": row["simplified"],
+            "meaning": row["meaning"]
+        })
+    
+    assert len(context.anki_cards) == len(expected_cards), f"Expected {len(expected_cards)} cards, got {len(context.anki_cards)}"
+    
+    for i, (actual_card, expected_card) in enumerate(zip(context.anki_cards, expected_cards)):
+        assert actual_card.pinyin == expected_card["pinyin"], f"Card {i}: expected pinyin '{expected_card['pinyin']}', got '{actual_card.pinyin}'"
+        assert actual_card.simplified == expected_card["simplified"], f"Card {i}: expected simplified '{expected_card['simplified']}', got '{actual_card.simplified}'"
+        assert actual_card.meaning == expected_card["meaning"], f"Card {i}: expected meaning '{expected_card['meaning']}', got '{actual_card.meaning}'"
+
+
+@then("I should get the following Anki card")
+def step_verify_anki_card(context):
+    """Verify the converted Anki card matches expected values."""
+    row = context.table[0]
+    expected_pinyin = row["pinyin"]
+    expected_simplified = row["simplified"]
+    expected_meaning = row["meaning"]
+    
+    assert context.anki_card.pinyin == expected_pinyin, f"Expected pinyin '{expected_pinyin}', got '{context.anki_card.pinyin}'"
+    assert context.anki_card.simplified == expected_simplified, f"Expected simplified '{expected_simplified}', got '{context.anki_card.simplified}'"
+    assert context.anki_card.meaning == expected_meaning, f"Expected meaning '{expected_meaning}', got '{context.anki_card.meaning}'"
+
+
+@then("the Anki card should have the following default values")
+def step_verify_default_values(context):
+    """Verify the Anki card has expected default values."""
+    for row in context.table:
+        field = row["field"]
+        expected_value = row["value"]
+        
+        actual_value = getattr(context.anki_card, field)
+        
+        if expected_value == "None":
+            assert actual_value is None, f"Expected {field} to be None, got {actual_value}"
+        elif expected_value == "False":
+            assert actual_value is False, f"Expected {field} to be False, got {actual_value}"
+        else:
+            assert str(actual_value) == expected_value, f"Expected {field} to be {expected_value}, got {actual_value}"

@@ -6,7 +6,7 @@ Feature: Convert Pleco entries to Anki cards
   Background:
     Given the pleco_to_anki conversion function is available
 
-  Scenario: Convert multiple Pleco entries to Anki cards
+  Scenario: Convert multiple Pleco entries to Anki cards with tone marks
     Given I have the following Pleco entries:
       | chinese    | pinyin              | definition                                                      |
       | 迷上       | mi2shang4           | to become fascinated with; to become obsessed with             |
@@ -17,11 +17,11 @@ Feature: Convert Pleco entries to Anki cards
     When I convert them to Anki cards
     Then I should get the following Anki cards:
       | pinyin              | simplified | meaning                                                         |
-      | mi2shang4           | 迷上       | to become fascinated with; to become obsessed with             |
-      | shun4jian1zhuan3yi2 | 瞬间转移   | teleportation                                                   |
-      | tao3ren2xi3huan5    | 讨人喜欢   | 1 to attract people's affection 2 charming 3 delightful        |
-      | suan4wu2yi2ce4      | 算无遗策   | F.E. make a well-conceived plan                                 |
-      | yin2chang4          | 吟唱       | verb sing (a verse); chant                                      |
+      | míshàng             | 迷上       | to become fascinated with; to become obsessed with             |
+      | shùnjiānzhuǎnyí     | 瞬间转移   | teleportation                                                   |
+      | tǎorénxǐhuan        | 讨人喜欢   | 1 to attract people's affection 2 charming 3 delightful        |
+      | suànwúyícè          | 算无遗策   | F.E. make a well-conceived plan                                 |
+      | yínchàng            | 吟唱       | verb sing (a verse); chant                                      |
 
   Scenario: Convert Pleco entry with complex definition and examples
     Given I have the following Pleco entry:
@@ -30,7 +30,7 @@ Feature: Convert Pleco entries to Anki cards
     When I convert it to an Anki card
     Then I should get the following Anki card:
       | pinyin    | simplified | meaning                                                                                                                                                                                          |
-      | dong4tan5 | 动弹       | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
+      | dòngtan   | 动弹       | verb move; stir 机器不动弹了。 Jīqì bù dòngtan le. The machine has stopped. 车里太挤, 动弹不得。 Chē lǐ tài jǐ, dòngtan bude. The bus was so crowded that nobody could move. or The bus was jam-packed. |
 
   Scenario: Verify optional fields have default values
     Given I have a Pleco entry with chinese "迷上", pinyin "mi2shang4", and definition "to become fascinated with"
