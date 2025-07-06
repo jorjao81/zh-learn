@@ -205,4 +205,6 @@ def pleco_to_anki(pleco_entry: PlecoEntry) -> AnkiCard:
         meaning=meaning,
         examples=examples,
         semantic_component=semantic_component,
+        passive=True,
+        nohearing=True,
     )

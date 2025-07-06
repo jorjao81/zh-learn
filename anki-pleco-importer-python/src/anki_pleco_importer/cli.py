@@ -2,6 +2,7 @@
 
 import click
 import re
+import pandas as pd
 from pathlib import Path
 from typing import List
 
@@ -146,8 +147,11 @@ def main(tsv_file: Path) -> None:
             click.echo(click.style(f"Parsed {len(collection)} entries from {tsv_file}:", fg="green", bold=True))
             click.echo()
 
+            anki_cards = []
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry)
+                anki_cards.append(anki_card)
+                
                 click.echo(click.style(f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True) + anki_card.pinyin)
                 click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)}")
                 meaning_box = format_meaning_box(anki_card.meaning)
@@ -159,6 +163,27 @@ def main(tsv_file: Path) -> None:
                     click.echo(component_box)
 
                 click.echo()
+
+            # Convert to DataFrame and save as CSV
+            df_data = []
+            for card in anki_cards:
+                df_data.append({
+                    'simplified': card.simplified,
+                    'pinyin': card.pinyin,
+                    'pronunciation': card.pronunciation,
+                    'meaning': card.meaning,
+                    'examples': '; '.join(card.examples) if card.examples else None,
+                    'phonetic_component': card.phonetic_component,
+                    'semantic_component': card.semantic_component,
+                    'similar_characters': '; '.join(card.similar_characters) if card.similar_characters else None,
+                    'passive': card.passive,
+                    'alternate_pronunciations': '; '.join(card.alternate_pronunciations) if card.alternate_pronunciations else None,
+                    'nohearing': card.nohearing
+                })
+            
+            df = pd.DataFrame(df_data)
+            df.to_csv('processed.csv', index=False)
+            click.echo(click.style(f"Converted {len(anki_cards)} cards saved to processed.csv", fg="green", bold=True))
 
         except Exception as e:
             click.echo(f"Error parsing file: {e}", err=True)
