@@ -242,57 +242,49 @@ def step_convert_entry_to_anki(context):
     context.anki_card = pleco_to_anki(context.pleco_entry)
 
 
-@then("I should get the following Anki cards")
-def step_verify_anki_cards(context):
-    """Verify the converted Anki cards match expected values."""
-    expected_cards = []
-    for row in context.table:
-        expected_cards.append({
-            "pinyin": row["pinyin"],
-            "simplified": row["simplified"],
-            "meaning": row["meaning"]
-        })
-    
-    assert len(context.anki_cards) == len(expected_cards), f"Expected {len(expected_cards)} cards, got {len(context.anki_cards)}"
-    
-    for i, (actual_card, expected_card) in enumerate(zip(context.anki_cards, expected_cards)):
-        assert actual_card.pinyin == expected_card["pinyin"], f"Card {i}: expected pinyin '{expected_card['pinyin']}', got '{actual_card.pinyin}'"
-        assert actual_card.simplified == expected_card["simplified"], f"Card {i}: expected simplified '{expected_card['simplified']}', got '{actual_card.simplified}'"
-        assert actual_card.meaning == expected_card["meaning"], f"Card {i}: expected meaning '{expected_card['meaning']}', got '{actual_card.meaning}'"
-
-
 @then("I should get the following Anki card")
+@then("I should get the following Anki cards")
 def step_verify_anki_card(context):
-    """Verify the converted Anki card matches expected values."""
-    row = context.table[0]
-    expected_pinyin = row["pinyin"]
-    expected_simplified = row["simplified"]
+    """Verify the converted Anki card(s) match expected values."""
+    # Handle both single card and multiple cards scenarios
+    if hasattr(context, 'anki_cards'):
+        # Multiple cards scenario
+        actual_cards = context.anki_cards
+    else:
+        # Single card scenario - convert to list for uniform processing
+        actual_cards = [context.anki_card]
     
-    assert context.anki_card.pinyin == expected_pinyin, f"Expected pinyin '{expected_pinyin}', got '{context.anki_card.pinyin}'"
-    assert context.anki_card.simplified == expected_simplified, f"Expected simplified '{expected_simplified}', got '{context.anki_card.simplified}'"
+    expected_rows = list(context.table)
+    assert len(actual_cards) == len(expected_rows), f"Expected {len(expected_rows)} cards, got {len(actual_cards)}"
     
-    # Check meaning field if present in the table
-    if "meaning" in row:
-        expected_meaning = row["meaning"]
-        # Handle escaped newlines in expected meaning
-        expected_meaning = expected_meaning.replace('\\n', '\n')
-        assert context.anki_card.meaning == expected_meaning, f"Expected meaning '{expected_meaning}', got '{context.anki_card.meaning}'"
-    
-    # Check examples field if present in the table
-    if "examples" in row:
-        expected_examples = row["examples"]
-        if expected_examples:
-            # Convert list to newline-separated string for comparison
-            actual_examples = "\n".join(context.anki_card.examples) if context.anki_card.examples else None
-            # Handle escaped newlines in expected examples
-            expected_examples = expected_examples.replace('\\n', '\n')
-            assert actual_examples == expected_examples, f"Expected examples '{expected_examples}', got '{actual_examples}'"
-    
-    # Check semantic_component field if present in the table
-    if "semantic_component" in row:
-        expected_semantic_component = row["semantic_component"]
-        actual_semantic_component = context.anki_card.semantic_component
-        assert actual_semantic_component == expected_semantic_component, f"Expected semantic_component '{expected_semantic_component}', got '{actual_semantic_component}'"
+    for i, (actual_card, row) in enumerate(zip(actual_cards, expected_rows)):
+        # Check required fields
+        expected_pinyin = row["pinyin"]
+        expected_simplified = row["simplified"]
+        
+        assert actual_card.pinyin == expected_pinyin, f"Card {i}: expected pinyin '{expected_pinyin}', got '{actual_card.pinyin}'"
+        assert actual_card.simplified == expected_simplified, f"Card {i}: expected simplified '{expected_simplified}', got '{actual_card.simplified}'"
+        
+        # Check optional fields if present in the table
+        if "meaning" in row:
+            expected_meaning = row["meaning"]
+            # Handle escaped newlines in expected meaning
+            expected_meaning = expected_meaning.replace('\\n', '\n')
+            assert actual_card.meaning == expected_meaning, f"Card {i}: expected meaning '{expected_meaning}', got '{actual_card.meaning}'"
+        
+        if "examples" in row:
+            expected_examples = row["examples"]
+            if expected_examples:
+                # Convert list to newline-separated string for comparison
+                actual_examples = "\n".join(actual_card.examples) if actual_card.examples else None
+                # Handle escaped newlines in expected examples
+                expected_examples = expected_examples.replace('\\n', '\n')
+                assert actual_examples == expected_examples, f"Card {i}: expected examples '{expected_examples}', got '{actual_examples}'"
+        
+        if "semantic_component" in row:
+            expected_semantic_component = row["semantic_component"]
+            actual_semantic_component = actual_card.semantic_component
+            assert actual_semantic_component == expected_semantic_component, f"Card {i}: expected semantic_component '{expected_semantic_component}', got '{actual_semantic_component}'"
 
 
 @then("the Anki card should have the following default values")

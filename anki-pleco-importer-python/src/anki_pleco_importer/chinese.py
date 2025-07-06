@@ -131,28 +131,30 @@ def get_semantic_components(chinese_text: str) -> str:
                     pinyin = p
                     break
 
-            # Get definition - prefer the non-surname definition
+            # Get all definitions
             definitions = _hanzi_dictionary.definition_lookup(char)
             if not definitions:
                 continue
 
-            # Find the best definition (prefer non-surname)
-            best_definition = None
+            # Collect all definitions, excluding surname definitions
+            all_definitions = []
             for def_item in definitions:
                 definition_text = def_item.get("definition", "")
-                if "surname" not in definition_text.lower():
-                    best_definition = definition_text
-                    break
+                if "surname" not in definition_text.lower() and definition_text:
+                    all_definitions.append(definition_text)
 
-            # If no non-surname definition found, use the first one
-            if not best_definition:
-                best_definition = definitions[0].get("definition", "")
+            # If no non-surname definitions found, use the first one
+            if not all_definitions:
+                all_definitions = [definitions[0].get("definition", "")]
 
-            # Remove tone numbers from pinyin for cleaner display
-            pinyin_clean = re.sub(r"[0-9]", "", pinyin)
+            # Join all definitions with forward slash separator
+            combined_definition = "/".join(all_definitions)
+
+            # Convert numbered pinyin to toned pinyin for display
+            pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
             # Format as: 字(pinyin - meaning)
-            component = f"{char}({pinyin_clean} - {best_definition})"
+            component = f"{char}({pinyin_clean} - {combined_definition})"
             components.append(component)
 
         except Exception:
