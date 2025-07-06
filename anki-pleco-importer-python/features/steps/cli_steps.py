@@ -19,7 +19,7 @@ def step_run_command(context, command):
 
             result = subprocess.run(
                 cmd_parts,
-                cwd=context.test_files_dir,
+                cwd=Path.cwd(),
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
@@ -111,3 +111,17 @@ def step_verify_non_zero_exit_code(context):
     assert (
         context.exit_code != 0
     ), f"Exit code should be non-zero, got {context.exit_code}"
+
+
+@given('I have the sample TSV file "import.tsv"')
+def step_sample_tsv_file(context):
+    """Verify the sample TSV file exists."""
+    sample_file = Path("features/examples/import.tsv")
+    assert sample_file.exists(), "Sample TSV file should exist"
+
+
+@then('the output should contain "{expected_text}"')
+def step_verify_output_contains(context, expected_text):
+    """Verify the output contains the expected text."""
+    output = context.stdout + context.stderr
+    assert expected_text in output, f"Output should contain '{expected_text}'. Got: {output}"

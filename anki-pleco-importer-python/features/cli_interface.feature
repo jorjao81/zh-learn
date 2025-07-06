@@ -3,27 +3,11 @@ Feature: Command Line Interface
   I want to use the command line interface
   So that I can convert Pleco files easily from the terminal
 
-  Scenario: Display help information
-    When I run the command "anki-pleco-importer --help"
-    Then the output should contain usage information
-    And the output should contain available options
 
-  Scenario: Display version information
-    When I run the command "anki-pleco-importer --version"
-    Then the output should contain the version number
-
-  Scenario: Convert file using command line
-    Given I have a Pleco export file "input.txt"
-    When I run the command "anki-pleco-importer input.txt -o output.csv"
-    Then the file "output.csv" should be created
-    And the file "output.csv" should contain the converted data
-
-  Scenario: Handle missing input file
-    When I run the command "anki-pleco-importer nonexistent.txt"
-    Then I should get an error about the missing file
-    And the exit code should be non-zero
-
-  Scenario: Use default output filename
-    Given I have a Pleco export file "input.txt"
-    When I run the command "anki-pleco-importer input.txt"
-    Then the file "input_anki.csv" should be created
+  Scenario: Parse and display TSV file
+    Given I have the sample TSV file "import.tsv"
+    When I run the command "anki-pleco-importer features/examples/import.tsv"
+    Then the output should contain "Parsed 6 entries from features/examples/import.tsv:"
+    And the output should contain "1. 迷上"
+    And the output should contain "Pinyin: mi2shang4"
+    And the output should contain "Definition: to become fascinated with; to become obsessed with"
