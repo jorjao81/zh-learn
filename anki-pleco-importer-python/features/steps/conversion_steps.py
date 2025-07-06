@@ -267,14 +267,16 @@ def step_verify_anki_card(context):
     row = context.table[0]
     expected_pinyin = row["pinyin"]
     expected_simplified = row["simplified"]
-    expected_meaning = row["meaning"]
-    
-    # Handle escaped newlines in expected meaning
-    expected_meaning = expected_meaning.replace('\\n', '\n')
     
     assert context.anki_card.pinyin == expected_pinyin, f"Expected pinyin '{expected_pinyin}', got '{context.anki_card.pinyin}'"
     assert context.anki_card.simplified == expected_simplified, f"Expected simplified '{expected_simplified}', got '{context.anki_card.simplified}'"
-    assert context.anki_card.meaning == expected_meaning, f"Expected meaning '{expected_meaning}', got '{context.anki_card.meaning}'"
+    
+    # Check meaning field if present in the table
+    if "meaning" in row:
+        expected_meaning = row["meaning"]
+        # Handle escaped newlines in expected meaning
+        expected_meaning = expected_meaning.replace('\\n', '\n')
+        assert context.anki_card.meaning == expected_meaning, f"Expected meaning '{expected_meaning}', got '{context.anki_card.meaning}'"
     
     # Check examples field if present in the table
     if "examples" in row:
@@ -285,6 +287,12 @@ def step_verify_anki_card(context):
             # Handle escaped newlines in expected examples
             expected_examples = expected_examples.replace('\\n', '\n')
             assert actual_examples == expected_examples, f"Expected examples '{expected_examples}', got '{actual_examples}'"
+    
+    # Check semantic_component field if present in the table
+    if "semantic_component" in row:
+        expected_semantic_component = row["semantic_component"]
+        actual_semantic_component = context.anki_card.semantic_component
+        assert actual_semantic_component == expected_semantic_component, f"Expected semantic_component '{expected_semantic_component}', got '{actual_semantic_component}'"
 
 
 @then("the Anki card should have the following default values")

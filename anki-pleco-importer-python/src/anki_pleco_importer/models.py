@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Iterator, Match
 import re
+import logging
 from pydantic import BaseModel
+from hanzipy.dictionary import HanziDictionary  # type: ignore
+
+# Suppress debug output from hanzipy library
+logging.getLogger('root').setLevel(logging.WARNING)
 
 
 @dataclass
@@ -252,8 +257,27 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
 
 def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     """Extract examples from a text section, returning cleaned meaning and examples."""
-    # Extract just the definition part before the first Chinese example
-    # Look for where Chinese characters start (these are examples)
+
+    # Handle abbreviation pattern: "abbreviation = [number][chinese][pinyin][chinese] english_translation"
+    # Note: Pleco exports may contain private use area Unicode characters, so we need a more flexible pattern
+    abbrev_match = re.search(
+        r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$", text
+    )
+    if abbrev_match:
+        # Extract just the English translation at the end, but preserve any part of speech at the beginning
+        english_part = abbrev_match.group(1).strip()
+
+        # Check if the text starts with a part of speech
+        pos_match = re.match(
+            r"^(verb|noun|adjective|adverb|pronoun|preposition|conjunction|interjection|idiom)\s+", text, re.IGNORECASE
+        )
+        if pos_match:
+            pos_word = pos_match.group(1)
+            meaning = f"{pos_word} {english_part}"
+        else:
+            meaning = english_part
+
+        return meaning, None
 
     # Find the first occurrence of Chinese characters - this marks start of examples
     chinese_match = re.search(r"[一-龯]", text)
@@ -275,13 +299,79 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     return meaning, examples
 
 
+def get_semantic_components(chinese_text: str) -> str:
+    """Get semantic components for Chinese characters using hanzipy.
+
+    Args:
+        chinese_text: Chinese text to decompose
+
+    Returns:
+        Formatted string with characters and their meanings joined by +
+        Format: 字(pinyin - meaning) + 字(pinyin - meaning)
+    """
+    dictionary = HanziDictionary()
+    components = []
+
+    # Split text into individual characters
+    for char in chinese_text:
+        # Skip non-Chinese characters
+        if not "\u4e00" <= char <= "\u9fff":
+            continue
+
+        try:
+            # Get pinyin (prefer lowercase/common pronunciation)
+            pinyin_list = dictionary.get_pinyin(char)
+            if not pinyin_list:
+                continue
+
+            # Prefer lowercase pinyin over uppercase (common vs proper name)
+            pinyin = pinyin_list[0]
+            for p in pinyin_list:
+                if p.islower():
+                    pinyin = p
+                    break
+
+            # Get definition - prefer the non-surname definition
+            definitions = dictionary.definition_lookup(char)
+            if not definitions:
+                continue
+
+            # Find the best definition (prefer non-surname)
+            best_definition = None
+            for def_item in definitions:
+                definition_text = def_item.get("definition", "")
+                if "surname" not in definition_text.lower():
+                    best_definition = definition_text
+                    break
+
+            # If no non-surname definition found, use the first one
+            if not best_definition:
+                best_definition = definitions[0].get("definition", "")
+
+            # Remove tone numbers from pinyin for cleaner display
+            pinyin_clean = re.sub(r"[0-9]", "", pinyin)
+
+            # Format as: 字(pinyin - meaning)
+            component = f"{char}({pinyin_clean} - {best_definition})"
+            components.append(component)
+
+        except Exception:
+            # If any error occurs, skip this character
+            continue
+
+    # Join with + sign
+    return " + ".join(components)
+
+
 def pleco_to_anki(pleco_entry: PlecoEntry) -> AnkiCard:
     """Convert a PlecoEntry to an AnkiCard."""
     meaning, examples = parse_pleco_definition(pleco_entry.definition)
+    semantic_component = get_semantic_components(pleco_entry.chinese)
 
     return AnkiCard(
         pinyin=convert_numbered_pinyin_to_tones(pleco_entry.pinyin),
         simplified=pleco_entry.chinese,
         meaning=meaning,
         examples=examples,
+        semantic_component=semantic_component,
     )
