@@ -139,14 +139,47 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
 
 def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
     """Parse Pleco definition to extract meanings and examples."""
-    parts_of_speech = ["verb", "noun", "adjective", "adverb", "pronoun", "preposition", "conjunction", "interjection"]
+    parts_of_speech = [
+        "verb",
+        "noun",
+        "adjective",
+        "adverb",
+        "pronoun",
+        "preposition",
+        "conjunction",
+        "interjection",
+        "idiom",
+    ]
 
-    # Find all parts of speech positions
+    # Find all parts of speech positions, but exclude those in parentheses
     pos_positions = []
     for pos in parts_of_speech:
         pattern = rf"\b{pos}\b"
         for match in re.finditer(pattern, definition, re.IGNORECASE):
-            pos_positions.append((match.start(), match.end(), pos))
+            # Check if this match is inside parentheses
+            start_pos = match.start()
+            # Find the closest opening parenthesis before this position
+            preceding_text = definition[:start_pos]
+            following_text = definition[start_pos:]
+
+            # Check if we're inside parentheses
+            in_parentheses = False
+            paren_depth = 0
+            for char in preceding_text:
+                if char == "(":
+                    paren_depth += 1
+                elif char == ")":
+                    paren_depth -= 1
+
+            # If paren_depth > 0, we're inside parentheses
+            if paren_depth > 0:
+                # Check if there's a closing parenthesis after this position
+                if ")" in following_text:
+                    in_parentheses = True
+
+            # Only add to pos_positions if not in parentheses
+            if not in_parentheses:
+                pos_positions.append((match.start(), match.end(), pos))
 
     # Sort by position
     pos_positions.sort()
@@ -180,8 +213,40 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
 
     # Format parts of speech with HTML
     combined_meaning = "\n".join(meanings)
+
+    # Handle abbreviations first
+    abbreviations = {
+        r"\bV\.\s*": "<b>verb</b> ",
+        r"\bN\.\s*": "<b>noun</b> ",
+        r"\bAdj\.\s*": "<b>adjective</b> ",
+        r"\bAdv\.\s*": "<b>adverb</b> ",
+    }
+
+    for abbrev_pattern, replacement in abbreviations.items():
+        combined_meaning = re.sub(abbrev_pattern, replacement, combined_meaning, flags=re.IGNORECASE)
+
+    # Handle idiom in parentheses - move "(idiom)" from end to beginning as "<b>idiom</b>"
+    if "(idiom)" in combined_meaning.lower():
+        combined_meaning = re.sub(r"\s*\(idiom\)\s*", "", combined_meaning, flags=re.IGNORECASE)
+        combined_meaning = "<b>idiom</b> " + combined_meaning.strip()
+
+    # Handle other special abbreviations in parentheses
+    combined_meaning = re.sub(
+        r"\(fig\.\)", '<span color="red">figurative></span>', combined_meaning, flags=re.IGNORECASE
+    )
+
+    # Handle subject/domain markers
+    combined_meaning = re.sub(r"\bphysics\b", '<span color="red">physics</span>', combined_meaning, flags=re.IGNORECASE)
+    combined_meaning = re.sub(r"\bLIT\b", '<span color="red">literary</span>', combined_meaning)
+
+    # Handle full parts of speech - but NOT "idiom" at the beginning of the line
+    # Also skip if already inside HTML tags
     for pos in parts_of_speech:
-        pattern = rf"\b{pos}\b"
+        if pos == "idiom":
+            # Only format idiom if it's not at the beginning of the line and not already in HTML tags
+            pattern = rf"(?<!^)(?<!<b>)\b{pos}\b(?!</b>)"
+        else:
+            pattern = rf"(?<!<b>)\b{pos}\b(?!</b>)"
         combined_meaning = re.sub(pattern, f"<b>{pos}</b>", combined_meaning, flags=re.IGNORECASE)
 
     return combined_meaning, examples if examples else None
