@@ -21,7 +21,7 @@ Feature: Handle complex Pleco entries with detailed definitions
     When I convert them to Anki cards
     Then I should get the following Anki cards:
       | simplified | pinyin       | meaning                                                                                                                                                                                |
-      | 瞑目       | míngmù       | 1 to close one's eyes 2 <span color="red">figurative></span> to be contented at the time of one's death (Dying without closing one's eyes would signify having unresolved grievances.) |
+      | 瞑目       | míngmù       | 1 to close one's eyes 2 <span color="red">figurative</span> to be contented at the time of one's death (Dying without closing one's eyes would signify having unresolved grievances.) |
       | 冲击波     | chōngjībō | <span color="red">physics</span> MET shock wave; blast wave <span color="red">literary</span> impact                                                                                   |
 
 

@@ -232,7 +232,7 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
 
     # Handle other special abbreviations in parentheses
     combined_meaning = re.sub(
-        r"\(fig\.\)", '<span color="red">figurative></span>', combined_meaning, flags=re.IGNORECASE
+        r"\(fig\.\)", '<span color="red">figurative</span>', combined_meaning, flags=re.IGNORECASE
     )
 
     # Handle subject/domain markers
