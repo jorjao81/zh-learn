@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 from typing import Union
 
-from .models import PlecoEntry, PlecoCollection
+from .pleco import PlecoEntry, PlecoCollection
 
 
 class PlecoTSVParser:

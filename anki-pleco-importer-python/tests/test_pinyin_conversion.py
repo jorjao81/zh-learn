@@ -1,6 +1,7 @@
 """Unit tests for pinyin tone conversion functionality."""
 
-from anki_pleco_importer.models import convert_numbered_pinyin_to_tones, pleco_to_anki, PlecoEntry
+from anki_pleco_importer.chinese import convert_numbered_pinyin_to_tones
+from anki_pleco_importer.pleco import pleco_to_anki, PlecoEntry
 
 
 class TestPinyinConversion:

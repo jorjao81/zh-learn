@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List
 
 from .parser import PlecoTSVParser
-from .models import pleco_to_anki
+from .pleco import pleco_to_anki
 
 
 def format_html_for_terminal(text: str) -> str:

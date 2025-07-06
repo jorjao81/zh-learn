@@ -5,7 +5,7 @@ import io
 from pathlib import Path
 from behave import given, when, then
 from anki_pleco_importer.cli import main
-from anki_pleco_importer.models import PlecoEntry, pleco_to_anki
+from anki_pleco_importer.pleco import PlecoEntry, pleco_to_anki
 
 
 @given("I have the anki-pleco-importer application")
