@@ -16,11 +16,19 @@ def format_html_for_terminal(text: str) -> str:
         content = match.group(1)
         return click.style(content, bold=True)
 
+    # Replace <span color="red">...</span> with click's red color formatting
+    def replace_red_span(match: re.Match[str]) -> str:
+        content = match.group(1)
+        return click.style(content, fg='red')
+
     # Handle bold tags (case insensitive)
     formatted = re.sub(r"<b>(.*?)</b>", replace_bold, text, flags=re.IGNORECASE)
 
     # Also handle self-closing bold tags if any
     formatted = re.sub(r"<B>(.*?)</B>", replace_bold, formatted)
+
+    # Handle red span tags (case insensitive)
+    formatted = re.sub(r'<span\s+color="red">(.*?)</span>', replace_red_span, formatted, flags=re.IGNORECASE)
 
     return formatted
 
