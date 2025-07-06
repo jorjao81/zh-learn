@@ -45,6 +45,10 @@ for ch in skritter.keys():
     if ch not in characters.keys():
         print(ch)
 
+print("\nChars in Anki not in skritter")
+for ch in [ word for word in characters.keys() if len(word) == 1 ]:
+    if ch not in skritter.keys():
+        print(ch)
 
 missing_chars = {}
 
