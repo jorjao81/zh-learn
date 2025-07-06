@@ -8,6 +8,9 @@ from hanzipy.dictionary import HanziDictionary  # type: ignore
 # Suppress debug output from hanzipy library
 logging.getLogger('root').setLevel(logging.WARNING)
 
+# Initialize HanziDictionary at module level for performance
+_hanzi_dictionary = HanziDictionary()
+
 
 def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
     """Convert numbered pinyin (e.g., 'ni3hao3') to pinyin with tone marks (e.g., 'nǐhǎo')."""
@@ -107,7 +110,6 @@ def get_semantic_components(chinese_text: str) -> str:
         Formatted string with characters and their meanings joined by +
         Format: 字(pinyin - meaning) + 字(pinyin - meaning)
     """
-    dictionary = HanziDictionary()
     components = []
 
     # Split text into individual characters
@@ -118,7 +120,7 @@ def get_semantic_components(chinese_text: str) -> str:
 
         try:
             # Get pinyin (prefer lowercase/common pronunciation)
-            pinyin_list = dictionary.get_pinyin(char)
+            pinyin_list = _hanzi_dictionary.get_pinyin(char)
             if not pinyin_list:
                 continue
 
@@ -130,7 +132,7 @@ def get_semantic_components(chinese_text: str) -> str:
                     break
 
             # Get definition - prefer the non-surname definition
-            definitions = dictionary.definition_lookup(char)
+            definitions = _hanzi_dictionary.definition_lookup(char)
             if not definitions:
                 continue
 

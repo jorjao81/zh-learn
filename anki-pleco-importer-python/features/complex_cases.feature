@@ -40,6 +40,18 @@ Feature: Handle complex Pleco entries with detailed definitions
       | 遵循       | zūnxún     | <b>verb</b> follow; abide by; adhere to                   |
 
 
+  Scenario: Handle abbreviations and weird charachters
+    Given I have the following Pleco entries:
+      | chinese  | pinyin           | definition                                                |
+      | 化肥	    | hua4fei2	       | noun abbreviation = 22930176化学肥料hua4xue2fei2liao4化学肥料 chemical fertilizer |
+
+    When I convert them to Anki cards
+    Then I should get the following Anki cards:
+      | simplified | pinyin       | meaning                                                   |
+      | 化肥	    | huàféi	       | <b>noun</b> chemical fertilizer |
+
+
+
 
 
 
