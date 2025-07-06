@@ -10,6 +10,22 @@ A Python application to convert Pleco flashcard exports to Anki-compatible forma
 - Data validation and integrity checks
 - Command-line interface for easy usage
 
+## AnkiCard Model
+
+The application uses an `AnkiCard` model to represent flashcards with the following fields:
+
+- **pinyin**: The pinyin romanization of the Chinese word
+- **simplified**: The word using simplified Chinese characters
+- **pronunciation**: Audio file path for pronunciation (optional)
+- **meaning**: The definition/meaning of the word
+- **examples**: List of usage examples (optional)
+- **phonetic_component**: Phonetic component of the character (optional)
+- **semantic_component**: Semantic component of the character (optional)
+- **similar_characters**: List of similar characters (optional)
+- **passive**: Boolean flag for passive vocabulary (default: False)
+- **alternate_pronunciations**: List of alternate pronunciations (optional)
+- **nohearing**: Boolean flag to disable hearing-based cards (default: False)
+
 ## Installation
 
 1. Clone the repository:
