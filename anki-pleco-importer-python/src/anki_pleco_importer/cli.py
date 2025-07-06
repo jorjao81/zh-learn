@@ -182,7 +182,7 @@ def main(tsv_file: Path) -> None:
                 })
             
             df = pd.DataFrame(df_data)
-            df.to_csv('processed.csv', index=False)
+            df.to_csv('processed.csv', index=False, header=False)
             click.echo(click.style(f"Converted {len(anki_cards)} cards saved to processed.csv", fg="green", bold=True))
 
         except Exception as e:

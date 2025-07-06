@@ -6,6 +6,15 @@ import re
 
 from .anki import AnkiCard
 from .chinese import convert_numbered_pinyin_to_tones, get_semantic_components
+from .constants import (
+    PARTS_OF_SPEECH, 
+    PART_OF_SPEECH_ABBREVIATIONS,
+    DOMAIN_MARKERS,
+    COMPILED_PATTERNS,
+    COMPILED_DOMAIN_PATTERNS,
+    COMPILED_POS_PATTERNS,
+    COMPILED_ABBREV_PATTERNS
+)
 
 
 @dataclass
@@ -37,28 +46,14 @@ class PlecoCollection:
         self.entries.append(entry)
 
 
-def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
-    """Parse Pleco definition to extract meanings and examples."""
-    parts_of_speech = [
-        "verb",
-        "noun",
-        "adjective",
-        "adverb",
-        "pronoun",
-        "preposition",
-        "conjunction",
-        "interjection",
-        "idiom",
-    ]
-
-    # Find all parts of speech positions, but exclude those in parentheses
+def _detect_parts_of_speech_positions(definition: str) -> List[Tuple[int, int, str]]:
+    """Detect positions of parts of speech in definition, excluding those in parentheses."""
     pos_positions = []
-    for pos in parts_of_speech:
+    for pos in PARTS_OF_SPEECH:
         pattern = rf"\b{pos}\b"
         for match in re.finditer(pattern, definition, re.IGNORECASE):
             # Check if this match is inside parentheses
             start_pos = match.start()
-            # Find the closest opening parenthesis before this position
             preceding_text = definition[:start_pos]
             following_text = definition[start_pos:]
 
@@ -83,8 +78,11 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
 
     # Sort by position
     pos_positions.sort()
+    return pos_positions
 
-    # Split definition into meaning sections
+
+def _extract_meaning_sections(definition: str, pos_positions: List[Tuple[int, int, str]]) -> Tuple[List[str], List[str]]:
+    """Extract meaning sections and examples from definition based on parts of speech positions."""
     meanings = []
     examples = []
 
@@ -111,61 +109,60 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
             if extracted_examples:
                 examples.extend(extracted_examples)
 
-    # Format parts of speech with HTML
+    return meanings, examples
+
+
+def _format_meaning_with_html(meanings: List[str]) -> str:
+    """Format meanings with HTML tags for parts of speech and domain markers."""
     combined_meaning = "\n".join(meanings)
 
-    # Handle abbreviations first
-    abbreviations = {
-        r"\bV\.\s*": "<b>verb</b> ",
-        r"\bN\.\s*": "<b>noun</b> ",
-        r"\bAdj\.\s*": "<b>adjective</b> ",
-        r"\bAdv\.\s*": "<b>adverb</b> ",
-    }
-
-    for abbrev_pattern, replacement in abbreviations.items():
-        combined_meaning = re.sub(abbrev_pattern, replacement, combined_meaning, flags=re.IGNORECASE)
+    # Handle abbreviations first using pre-compiled patterns
+    for pattern, replacement in COMPILED_ABBREV_PATTERNS.items():
+        combined_meaning = pattern.sub(replacement, combined_meaning)
 
     # Handle idiom in parentheses - move "(idiom)" from end to beginning as "<b>idiom</b>"
     if "(idiom)" in combined_meaning.lower():
-        combined_meaning = re.sub(r"\s*\(idiom\)\s*", "", combined_meaning, flags=re.IGNORECASE)
+        combined_meaning = COMPILED_PATTERNS["idiom_parentheses"].sub("", combined_meaning)
         combined_meaning = "<b>idiom</b> " + combined_meaning.strip()
 
-    # Handle subject/domain markers
-    domain_markers = {
-        r"\(fig\.\)": "figurative",
-        r"\bphysics\b": "physics",
-        r"\bphilosophy\b": "philosophy",
-        r"\bLIT\b": "literary",
-    }
-
-    for pattern, display_text in domain_markers.items():
+    # Handle subject/domain markers using pre-compiled patterns
+    for pattern, display_text in COMPILED_DOMAIN_PATTERNS.items():
         replacement = f'<span color="red">{display_text}</span>'
-        combined_meaning = re.sub(pattern, replacement, combined_meaning, flags=re.IGNORECASE)
+        combined_meaning = pattern.sub(replacement, combined_meaning)
 
-    # Handle full parts of speech - skip if already inside HTML tags
-    for pos in parts_of_speech:
-        pattern = rf"(?<!<b>)\b{pos}\b(?!</b>)"
-        combined_meaning = re.sub(pattern, f"<b>{pos}</b>", combined_meaning, flags=re.IGNORECASE)
+    # Handle full parts of speech using pre-compiled patterns
+    for pos, pattern in COMPILED_POS_PATTERNS.items():
+        combined_meaning = pattern.sub(f"<b>{pos}</b>", combined_meaning)
 
-    return combined_meaning, examples if examples else None
+    return combined_meaning
+
+
+def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
+    """Parse Pleco definition to extract meanings and examples."""
+    # Detect parts of speech positions 
+    pos_positions = _detect_parts_of_speech_positions(definition)
+    
+    # Extract meaning sections and examples
+    meanings, examples = _extract_meaning_sections(definition, pos_positions)
+    
+    # Format meanings with HTML
+    formatted_meaning = _format_meaning_with_html(meanings)
+    
+    return formatted_meaning, examples if examples else None
 
 
 def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     """Extract examples from a text section, returning cleaned meaning and examples."""
 
-    # Handle abbreviation pattern: "abbreviation = [number][chinese][pinyin][chinese] english_translation"
-    # Note: Pleco exports may contain private use area Unicode characters, so we need a more flexible pattern
-    abbrev_match = re.search(
-        r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$", text
-    )
+    # Handle abbreviation pattern using pre-compiled pattern
+    abbrev_match = COMPILED_PATTERNS["abbreviation"].search(text)
     if abbrev_match:
         # Extract just the English translation at the end, but preserve any part of speech at the beginning
         english_part = abbrev_match.group(1).strip()
 
         # Check if the text starts with a part of speech
-        pos_match = re.match(
-            r"^(verb|noun|adjective|adverb|pronoun|preposition|conjunction|interjection|idiom)\s+", text, re.IGNORECASE
-        )
+        parts_pattern = "|".join(PARTS_OF_SPEECH)
+        pos_match = re.match(rf"^({parts_pattern})\s+", text, re.IGNORECASE)
         if pos_match:
             pos_word = pos_match.group(1)
             meaning = f"{pos_word} {english_part}"
@@ -174,22 +171,51 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
 
         return meaning, None
 
-    # Find the first occurrence of Chinese characters - this marks start of examples
-    chinese_match = re.search(r"[一-龯]", text)
-
-    if chinese_match:
-        # Everything before Chinese characters is the core meaning
-        meaning = text[: chinese_match.start()].strip()
-        # Everything from Chinese characters onwards are examples
-        examples_text = text[chinese_match.start() :].strip()
-        examples = [examples_text] if examples_text else None
+    # Find Chinese example sentences using multiple patterns
+    chinese_examples = []
+    
+    # Pattern 1: Chinese sentence with punctuation + pinyin + English with punctuation
+    pattern1 = r'[一-龯][^.。]*[.。]\s+[A-Za-z][^.]*?[.!?]\s*(?:[A-Z][^.]*?[.!?]\s*)*'
+    examples1 = re.findall(pattern1, text)
+    chinese_examples.extend(examples1)
+    
+    # Pattern 2: Any text starting with Chinese chars that goes to the end after the meaning
+    # Look for Chinese chars followed by space and capitalized word, going to end of string
+    remaining_text = text
+    for found_example in chinese_examples:
+        remaining_text = remaining_text.replace(found_example, '')
+    
+    # Now look for any remaining Chinese examples in the remaining text
+    pattern2 = r'[一-龯][^$]*$'
+    examples2 = re.findall(pattern2, remaining_text.strip())
+    
+    # Filter and add unique examples
+    for ex in examples2:
+        if ex.strip() and not any(ex.strip() in found for found in chinese_examples):
+            chinese_examples.append(ex.strip())
+    
+    if chinese_examples:
+        # Remove Chinese examples from text to get clean meaning
+        meaning_text = text
+        for example in chinese_examples:
+            meaning_text = meaning_text.replace(example, ' ')
+        
+        # Clean up the meaning using pre-compiled pattern
+        meaning = COMPILED_PATTERNS["whitespace_cleanup"].sub(" ", meaning_text).strip()
+        examples = chinese_examples if chinese_examples else None
     else:
-        # No Chinese characters, just the meaning
-        meaning = text.strip()
-        examples = None
+        # Fallback to original simple logic
+        chinese_match = COMPILED_PATTERNS["chinese_chars"].search(text)
+        if chinese_match:
+            meaning = text[: chinese_match.start()].strip()
+            examples_text = text[chinese_match.start() :].strip()
+            examples = [examples_text] if examples_text else None
+        else:
+            meaning = text.strip()
+            examples = None
 
-    # Clean up extra spaces
-    meaning = re.sub(r"\s+", " ", meaning).strip()
+    # Clean up extra spaces using pre-compiled pattern
+    meaning = COMPILED_PATTERNS["whitespace_cleanup"].sub(" ", meaning).strip()
 
     return meaning, examples
 
