@@ -41,8 +41,6 @@ dev = [
     "pre-commit>=2.20.0",
 ]
 audio = [
-    "azure-cognitiveservices-speech>=1.25.0",
-    "boto3>=1.26.0",
     "playsound3>=3.0.0",
 ]
 

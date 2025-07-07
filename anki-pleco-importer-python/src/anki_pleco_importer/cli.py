@@ -162,12 +162,6 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
 
     # Load from environment variables (override file config)
     env_config = {
-        "azure": {"subscription_key": os.getenv("AZURE_SPEECH_KEY"), "region": os.getenv("AZURE_SPEECH_REGION")},
-        "polly": {
-            "aws_access_key_id": os.getenv("AWS_ACCESS_KEY_ID"),
-            "aws_secret_access_key": os.getenv("AWS_SECRET_ACCESS_KEY"),
-            "region": os.getenv("AWS_REGION", "us-east-1"),
-        },
         "forvo": {"api_key": os.getenv("FORVO_API_KEY")},
     }
 
@@ -185,8 +179,8 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
 @click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
 @click.option(
     "--audio-providers",
-    default="forvo,azure,polly",
-    help="Comma-separated list of audio providers in order of preference",
+    default="forvo",
+    help="Audio provider (only Forvo supported for high-quality human pronunciation)",
 )
 @click.option(
     "--audio-config",
@@ -350,16 +344,12 @@ def main(
         click.echo("Usage: anki-pleco-importer <tsv_file>")
         click.echo("\nOptions:")
         click.echo("  --audio                 Generate pronunciation audio files")
-        click.echo("  --audio-providers TEXT  Audio providers (default: forvo,azure,polly)")
+        click.echo("  --audio-providers TEXT  Audio provider (default: forvo)")
         click.echo("  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)")
         click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
         click.echo("  --dry-run              Show what would be done without making changes")
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")
-        click.echo("  AZURE_SPEECH_KEY       Azure Speech Services API key")
-        click.echo("  AZURE_SPEECH_REGION    Azure Speech Services region")
-        click.echo("  AWS_ACCESS_KEY_ID      AWS access key for Polly")
-        click.echo("  AWS_SECRET_ACCESS_KEY  AWS secret key for Polly")
         click.echo("  FORVO_API_KEY          Forvo API key")
 
 
