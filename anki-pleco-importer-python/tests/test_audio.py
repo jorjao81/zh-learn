@@ -117,9 +117,11 @@ class TestESpeakGenerator:
                 with patch.object(generator, '_convert_wav_to_mp3'):
                     result = generator.generate_audio("测试", output_file)
                     
-                    # Should have been called with correct parameters
-                    mock_run.assert_called_once()
-                    args = mock_run.call_args[0][0]
+                    # Should have been called twice: once for availability check, once for generation
+                    assert mock_run.call_count == 2
+                    # Check the generation call (second call)
+                    generation_call = mock_run.call_args_list[1]
+                    args = generation_call[0][0]
                     assert 'espeak-ng' in args
                     assert '测试' in args
     
@@ -131,8 +133,11 @@ class TestESpeakGenerator:
             
             # Mock subprocess to simulate failed eSpeak execution
             with patch('subprocess.run') as mock_run:
-                mock_run.return_value.returncode = 1
-                mock_run.return_value.stderr = "Error message"
+                # First call (availability check) succeeds, second call (generation) fails
+                mock_run.side_effect = [
+                    type('MockResult', (), {'returncode': 0})(),  # Availability check succeeds
+                    type('MockResult', (), {'returncode': 1, 'stderr': 'Error message'})()  # Generation fails
+                ]
                 
                 result = generator.generate_audio("测试", output_file)
                 assert result is None

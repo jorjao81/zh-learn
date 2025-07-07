@@ -315,9 +315,11 @@ class ESpeakGenerator(AudioGenerator):
 
 
 class ForvoGenerator(AudioGenerator):
-    """Forvo community pronunciation generator."""
+    """Forvo community pronunciation generator with smart user selection."""
     
-    def __init__(self, api_key: str, cache_dir: Optional[str] = None, use_paid_api: bool = True):
+    def __init__(self, api_key: str, cache_dir: Optional[str] = None, use_paid_api: bool = True, 
+                 preferred_users: Optional[list[str]] = None, download_all_when_no_preferred: bool = True,
+                 interactive_selection: bool = True):
         super().__init__(cache_dir)
         self.api_key = api_key
         self.language = "zh"
@@ -325,6 +327,9 @@ class ForvoGenerator(AudioGenerator):
         # The difference is in rate limits and features, not the URL
         self.base_url = "https://apifree.forvo.com"
         self.use_paid_api = use_paid_api
+        self.preferred_users = preferred_users or []
+        self.download_all_when_no_preferred = download_all_when_no_preferred
+        self.interactive_selection = interactive_selection
     
     def is_available(self) -> bool:
         """Check if Forvo API is available."""
@@ -333,10 +338,108 @@ class ForvoGenerator(AudioGenerator):
     def get_provider_name(self) -> str:
         return "forvo"
     
+    def _get_forvo_cache_filename(self, text: str, username: str) -> Path:
+        """Generate a Forvo-specific cache filename including username."""
+        text_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
+        return self.cache_dir / f"forvo_{username}_{text_hash}.mp3"
+    
+    def _find_cached_forvo_audio(self, text: str) -> Optional[str]:
+        """Find any cached Forvo audio for this text, regardless of username."""
+        pattern = f"forvo_*_{hashlib.md5(text.encode('utf-8')).hexdigest()}.mp3"
+        cache_files = list(self.cache_dir.glob(pattern))
+        return str(cache_files[0]) if cache_files else None
+    
+    def _format_pronunciation_info(self, pronunciation: Dict) -> str:
+        """Format pronunciation information for display."""
+        username = pronunciation.get('username', 'unknown')
+        sex = pronunciation.get('sex', '?')
+        country = pronunciation.get('country', 'unknown')
+        votes = pronunciation.get('num_votes', 0)
+        positive_votes = pronunciation.get('num_positive_votes', 0)
+        rating = pronunciation.get('rate', 0)
+        
+        # Gender emoji
+        gender_emoji = "♀" if sex == 'f' else "♂" if sex == 'm' else "?"
+        
+        # Rating stars
+        stars = "⭐" * min(5, max(0, int(rating))) if rating > 0 else ""
+        
+        # Preferred user indicator
+        preferred = " [PREFERRED]" if username in self.preferred_users else ""
+        
+        return f"{username} ({gender_emoji}, {country}) - {votes} votes, rating: {rating:.1f} {stars}{preferred}"
+    
+    def _select_best_pronunciation(self, pronunciations: list[Dict], text: str) -> Optional[Dict]:
+        """Select the best pronunciation based on preferences."""
+        if not pronunciations:
+            return None
+        
+        # Check for preferred users in order
+        for preferred_user in self.preferred_users:
+            for pronunciation in pronunciations:
+                if pronunciation.get('username') == preferred_user:
+                    logger.info(f"Found preferred user '{preferred_user}' for '{text}'")
+                    return pronunciation
+        
+        # No preferred users found
+        if not self.download_all_when_no_preferred:
+            # Fall back to highest-rated pronunciation
+            best = max(pronunciations, key=lambda x: (x.get('num_positive_votes', 0), x.get('num_votes', 0)))
+            logger.info(f"No preferred users found for '{text}', using highest-rated: {best.get('username')}")
+            return best
+        
+        # Interactive selection if enabled
+        if self.interactive_selection and len(pronunciations) > 1:
+            return self._interactive_pronunciation_selection(pronunciations, text)
+        else:
+            # Just use the first one if interactive selection is disabled
+            return pronunciations[0]
+    
+    def _interactive_pronunciation_selection(self, pronunciations: list[Dict], text: str) -> Optional[Dict]:
+        """Allow interactive selection of pronunciation."""
+        print(f"\n🎵 {text} - Found {len(pronunciations)} pronunciations:")
+        
+        for i, pronunciation in enumerate(pronunciations, 1):
+            info = self._format_pronunciation_info(pronunciation)
+            print(f"{i:2d}. {info}")
+        
+        while True:
+            try:
+                choice = input(f"\nSelect pronunciation (1-{len(pronunciations)}, or 's' to skip): ").strip().lower()
+                
+                if choice == 's':
+                    logger.info(f"User skipped pronunciation selection for '{text}'")
+                    return None
+                
+                choice_num = int(choice)
+                if 1 <= choice_num <= len(pronunciations):
+                    selected = pronunciations[choice_num - 1]
+                    username = selected.get('username', 'unknown')
+                    logger.info(f"User selected pronunciation by '{username}' for '{text}'")
+                    return selected
+                else:
+                    print(f"Please enter a number between 1 and {len(pronunciations)}")
+                    
+            except ValueError:
+                print("Please enter a valid number or 's' to skip")
+            except KeyboardInterrupt:
+                print("\nSkipping pronunciation selection...")
+                return None
+    
     def generate_audio(self, text: str, output_file: str) -> Optional[str]:
-        """Download audio from Forvo."""
+        """Download audio from Forvo with smart user selection."""
         if not self.is_available():
             raise TTSProviderNotAvailable("Forvo API not available")
+        
+        # Check for cached audio first
+        cached_audio = self._find_cached_forvo_audio(text)
+        if cached_audio:
+            logger.info(f"Using cached Forvo audio for '{text}': {cached_audio}")
+            if output_file != cached_audio:
+                import shutil
+                shutil.copy2(cached_audio, output_file)
+                return output_file
+            return cached_audio
         
         try:
             # Get pronunciation URL
@@ -359,35 +462,54 @@ class ForvoGenerator(AudioGenerator):
             response.raise_for_status()
             
             data = response.json()
-            logger.info(f"Forvo API response data: {data}")
             
             # Check for API error messages
             if 'error' in data:
                 logger.error(f"Forvo API error: {data['error']}")
                 return None
             
-            if data.get('items'):
-                # Get the highest-rated pronunciation
-                best_pronunciation = max(data['items'], key=lambda x: x.get('num_votes', 0))
-                audio_url = best_pronunciation.get('pathmp3')
-                
-                if audio_url:
-                    logger.info(f"Downloading audio from: {audio_url}")
-                    # Download the audio file
-                    audio_response = requests.get(audio_url, timeout=30)
-                    audio_response.raise_for_status()
-                    
-                    with open(output_file, 'wb') as f:
-                        f.write(audio_response.content)
-                    
-                    logger.info(f"Forvo downloaded audio for '{text}' to {output_file}")
-                    return output_file
-                else:
-                    logger.warning(f"No audio URL found in Forvo response for '{text}'")
-                    return None
-            else:
+            pronunciations = data.get('items', [])
+            if not pronunciations:
                 logger.warning(f"No Forvo pronunciation items found for '{text}'")
                 return None
+            
+            # Select the best pronunciation
+            selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
+            if not selected_pronunciation:
+                logger.info(f"No pronunciation selected for '{text}'")
+                return None
+            
+            # Get user info for logging and filename
+            username = selected_pronunciation.get('username', 'unknown')
+            audio_url = selected_pronunciation.get('pathmp3')
+            
+            if not audio_url:
+                logger.warning(f"No audio URL found in selected pronunciation for '{text}'")
+                return None
+            
+            logger.info(f"Downloading audio from: {audio_url}")
+            logger.info(f"Selected pronunciation by: {username}")
+            
+            # Download the audio file
+            audio_response = requests.get(audio_url, timeout=30)
+            audio_response.raise_for_status()
+            
+            # Use username-specific cache filename
+            cache_filename = self._get_forvo_cache_filename(text, username)
+            
+            with open(cache_filename, 'wb') as f:
+                f.write(audio_response.content)
+            
+            # Copy to output file if different
+            if output_file != str(cache_filename):
+                import shutil
+                shutil.copy2(cache_filename, output_file)
+                result_file = output_file
+            else:
+                result_file = str(cache_filename)
+            
+            logger.info(f"Forvo downloaded audio for '{text}' by '{username}' to {result_file}")
+            return result_file
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Forvo network error: {e}")
@@ -484,7 +606,10 @@ class AudioGeneratorFactory:
             return ForvoGenerator(
                 api_key=config.get("api_key"),
                 cache_dir=cache_dir,
-                use_paid_api=config.get("use_paid_api", True)
+                use_paid_api=config.get("use_paid_api", True),
+                preferred_users=config.get("preferred_users", []),
+                download_all_when_no_preferred=config.get("download_all_when_no_preferred", True),
+                interactive_selection=config.get("interactive_selection", True)
             )
         elif provider == "wiktionary":
             return WiktionaryGenerator(cache_dir=cache_dir)

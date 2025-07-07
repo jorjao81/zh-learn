@@ -13,7 +13,16 @@
       "region": "us-east-1"
     },
     "forvo": {
-      "api_key": "your_forvo_api_key_here"
+      "api_key": "your_forvo_api_key_here",
+      "preferred_users": [
+        "liufeimagic",
+        "mouyao", 
+        "darren8221",
+        "learnxuexi",
+        "Vincent930209"
+      ],
+      "download_all_when_no_preferred": true,
+      "interactive_selection": true
     },
     "espeak": {},
     "wiktionary": {}
