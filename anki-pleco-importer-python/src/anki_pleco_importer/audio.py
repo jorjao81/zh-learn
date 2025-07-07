@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import platform
 import shutil
+import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -35,18 +36,35 @@ class AudioGenerator(ABC):
         self.cache_dir = Path(cache_dir) if cache_dir else Path("audio_cache")
         self.cache_dir.mkdir(exist_ok=True)
 
-    def _get_cache_filename(self, text: str, provider: str) -> Path:
-        """Generate a cache filename based on text and provider."""
-        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
-        return self.cache_dir / f"{provider}_{text_hash}.mp3"
+    def _get_cache_filename(self, text: str, provider: str, details: Optional[str] = None) -> Path:
+        """Generate a cache filename based on text, provider, and optional details."""
+        # Sanitize the Chinese text for filename (remove unsafe characters)
+        safe_text = re.sub(r'[<>:"/\\|?*]', "", text)
+        safe_text = safe_text.replace(" ", "_")
 
-    def _is_cached(self, text: str, provider: str) -> bool:
+        # Build filename components
+        filename_parts = [safe_text, provider]
+
+        # Add details if provided (e.g., Forvo username)
+        if details:
+            safe_details = re.sub(r'[<>:"/\\|?*]', "", details)
+            safe_details = safe_details.replace(" ", "_")
+            filename_parts.append(safe_details)
+
+        # Add hash to avoid conflicts and ensure uniqueness
+        content_hash = hashlib.md5(f"{text}_{provider}_{details or ''}".encode("utf-8")).hexdigest()[:8]
+        filename_parts.append(content_hash)
+
+        filename = "_".join(filename_parts) + ".mp3"
+        return self.cache_dir / filename
+
+    def _is_cached(self, text: str, provider: str, details: Optional[str] = None) -> bool:
         """Check if audio is already cached."""
-        return self._get_cache_filename(text, provider).exists()
+        return self._get_cache_filename(text, provider, details).exists()
 
-    def _get_cached_path(self, text: str, provider: str) -> Optional[str]:
+    def _get_cached_path(self, text: str, provider: str, details: Optional[str] = None) -> Optional[str]:
         """Get path to cached audio file."""
-        cache_file = self._get_cache_filename(text, provider)
+        cache_file = self._get_cache_filename(text, provider, details)
         return str(cache_file) if cache_file.exists() else None
 
     @abstractmethod
@@ -64,13 +82,15 @@ class AudioGenerator(ABC):
         """Get the name of this provider."""
         pass
 
-    def generate_with_cache(self, text: str, output_file: Optional[str] = None) -> Optional[str]:
+    def generate_with_cache(
+        self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None
+    ) -> Optional[str]:
         """Generate audio with caching support."""
         provider = self.get_provider_name()
 
         # Check cache first
-        if self._is_cached(text, provider):
-            cached_path = self._get_cached_path(text, provider)
+        if self._is_cached(text, provider, cache_details):
+            cached_path = self._get_cached_path(text, provider, cache_details)
             logger.info(f"Using cached audio for '{text}' from {provider}")
 
             # If output_file is specified, copy from cache
@@ -83,13 +103,13 @@ class AudioGenerator(ABC):
 
         # Generate new audio
         if not output_file:
-            output_file = str(self._get_cache_filename(text, provider))
+            output_file = str(self._get_cache_filename(text, provider, cache_details))
 
         result = self.generate_audio(text, output_file)
 
         # Cache the result if successful and not already in cache location
-        if result and result != str(self._get_cache_filename(text, provider)):
-            cache_file = self._get_cache_filename(text, provider)
+        if result and result != str(self._get_cache_filename(text, provider, cache_details)):
+            cache_file = self._get_cache_filename(text, provider, cache_details)
             import shutil
 
             shutil.copy2(result, cache_file)
@@ -117,6 +137,10 @@ class AzureSpeechGenerator(AudioGenerator):
 
     def get_provider_name(self) -> str:
         return "azure"
+
+    def get_cache_details(self) -> str:
+        """Get cache details for Azure (voice name)."""
+        return self.voice_name
 
     def generate_audio(self, text: str, output_file: str) -> Optional[str]:
         """Generate audio using Azure Speech Services."""
@@ -175,6 +199,10 @@ class AmazonPollyGenerator(AudioGenerator):
 
     def get_provider_name(self) -> str:
         return "polly"
+
+    def get_cache_details(self) -> str:
+        """Get cache details for Polly (voice ID)."""
+        return self.voice_id
 
     def generate_audio(self, text: str, output_file: str) -> Optional[str]:
         """Generate audio using Amazon Polly."""
@@ -236,14 +264,11 @@ class ForvoGenerator(AudioGenerator):
     def get_provider_name(self) -> str:
         return "forvo"
 
-    def _get_forvo_cache_filename(self, text: str, username: str) -> Path:
-        """Generate a Forvo-specific cache filename including username."""
-        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
-        return self.cache_dir / f"forvo_{username}_{text_hash}.mp3"
-
     def _find_cached_forvo_audio(self, text: str) -> Optional[str]:
         """Find any cached Forvo audio for this text, regardless of username."""
-        pattern = f"forvo_*_{hashlib.md5(text.encode('utf-8')).hexdigest()}.mp3"
+        # Look for any existing Forvo cache files for this text
+        safe_text = re.sub(r'[<>:"/\\|?*]', "", text).replace(" ", "_")
+        pattern = f"{safe_text}_forvo_*.mp3"
         cache_files = list(self.cache_dir.glob(pattern))
         return str(cache_files[0]) if cache_files else None
 
@@ -497,17 +522,6 @@ class ForvoGenerator(AudioGenerator):
         if not self.is_available():
             raise TTSProviderNotAvailable("Forvo API not available")
 
-        # Check for cached audio first
-        cached_audio = self._find_cached_forvo_audio(text)
-        if cached_audio:
-            logger.info(f"Using cached Forvo audio for '{text}': {cached_audio}")
-            if output_file != cached_audio:
-                import shutil
-
-                shutil.copy2(cached_audio, output_file)
-                return output_file
-            return cached_audio
-
         try:
             # Get pronunciation URL
             url = f"{self.base_url}/key/{self.api_key}/format/json/action/word-pronunciations/word/{text}/language/{self.language}"
@@ -561,29 +575,59 @@ class ForvoGenerator(AudioGenerator):
             audio_response = requests.get(audio_url, timeout=30)
             audio_response.raise_for_status()
 
-            # Use username-specific cache filename
-            cache_filename = self._get_forvo_cache_filename(text, username)
-
-            with open(cache_filename, "wb") as f:
+            # Write to output file
+            with open(output_file, "wb") as f:
                 f.write(audio_response.content)
 
-            # Copy to output file if different
-            if output_file != str(cache_filename):
-                import shutil
-
-                shutil.copy2(cache_filename, output_file)
-                result_file = output_file
-            else:
-                result_file = str(cache_filename)
-
-            logger.info(f"Forvo downloaded audio for '{text}' by '{username}' to {result_file}")
-            return result_file
+            logger.info(f"Forvo downloaded audio for '{text}' by '{username}' to {output_file}")
+            return output_file
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Forvo network error: {e}")
             return None
         except Exception as e:
             logger.error(f"Forvo unexpected error: {e}")
+            return None
+
+    def generate_with_cache(self, text: str, output_file: Optional[str] = None) -> Optional[str]:
+        """Generate audio with Forvo-specific caching that includes username."""
+        # Check for any existing cached audio first
+        cached_audio = self._find_cached_forvo_audio(text)
+        if cached_audio:
+            logger.info(f"Using cached Forvo audio for '{text}': {cached_audio}")
+            if output_file and output_file != cached_audio:
+                import shutil
+
+                shutil.copy2(cached_audio, output_file)
+                return output_file
+            return cached_audio
+
+        # No cache found, need to download and determine username first
+        try:
+            # Get pronunciation URL to determine username
+            url = f"{self.base_url}/key/{self.api_key}/format/json/action/word-pronunciations/word/{text}/language/{self.language}"
+            response = requests.get(url, timeout=10)
+
+            if response.status_code != 200:
+                return None
+
+            data = response.json()
+            pronunciations = data.get("items", [])
+            if not pronunciations:
+                return None
+
+            # Select the best pronunciation to get username
+            selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
+            if not selected_pronunciation:
+                return None
+
+            username = selected_pronunciation.get("username", "unknown")
+
+            # Use new caching system with username as cache_details
+            return super().generate_with_cache(text, output_file, username)
+
+        except Exception as e:
+            logger.error(f"Forvo cache lookup error: {e}")
             return None
 
 
@@ -659,7 +703,12 @@ class MultiProviderAudioGenerator:
             generator = self.generators.get(provider)
             if generator:
                 try:
-                    result = generator.generate_with_cache(text, output_file)
+                    # Get cache details if the generator supports it
+                    cache_details = None
+                    if hasattr(generator, "get_cache_details"):
+                        cache_details = generator.get_cache_details()
+
+                    result = generator.generate_with_cache(text, output_file, cache_details)
                     if result:
                         logger.info(f"Successfully generated audio for '{text}' using {provider}")
                         return result
