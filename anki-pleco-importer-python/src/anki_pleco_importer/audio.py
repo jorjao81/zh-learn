@@ -1,11 +1,10 @@
-"""Audio generation module with multiple TTS providers."""
+"""Forvo audio generation for Chinese pronunciation."""
 
 import os
 import hashlib
-import subprocess
 import tempfile
 import platform
-import shutil
+import subprocess
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -19,13 +18,11 @@ logger = logging.getLogger(__name__)
 
 class AudioGeneratorError(Exception):
     """Base exception for audio generation errors."""
-
     pass
 
 
 class TTSProviderNotAvailable(AudioGeneratorError):
     """Raised when a TTS provider is not available or configured."""
-
     pass
 
 
@@ -139,6 +136,7 @@ class ForvoGenerator(AudioGenerator):
         self.preferred_users = preferred_users or []
         self.download_all_when_no_preferred = download_all_when_no_preferred
         self.interactive_selection = interactive_selection
+        self._cached_selection = None
 
     def is_available(self) -> bool:
         """Check if Forvo API is available."""
@@ -218,25 +216,24 @@ class ForvoGenerator(AudioGenerator):
         if not pronunciations:
             return None
 
-        # Check for preferred users in order
+        # Check for preferred users in order - auto-select only if found
         for preferred_user in self.preferred_users:
             for pronunciation in pronunciations:
                 if pronunciation.get("username") == preferred_user:
-                    logger.info(f"Found preferred user '{preferred_user}' for '{text}'")
+                    logger.info(f"Auto-selecting preferred user '{preferred_user}' for '{text}'")
                     return pronunciation
 
-        # No preferred users found
+        # No preferred users found - always show interactive selection if enabled
+        if self.interactive_selection:
+            return self._interactive_pronunciation_selection(pronunciations, text)
+        
+        # Interactive selection disabled - use highest-rated pronunciation
         if not self.download_all_when_no_preferred:
-            # Fall back to highest-rated pronunciation
             best = max(pronunciations, key=lambda x: (x.get("num_positive_votes", 0), x.get("num_votes", 0)))
             logger.info(f"No preferred users found for '{text}', using highest-rated: {best.get('username')}")
             return best
-
-        # Interactive selection if enabled
-        if self.interactive_selection and len(pronunciations) > 1:
-            return self._interactive_pronunciation_selection(pronunciations, text)
         else:
-            # Just use the first one if interactive selection is disabled
+            # Just use the first one
             return pronunciations[0]
 
     def _play_audio(self, file_path: str) -> bool:
@@ -322,8 +319,8 @@ class ForvoGenerator(AudioGenerator):
             info = self._format_pronunciation_info(pronunciation)
             print(f"{i:2d}. {info}")
 
-        print(f"\nCommands: p<number> to preview, <number> to select, 's' to skip")
-        print(f"Example: 'p1' to preview option 1, '1' to select option 1")
+        print(f"\nCommands: <number> to play, s<number> to select, 's' to skip")
+        print(f"Example: '1' to play option 1, 's1' to select option 1, 's' to skip all")
 
         preview_files = []  # Track temporary files for cleanup
 
@@ -336,61 +333,47 @@ class ForvoGenerator(AudioGenerator):
                         logger.info(f"User skipped pronunciation selection for '{text}'")
                         return None
 
-                    # Handle preview commands (p1, p2, etc.)
-                    if choice.startswith("p") and len(choice) > 1:
+                    # Handle selection commands (s1, s2, etc.)
+                    if choice.startswith("s") and len(choice) > 1:
                         try:
-                            preview_num = int(choice[1:])
-                            if 1 <= preview_num <= len(pronunciations):
-                                pronunciation = pronunciations[preview_num - 1]
-                                username = pronunciation.get("username", "unknown")
-
-                                print(f"🔊 Downloading and playing pronunciation by {username}...")
-
-                                # Download to temporary file
-                                temp_file = self._download_pronunciation_preview(pronunciation, text)
-                                if temp_file:
-                                    preview_files.append(temp_file)
-
-                                    # Try to play the audio
-                                    if self._play_audio(temp_file):
-                                        print(f"✅ Played pronunciation by {username}")
-
-                                        # Ask for confirmation
-                                        confirm = input(f"Select this pronunciation? (y/n): ").strip().lower()
-                                        if confirm in ["y", "yes"]:
-                                            logger.info(
-                                                f"User selected pronunciation by '{username}' for '{text}' after preview"
-                                            )
-                                            return pronunciation
-                                    else:
-                                        print(f"❌ Could not play audio (file downloaded but playback failed)")
-                                        print(f"You may need to install an audio player or playsound3")
-                                else:
-                                    print(f"❌ Could not download audio for preview")
+                            select_num = int(choice[1:])
+                            if 1 <= select_num <= len(pronunciations):
+                                selected = pronunciations[select_num - 1]
+                                username = selected.get("username", "unknown")
+                                logger.info(f"User selected pronunciation by '{username}' for '{text}'")
+                                return selected
                             else:
                                 print(f"Please enter a number between 1 and {len(pronunciations)}")
                         except ValueError:
-                            print(f"Invalid preview command. Use format: p1, p2, etc.")
+                            print(f"Invalid selection command. Use format: s1, s2, etc.")
                         continue
 
-                    # Handle direct selection (1, 2, etc.)
+                    # Handle play commands (1, 2, etc.)
                     try:
-                        choice_num = int(choice)
-                        if 1 <= choice_num <= len(pronunciations):
-                            selected = pronunciations[choice_num - 1]
-                            username = selected.get("username", "unknown")
+                        play_num = int(choice)
+                        if 1 <= play_num <= len(pronunciations):
+                            pronunciation = pronunciations[play_num - 1]
+                            username = pronunciation.get("username", "unknown")
 
-                            # Ask for confirmation without preview
-                            confirm = (
-                                input(f"Select pronunciation by {username} without preview? (y/n): ").strip().lower()
-                            )
-                            if confirm in ["y", "yes"]:
-                                logger.info(f"User selected pronunciation by '{username}' for '{text}' without preview")
-                                return selected
+                            print(f"🔊 Downloading and playing pronunciation by {username}...")
+
+                            # Download to temporary file
+                            temp_file = self._download_pronunciation_preview(pronunciation, text)
+                            if temp_file:
+                                preview_files.append(temp_file)
+
+                                # Try to play the audio
+                                if self._play_audio(temp_file):
+                                    print(f"✅ Played pronunciation by {username}")
+                                else:
+                                    print(f"❌ Could not play audio (file downloaded but playback failed)")
+                                    print(f"You may need to install an audio player or playsound3")
+                            else:
+                                print(f"❌ Could not download audio for preview")
                         else:
                             print(f"Please enter a number between 1 and {len(pronunciations)}")
                     except ValueError:
-                        print("Invalid input. Use: number to select, p<number> to preview, 's' to skip")
+                        print("Invalid input. Use: number to play, s<number> to select, 's' to skip")
 
                 except KeyboardInterrupt:
                     print("\nSkipping pronunciation selection...")
@@ -437,11 +420,17 @@ class ForvoGenerator(AudioGenerator):
                 logger.warning(f"No Forvo pronunciation items found for '{text}'")
                 return None
 
-            # Select the best pronunciation
-            selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
-            if not selected_pronunciation:
-                logger.info(f"No pronunciation selected for '{text}'")
-                return None
+            # Use cached selection if available, otherwise select
+            if hasattr(self, '_cached_selection') and self._cached_selection:
+                selected_pronunciation = self._cached_selection
+                # Clear the cache after using it
+                self._cached_selection = None
+                logger.info(f"Using cached pronunciation selection for '{text}'")
+            else:
+                selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
+                if not selected_pronunciation:
+                    logger.info(f"No pronunciation selected for '{text}'")
+                    return None
 
             # Get user info for logging and filename
             username = selected_pronunciation.get("username", "unknown")
@@ -472,7 +461,7 @@ class ForvoGenerator(AudioGenerator):
             logger.error(f"Forvo unexpected error: {e}")
             return None
 
-    def generate_with_cache(self, text: str, output_file: Optional[str] = None) -> Optional[str]:
+    def generate_with_cache(self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None) -> Optional[str]:
         """Generate audio with Forvo-specific caching that includes username."""
         # Check for any existing cached audio first
         cached_audio = self._find_cached_forvo_audio(text)
@@ -499,11 +488,13 @@ class ForvoGenerator(AudioGenerator):
             if not pronunciations:
                 return None
 
-            # Select the best pronunciation to get username
+            # Select the best pronunciation to get username - cache the result
             selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
             if not selected_pronunciation:
                 return None
 
+            # Store the selection to avoid re-prompting
+            self._cached_selection = selected_pronunciation
             username = selected_pronunciation.get("username", "unknown")
 
             # Use new caching system with username as cache_details
@@ -556,6 +547,7 @@ class MultiProviderAudioGenerator:
         self.config = config
         self.cache_dir = cache_dir
         self.generators = {}
+        self.skipped_words = []  # Track words with no pronunciation selected
 
         # Initialize generators
         for provider in providers:
@@ -584,13 +576,29 @@ class MultiProviderAudioGenerator:
                     if result:
                         logger.info(f"Successfully generated audio for '{text}' using {provider}")
                         return result
+                    else:
+                        # No result could mean user skipped or no pronunciation found
+                        if text not in self.skipped_words:
+                            self.skipped_words.append(text)
+                        logger.info(f"No audio generated for '{text}' using {provider}")
                 except Exception as e:
                     logger.error(f"Provider '{provider}' failed for '{text}': {e}")
                     continue
 
+        # All providers failed - also track as skipped
+        if text not in self.skipped_words:
+            self.skipped_words.append(text)
         logger.error(f"All audio providers failed for '{text}'")
         return None
 
     def get_available_providers(self) -> list[str]:
         """Get list of available providers."""
         return list(self.generators.keys())
+
+    def get_skipped_words(self) -> list[str]:
+        """Get list of words for which no pronunciation was selected."""
+        return self.skipped_words.copy()
+
+    def clear_skipped_words(self) -> None:
+        """Clear the list of skipped words."""
+        self.skipped_words.clear()
