@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import os
 import json
+import shutil
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
@@ -188,6 +189,7 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
     help="Path to audio configuration JSON file (default: audio-config.json if exists)",
 )
 @click.option("--audio-cache-dir", default="audio_cache", help="Directory to cache audio files")
+@click.option("--audio-dest-dir", type=click.Path(), help="Directory to copy selected audio files to")
 @click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 @click.version_option()
@@ -197,6 +199,7 @@ def main(
     audio_providers: str,
     audio_config: Optional[str],
     audio_cache_dir: str,
+    audio_dest_dir: Optional[str],
     dry_run: bool,
     verbose: bool,
 ) -> None:
@@ -229,11 +232,21 @@ def main(
                     click.echo(click.style(f"Audio providers available: {', '.join(available_providers)}", fg="green"))
                 else:
                     click.echo(click.style("Warning: No audio providers available", fg="yellow"))
-                    audio_generator = None
+                    # Keep audio_generator to track skipped words even when no providers available
 
             except Exception as e:
                 click.echo(click.style(f"Warning: Failed to initialize audio generation: {e}", fg="yellow"))
                 audio_generator = None
+
+        # Create audio destination directory if specified
+        if audio_dest_dir and not dry_run:
+            try:
+                Path(audio_dest_dir).mkdir(parents=True, exist_ok=True)
+                if verbose:
+                    click.echo(f"Audio destination directory: {audio_dest_dir}")
+            except Exception as e:
+                click.echo(click.style(f"Warning: Failed to create audio destination directory: {e}", fg="yellow"))
+                audio_dest_dir = None
 
         try:
             collection = parser.parse_file(tsv_file)
@@ -255,6 +268,17 @@ def main(
                             anki_card.pronunciation = audio_file
                             if verbose:
                                 click.echo(f"    Audio saved to: {audio_file}")
+                            
+                            # Copy to destination directory if specified
+                            if audio_dest_dir:
+                                try:
+                                    audio_filename = Path(audio_file).name
+                                    dest_path = Path(audio_dest_dir) / audio_filename
+                                    shutil.copy2(audio_file, dest_path)
+                                    if verbose:
+                                        click.echo(f"    Audio copied to: {dest_path}")
+                                except Exception as copy_error:
+                                    click.echo(click.style(f"    Warning: Failed to copy audio to destination: {copy_error}", fg="yellow"))
                         elif verbose:
                             click.echo(f"    No audio generated for '{anki_card.simplified}'")
 
@@ -321,16 +345,33 @@ def main(
                 )
                 if audio_count > 0:
                     click.echo(click.style(f"Generated audio for {audio_count}/{len(anki_cards)} cards", fg="green"))
+                
+                # Report skipped words
+                if audio_generator:
+                    skipped_words = audio_generator.get_skipped_words()
+                    if skipped_words:
+                        click.echo()
+                        click.echo(click.style(f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True))
+                        for word in skipped_words:
+                            click.echo(f"  • {word}")
+                        click.echo()
             else:
                 audio_count = sum(1 for card in anki_cards if card.pronunciation)
                 click.echo(click.style(f"Dry run: Would convert {len(anki_cards)} cards", fg="blue", bold=True))
                 if audio and audio_generator:
-                    click.echo(
-                        click.style(
-                            f"Dry run: Would generate audio for cards using providers: {', '.join(audio_generator.get_available_providers())}",
-                            fg="blue",
-                        )
-                    )
+                    providers_text = ', '.join(audio_generator.get_available_providers())
+                    click.echo(click.style(f"Dry run: Would generate audio for cards using providers: {providers_text}", fg="blue"))
+                    if audio_dest_dir:
+                        click.echo(click.style(f"Dry run: Would copy audio files to: {audio_dest_dir}", fg="blue"))
+                    
+                    # Report skipped words even in dry-run
+                    skipped_words = audio_generator.get_skipped_words()
+                    if skipped_words:
+                        click.echo()
+                        click.echo(click.style(f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True))
+                        for word in skipped_words:
+                            click.echo(f"  • {word}")
+                        click.echo()
 
         except Exception as e:
             click.echo(f"Error parsing file: {e}", err=True)
@@ -347,6 +388,7 @@ def main(
         click.echo("  --audio-providers TEXT  Audio provider (default: forvo)")
         click.echo("  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)")
         click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
+        click.echo("  --audio-dest-dir PATH   Directory to copy selected audio files to")
         click.echo("  --dry-run              Show what would be done without making changes")
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")

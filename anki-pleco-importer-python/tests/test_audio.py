@@ -96,17 +96,17 @@ class TestForvoGenerator:
 
     def test_availability_with_api_key(self):
         """Test availability when API key is provided."""
-        generator = ForvoGenerator("test_api_key")
+        generator = ForvoGenerator("test_api_key", interactive_selection=False)
         assert generator.is_available()
 
-        generator = ForvoGenerator("")
+        generator = ForvoGenerator("", interactive_selection=False)
         assert not generator.is_available()
 
     @patch("requests.get")
     def test_successful_audio_download(self, mock_get):
         """Test successful audio download from Forvo."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            generator = ForvoGenerator("test_api_key", temp_dir)
+            generator = ForvoGenerator("test_api_key", temp_dir, interactive_selection=False)
             output_file = os.path.join(temp_dir, "test.mp3")
 
             # Mock API response
@@ -132,7 +132,7 @@ class TestForvoGenerator:
     def test_no_pronunciation_found(self, mock_get):
         """Test behavior when no pronunciation is found."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            generator = ForvoGenerator("test_api_key", temp_dir)
+            generator = ForvoGenerator("test_api_key", temp_dir, interactive_selection=False)
             output_file = os.path.join(temp_dir, "test.mp3")
 
             # Mock API response with no items
