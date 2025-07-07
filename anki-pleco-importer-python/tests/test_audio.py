@@ -162,7 +162,7 @@ class TestAudioGeneratorFactory:
 
     def test_get_available_providers(self):
         """Test getting available providers."""
-        config = {"forvo": {"api_key": "test_key"}, "azure": {}}  # Missing required config
+        config = {"forvo": {"api_key": "test_key"}}
 
         with patch.object(ForvoGenerator, "is_available", return_value=True):
             available = AudioGeneratorFactory.get_available_providers(config)
