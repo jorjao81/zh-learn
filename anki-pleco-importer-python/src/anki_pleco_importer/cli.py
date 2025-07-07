@@ -303,6 +303,12 @@ def main(
                 meaning_box = format_meaning_box(anki_card.meaning)
                 click.echo(meaning_box)
 
+                if anki_card.examples:
+                    click.echo(f"    {click.style('Examples:', fg='green', bold=True)}")
+                    examples_text = " ; ".join(anki_card.examples)
+                    examples_box = format_meaning_box(examples_text)
+                    click.echo(examples_box)
+
                 if anki_card.semantic_component:
                     click.echo(f"    {click.style('Components:', fg='magenta', bold=True)}")
                     component_box = format_meaning_box(anki_card.semantic_component)
