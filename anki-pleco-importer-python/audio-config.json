@@ -1,5 +1,16 @@
 {
   "audio": {
+    "azure": {
+      "subscription_key": "3845f8b264c9476fadd54d13832a7ec2",
+      "region": "eastus",
+      "voice_name": "zh-CN-XiaochenNeural",
+      "speaking_rate": 0.85
+    },
+    "polly": {
+      "aws_access_key_id": "your_aws_access_key_here",
+      "aws_secret_access_key": "your_aws_secret_key_here",
+      "region": "us-east-1"
+    },
     "forvo": {
       "api_key": "f1b43085e71a58a722938410c1f1ccb2",
       "preferred_users": [
