@@ -3,11 +3,14 @@
 import click
 import re
 import pandas as pd
+import os
+import json
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any, Optional
 
 from .parser import PlecoTSVParser
 from .pleco import pleco_to_anki
+from .audio import MultiProviderAudioGenerator
 
 
 def format_html_for_terminal(text: str) -> str:
@@ -135,13 +138,99 @@ def format_meaning_box(meaning: str) -> str:
     return "\n".join(result)
 
 
+def load_audio_config(config_file: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
+    """Load audio configuration from file or environment variables."""
+    config = {}
+    
+    # Try to load from config file first
+    if config_file and os.path.exists(config_file):
+        try:
+            with open(config_file, 'r') as f:
+                file_config = json.load(f)
+                config.update(file_config.get('audio', {}))
+        except Exception as e:
+            click.echo(f"Warning: Failed to load config file {config_file}: {e}", err=True)
+    
+    # Load from environment variables (override file config)
+    env_config = {
+        'azure': {
+            'subscription_key': os.getenv('AZURE_SPEECH_KEY'),
+            'region': os.getenv('AZURE_SPEECH_REGION')
+        },
+        'openai': {
+            'api_key': os.getenv('OPENAI_API_KEY')
+        },
+        'polly': {
+            'aws_access_key_id': os.getenv('AWS_ACCESS_KEY_ID'),
+            'aws_secret_access_key': os.getenv('AWS_SECRET_ACCESS_KEY'),
+            'region': os.getenv('AWS_REGION', 'us-east-1')
+        },
+        'forvo': {
+            'api_key': os.getenv('FORVO_API_KEY')
+        },
+        'espeak': {},
+        'wiktionary': {}
+    }
+    
+    # Merge environment config with file config
+    for provider, provider_config in env_config.items():
+        if provider not in config:
+            config[provider] = {}
+        config[provider].update({k: v for k, v in provider_config.items() if v is not None})
+    
+    return config
+
+
 @click.command()
 @click.argument("tsv_file", type=click.Path(exists=True, path_type=Path), required=False)
+@click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
+@click.option("--audio-providers", default="forvo,wiktionary,espeak,azure,openai,polly", 
+              help="Comma-separated list of audio providers in order of preference")
+@click.option("--audio-config", type=click.Path(exists=True), 
+              help="Path to audio configuration JSON file")
+@click.option("--audio-cache-dir", default="audio_cache", 
+              help="Directory to cache audio files")
+@click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 @click.version_option()
-def main(tsv_file: Path) -> None:
+def main(tsv_file: Path, audio: bool, audio_providers: str, audio_config: Optional[str], 
+         audio_cache_dir: str, dry_run: bool, verbose: bool) -> None:
     """Convert Pleco flashcard exports to Anki-compatible format."""
+    
+    # Configure logging level
+    import logging
+    if verbose:
+        logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+    else:
+        logging.basicConfig(level=logging.WARNING, format='%(levelname)s: %(message)s')
+    
     if tsv_file:
         parser = PlecoTSVParser()
+        
+        # Initialize audio generation if requested
+        audio_generator = None
+        if audio:
+            try:
+                config = load_audio_config(audio_config)
+                providers = [p.strip() for p in audio_providers.split(',')]
+                
+                audio_generator = MultiProviderAudioGenerator(
+                    providers=providers,
+                    config=config,
+                    cache_dir=audio_cache_dir
+                )
+                
+                available_providers = audio_generator.get_available_providers()
+                if available_providers:
+                    click.echo(click.style(f"Audio providers available: {', '.join(available_providers)}", fg="green"))
+                else:
+                    click.echo(click.style("Warning: No audio providers available", fg="yellow"))
+                    audio_generator = None
+                    
+            except Exception as e:
+                click.echo(click.style(f"Warning: Failed to initialize audio generation: {e}", fg="yellow"))
+                audio_generator = None
+        
         try:
             collection = parser.parse_file(tsv_file)
             click.echo(click.style(f"Parsed {len(collection)} entries from {tsv_file}:", fg="green", bold=True))
@@ -150,9 +239,35 @@ def main(tsv_file: Path) -> None:
             anki_cards = []
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry)
+                
+                # Generate audio if requested and not in dry-run mode
+                if audio_generator and not dry_run:
+                    try:
+                        if verbose:
+                            click.echo(f"    Generating audio for '{anki_card.simplified}'...")
+                        
+                        audio_file = audio_generator.generate_audio(anki_card.simplified)
+                        if audio_file:
+                            anki_card.pronunciation = audio_file
+                            if verbose:
+                                click.echo(f"    Audio saved to: {audio_file}")
+                        elif verbose:
+                            click.echo(f"    No audio generated for '{anki_card.simplified}'")
+                            
+                    except Exception as e:
+                        if verbose:
+                            click.echo(f"    Audio generation failed for '{anki_card.simplified}': {e}")
+                
                 anki_cards.append(anki_card)
                 
-                click.echo(click.style(f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True) + anki_card.pinyin)
+                # Display card information
+                audio_indicator = " 🔊" if anki_card.pronunciation else ""
+                click.echo(click.style(f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True) + 
+                          anki_card.pinyin + audio_indicator)
+                
+                if verbose and anki_card.pronunciation:
+                    click.echo(f"    {click.style('Audio:', fg='blue', bold=True)} {anki_card.pronunciation}")
+                
                 click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)}")
                 meaning_box = format_meaning_box(anki_card.meaning)
                 click.echo(meaning_box)
@@ -164,33 +279,62 @@ def main(tsv_file: Path) -> None:
 
                 click.echo()
 
-            # Convert to DataFrame and save as CSV
-            df_data = []
-            for card in anki_cards:
-                df_data.append({
-                    'simplified': card.simplified,
-                    'pinyin': card.pinyin,
-                    'pronunciation': card.pronunciation,
-                    'meaning': card.meaning,
-                    'examples': '; '.join(card.examples) if card.examples else None,
-                    'phonetic_component': card.phonetic_component,
-                    'semantic_component': card.semantic_component,
-                    'similar_characters': '; '.join(card.similar_characters) if card.similar_characters else None,
-                    'passive': card.passive,
-                    'alternate_pronunciations': '; '.join(card.alternate_pronunciations) if card.alternate_pronunciations else None,
-                    'nohearing': card.nohearing
-                })
-            
-            df = pd.DataFrame(df_data)
-            df.to_csv('processed.csv', index=False, header=False)
-            click.echo(click.style(f"Converted {len(anki_cards)} cards saved to processed.csv", fg="green", bold=True))
+            # Save results if not in dry-run mode
+            if not dry_run:
+                # Convert to DataFrame and save as CSV
+                df_data = []
+                for card in anki_cards:
+                    df_data.append({
+                        'simplified': card.simplified,
+                        'pinyin': card.pinyin,
+                        'pronunciation': card.pronunciation,
+                        'meaning': card.meaning,
+                        'examples': '; '.join(card.examples) if card.examples else None,
+                        'phonetic_component': card.phonetic_component,
+                        'semantic_component': card.semantic_component,
+                        'similar_characters': '; '.join(card.similar_characters) if card.similar_characters else None,
+                        'passive': card.passive,
+                        'alternate_pronunciations': '; '.join(card.alternate_pronunciations) if card.alternate_pronunciations else None,
+                        'nohearing': card.nohearing
+                    })
+                
+                df = pd.DataFrame(df_data)
+                df.to_csv('processed.csv', index=False, header=False)
+                
+                # Display summary
+                audio_count = sum(1 for card in anki_cards if card.pronunciation)
+                click.echo(click.style(f"Converted {len(anki_cards)} cards saved to processed.csv", fg="green", bold=True))
+                if audio_count > 0:
+                    click.echo(click.style(f"Generated audio for {audio_count}/{len(anki_cards)} cards", fg="green"))
+            else:
+                audio_count = sum(1 for card in anki_cards if card.pronunciation)
+                click.echo(click.style(f"Dry run: Would convert {len(anki_cards)} cards", fg="blue", bold=True))
+                if audio and audio_generator:
+                    click.echo(click.style(f"Dry run: Would generate audio for cards using providers: {', '.join(audio_generator.get_available_providers())}", fg="blue"))
 
         except Exception as e:
             click.echo(f"Error parsing file: {e}", err=True)
+            if verbose:
+                import traceback
+                traceback.print_exc()
             raise click.Abort()
     else:
         click.echo("Anki Pleco Importer")
         click.echo("Usage: anki-pleco-importer <tsv_file>")
+        click.echo("\nOptions:")
+        click.echo("  --audio                 Generate pronunciation audio files")
+        click.echo("  --audio-providers TEXT  Audio providers (default: forvo,wiktionary,espeak,azure,openai,polly)")
+        click.echo("  --audio-config PATH     Audio configuration JSON file")
+        click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
+        click.echo("  --dry-run              Show what would be done without making changes")
+        click.echo("  --verbose, -v          Enable verbose output")
+        click.echo("\nEnvironment variables:")
+        click.echo("  AZURE_SPEECH_KEY       Azure Speech Services API key")
+        click.echo("  AZURE_SPEECH_REGION    Azure Speech Services region")
+        click.echo("  OPENAI_API_KEY         OpenAI API key")
+        click.echo("  AWS_ACCESS_KEY_ID      AWS access key for Polly")
+        click.echo("  AWS_SECRET_ACCESS_KEY  AWS secret key for Polly")
+        click.echo("  FORVO_API_KEY          Forvo API key")
 
 
 if __name__ == "__main__":
