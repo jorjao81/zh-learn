@@ -6,7 +6,7 @@ from typing import Dict, List
 # Parts of speech that should be formatted with bold tags
 PARTS_OF_SPEECH = [
     "verb",
-    "noun", 
+    "noun",
     "adjective",
     "adverb",
     "pronoun",
@@ -36,14 +36,15 @@ DOMAIN_MARKERS = {
 # Regex patterns for Chinese example extraction
 CHINESE_EXAMPLE_PATTERNS = {
     # Pattern 1: Chinese sentence with punctuation + pinyin + English with punctuation
-    "sentence_with_punctuation": r'[一-龯][^.。]*[.。]\s+[A-Za-z][^.]*?[.!?]\s*(?:[A-Z][^.]*?[.!?]\s*)*',
-    
+    "sentence_with_punctuation": r"[一-龯][^.。]*[.。]\s+[A-Za-z][^.]*?[.!?]\s*(?:[A-Z][^.]*?[.!?]\s*)*",
     # Pattern 2: Chinese phrase at the end + space + pinyin + space + English
-    "remaining_chinese": r'[一-龯][^$]*$',
+    "remaining_chinese": r"[一-龯][^$]*$",
 }
 
 # Abbreviation pattern for definitions like "abbreviation = [stuff] translation"
-ABBREVIATION_PATTERN = r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$"
+ABBREVIATION_PATTERN = (
+    r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$"
+)
 
 # Pre-compiled regex patterns for performance
 COMPILED_PATTERNS = {
@@ -55,18 +56,13 @@ COMPILED_PATTERNS = {
 
 # Pre-compile domain marker patterns
 COMPILED_DOMAIN_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): display_text 
-    for pattern, display_text in DOMAIN_MARKERS.items()
+    re.compile(pattern, re.IGNORECASE): display_text for pattern, display_text in DOMAIN_MARKERS.items()
 }
 
 # Pre-compile parts of speech patterns
-COMPILED_POS_PATTERNS = {
-    pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE)
-    for pos in PARTS_OF_SPEECH
-}
+COMPILED_POS_PATTERNS = {pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE) for pos in PARTS_OF_SPEECH}
 
 # Pre-compile abbreviation patterns
 COMPILED_ABBREV_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): replacement 
-    for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
+    re.compile(pattern, re.IGNORECASE): replacement for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
 }

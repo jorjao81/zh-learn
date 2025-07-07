@@ -7,13 +7,13 @@ import re
 from .anki import AnkiCard
 from .chinese import convert_numbered_pinyin_to_tones, get_semantic_components
 from .constants import (
-    PARTS_OF_SPEECH, 
+    PARTS_OF_SPEECH,
     PART_OF_SPEECH_ABBREVIATIONS,
     DOMAIN_MARKERS,
     COMPILED_PATTERNS,
     COMPILED_DOMAIN_PATTERNS,
     COMPILED_POS_PATTERNS,
-    COMPILED_ABBREV_PATTERNS
+    COMPILED_ABBREV_PATTERNS,
 )
 
 
@@ -81,7 +81,9 @@ def _detect_parts_of_speech_positions(definition: str) -> List[Tuple[int, int, s
     return pos_positions
 
 
-def _extract_meaning_sections(definition: str, pos_positions: List[Tuple[int, int, str]]) -> Tuple[List[str], List[str]]:
+def _extract_meaning_sections(
+    definition: str, pos_positions: List[Tuple[int, int, str]]
+) -> Tuple[List[str], List[str]]:
     """Extract meaning sections and examples from definition based on parts of speech positions."""
     meanings = []
     examples = []
@@ -139,15 +141,15 @@ def _format_meaning_with_html(meanings: List[str]) -> str:
 
 def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]]]:
     """Parse Pleco definition to extract meanings and examples."""
-    # Detect parts of speech positions 
+    # Detect parts of speech positions
     pos_positions = _detect_parts_of_speech_positions(definition)
-    
+
     # Extract meaning sections and examples
     meanings, examples = _extract_meaning_sections(definition, pos_positions)
-    
+
     # Format meanings with HTML
     formatted_meaning = _format_meaning_with_html(meanings)
-    
+
     return formatted_meaning, examples if examples else None
 
 
@@ -173,33 +175,33 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
 
     # Find Chinese example sentences using multiple patterns
     chinese_examples = []
-    
+
     # Pattern 1: Chinese sentence with punctuation + pinyin + English with punctuation
-    pattern1 = r'[一-龯][^.。]*[.。]\s+[A-Za-z][^.]*?[.!?]\s*(?:[A-Z][^.]*?[.!?]\s*)*'
+    pattern1 = r"[一-龯][^.。]*[.。]\s+[A-Za-z][^.]*?[.!?]\s*(?:[A-Z][^.]*?[.!?]\s*)*"
     examples1 = re.findall(pattern1, text)
     chinese_examples.extend(examples1)
-    
+
     # Pattern 2: Any text starting with Chinese chars that goes to the end after the meaning
     # Look for Chinese chars followed by space and capitalized word, going to end of string
     remaining_text = text
     for found_example in chinese_examples:
-        remaining_text = remaining_text.replace(found_example, '')
-    
+        remaining_text = remaining_text.replace(found_example, "")
+
     # Now look for any remaining Chinese examples in the remaining text
-    pattern2 = r'[一-龯][^$]*$'
+    pattern2 = r"[一-龯][^$]*$"
     examples2 = re.findall(pattern2, remaining_text.strip())
-    
+
     # Filter and add unique examples
     for ex in examples2:
         if ex.strip() and not any(ex.strip() in found for found in chinese_examples):
             chinese_examples.append(ex.strip())
-    
+
     if chinese_examples:
         # Remove Chinese examples from text to get clean meaning
         meaning_text = text
         for example in chinese_examples:
-            meaning_text = meaning_text.replace(example, ' ')
-        
+            meaning_text = meaning_text.replace(example, " ")
+
         # Clean up the meaning using pre-compiled pattern
         meaning = COMPILED_PATTERNS["whitespace_cleanup"].sub(" ", meaning_text).strip()
         examples = chinese_examples if chinese_examples else None

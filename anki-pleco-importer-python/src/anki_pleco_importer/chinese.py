@@ -6,7 +6,7 @@ import logging
 from hanzipy.dictionary import HanziDictionary  # type: ignore
 
 # Suppress debug output from hanzipy library
-logging.getLogger('root').setLevel(logging.WARNING)
+logging.getLogger("root").setLevel(logging.WARNING)
 
 # Initialize HanziDictionary at module level for performance
 _hanzi_dictionary = HanziDictionary()

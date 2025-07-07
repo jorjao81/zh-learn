@@ -1,0 +1,14 @@
+{
+  "audio": {
+    "forvo": {
+      "api_key": "f1b43085e71a58a722938410c1f1ccb2",
+      "preferred_users": [
+        "Rhapsodia",
+        "mkrz", 
+        "MarvinMeow"
+      ],
+      "download_all_when_no_preferred": true,
+      "interactive_selection": true
+    }
+  }
+}

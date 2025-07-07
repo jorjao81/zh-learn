@@ -147,48 +147,6 @@ class AzureSpeechGenerator(AudioGenerator):
             return None
 
 
-class OpenAITTSGenerator(AudioGenerator):
-    """OpenAI TTS generator."""
-
-    def __init__(self, api_key: str, cache_dir: Optional[str] = None):
-        super().__init__(cache_dir)
-        self.api_key = api_key
-        self.voice = "nova"
-        self.model = "tts-1"
-
-    def is_available(self) -> bool:
-        """Check if OpenAI TTS is available."""
-        try:
-            import openai
-
-            return bool(self.api_key)
-        except ImportError:
-            return False
-
-    def get_provider_name(self) -> str:
-        return "openai"
-
-    def generate_audio(self, text: str, output_file: str) -> Optional[str]:
-        """Generate audio using OpenAI TTS."""
-        if not self.is_available():
-            raise TTSProviderNotAvailable("OpenAI TTS not available")
-
-        try:
-            from openai import OpenAI
-
-            client = OpenAI(api_key=self.api_key)
-
-            response = client.audio.speech.create(model=self.model, voice=self.voice, input=text)
-
-            response.stream_to_file(output_file)
-            logger.info(f"OpenAI TTS generated audio for '{text}'")
-            return output_file
-
-        except Exception as e:
-            logger.error(f"OpenAI TTS error: {e}")
-            return None
-
-
 class AmazonPollyGenerator(AudioGenerator):
     """Amazon Polly TTS generator."""
 
@@ -246,74 +204,6 @@ class AmazonPollyGenerator(AudioGenerator):
         except Exception as e:
             logger.error(f"Amazon Polly error: {e}")
             return None
-
-
-class ESpeakGenerator(AudioGenerator):
-    """eSpeak-NG offline TTS generator."""
-
-    def __init__(self, cache_dir: Optional[str] = None):
-        super().__init__(cache_dir)
-        self.speed = 150
-        self.voice = "zh"
-
-    def is_available(self) -> bool:
-        """Check if eSpeak-NG is available."""
-        try:
-            result = subprocess.run(["espeak-ng", "--version"], capture_output=True, text=True, timeout=5)
-            return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            return False
-
-    def get_provider_name(self) -> str:
-        return "espeak"
-
-    def generate_audio(self, text: str, output_file: str) -> Optional[str]:
-        """Generate audio using eSpeak-NG."""
-        if not self.is_available():
-            raise TTSProviderNotAvailable("eSpeak-NG not available")
-
-        try:
-            # Ensure output file has .wav extension for espeak
-            if not output_file.endswith(".wav"):
-                wav_file = output_file.replace(".mp3", ".wav")
-            else:
-                wav_file = output_file
-
-            result = subprocess.run(
-                ["espeak-ng", "-v", self.voice, "-s", str(self.speed), "-w", wav_file, text],
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
-
-            if result.returncode == 0:
-                # Convert WAV to MP3 if needed
-                if output_file.endswith(".mp3") and wav_file != output_file:
-                    self._convert_wav_to_mp3(wav_file, output_file)
-                    os.remove(wav_file)  # Clean up WAV file
-                    return output_file
-                else:
-                    logger.info(f"eSpeak-NG generated audio for '{text}'")
-                    return wav_file
-            else:
-                logger.error(f"eSpeak-NG failed: {result.stderr}")
-                return None
-
-        except Exception as e:
-            logger.error(f"eSpeak-NG error: {e}")
-            return None
-
-    def _convert_wav_to_mp3(self, wav_file: str, mp3_file: str):
-        """Convert WAV to MP3 using ffmpeg if available."""
-        try:
-            subprocess.run(
-                ["ffmpeg", "-i", wav_file, "-acodec", "mp3", mp3_file, "-y"], capture_output=True, timeout=30
-            )
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            # If ffmpeg not available, just rename the file
-            import shutil
-
-            shutil.move(wav_file, mp3_file)
 
 
 class ForvoGenerator(AudioGenerator):
@@ -697,63 +587,6 @@ class ForvoGenerator(AudioGenerator):
             return None
 
 
-class WiktionaryGenerator(AudioGenerator):
-    """Wiktionary public domain audio generator."""
-
-    def __init__(self, cache_dir: Optional[str] = None):
-        super().__init__(cache_dir)
-
-    def is_available(self) -> bool:
-        """Wiktionary is always available."""
-        return True
-
-    def get_provider_name(self) -> str:
-        return "wiktionary"
-
-    def generate_audio(self, text: str, output_file: str) -> Optional[str]:
-        """Download audio from Wiktionary."""
-        try:
-            from bs4 import BeautifulSoup
-
-            # Search Wiktionary for the word
-            url = f"https://en.wiktionary.org/wiki/{text}"
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.content, "html.parser")
-
-            # Look for Chinese audio files
-            audio_elements = soup.find_all("source", {"type": "audio/ogg"})
-
-            for audio in audio_elements:
-                src = audio.get("src", "")
-                if "zh-" in src or "cmn-" in src:  # Chinese audio
-                    # Convert relative URL to absolute
-                    if src.startswith("//"):
-                        audio_url = "https:" + src
-                    elif src.startswith("/"):
-                        audio_url = "https://en.wiktionary.org" + src
-                    else:
-                        audio_url = src
-
-                    # Download the audio
-                    audio_response = requests.get(audio_url, timeout=30)
-                    audio_response.raise_for_status()
-
-                    with open(output_file, "wb") as f:
-                        f.write(audio_response.content)
-
-                    logger.info(f"Wiktionary downloaded audio for '{text}'")
-                    return output_file
-
-            logger.warning(f"No Wiktionary audio found for '{text}'")
-            return None
-
-        except Exception as e:
-            logger.error(f"Wiktionary error: {e}")
-            return None
-
-
 class AudioGeneratorFactory:
     """Factory for creating audio generators."""
 
@@ -764,8 +597,6 @@ class AudioGeneratorFactory:
             return AzureSpeechGenerator(
                 subscription_key=config.get("subscription_key"), region=config.get("region"), cache_dir=cache_dir
             )
-        elif provider == "openai":
-            return OpenAITTSGenerator(api_key=config.get("api_key"), cache_dir=cache_dir)
         elif provider == "polly":
             return AmazonPollyGenerator(
                 aws_access_key_id=config.get("aws_access_key_id"),
@@ -773,8 +604,6 @@ class AudioGeneratorFactory:
                 region=config.get("region", "us-east-1"),
                 cache_dir=cache_dir,
             )
-        elif provider == "espeak":
-            return ESpeakGenerator(cache_dir=cache_dir)
         elif provider == "forvo":
             return ForvoGenerator(
                 api_key=config.get("api_key"),
@@ -784,8 +613,6 @@ class AudioGeneratorFactory:
                 download_all_when_no_preferred=config.get("download_all_when_no_preferred", True),
                 interactive_selection=config.get("interactive_selection", True),
             )
-        elif provider == "wiktionary":
-            return WiktionaryGenerator(cache_dir=cache_dir)
         else:
             raise ValueError(f"Unknown audio provider: {provider}")
 
@@ -794,7 +621,7 @@ class AudioGeneratorFactory:
         """Get list of available providers based on configuration."""
         available = []
 
-        for provider in ["azure", "openai", "polly", "espeak", "forvo", "wiktionary"]:
+        for provider in ["azure", "polly", "forvo"]:
             try:
                 generator = AudioGeneratorFactory.create_generator(provider, config.get(provider, {}), cache_dir=None)
                 if generator.is_available():

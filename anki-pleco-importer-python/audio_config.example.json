@@ -4,9 +4,6 @@
       "subscription_key": "your_azure_speech_key_here",
       "region": "your_azure_region_here"
     },
-    "openai": {
-      "api_key": "your_openai_api_key_here"
-    },
     "polly": {
       "aws_access_key_id": "your_aws_access_key_here",
       "aws_secret_access_key": "your_aws_secret_key_here",
@@ -24,7 +21,5 @@
       "download_all_when_no_preferred": true,
       "interactive_selection": true
     },
-    "espeak": {},
-    "wiktionary": {}
   }
 }
