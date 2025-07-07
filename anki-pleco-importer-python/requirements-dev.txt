@@ -6,3 +6,4 @@ mypy>=1.0.0
 behave>=1.2.6
 pre-commit>=2.20.0
 hanzipy>=1.0.0
+playsound3>=3.0.0

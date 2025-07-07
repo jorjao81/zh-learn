@@ -138,9 +138,16 @@ def format_meaning_box(meaning: str) -> str:
     return "\n".join(result)
 
 
-def load_audio_config(config_file: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
+def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) -> Dict[str, Dict[str, Any]]:
     """Load audio configuration from file or environment variables."""
     config = {}
+    
+    # Determine config file to use
+    if config_file is None:
+        # Try default audio-config.json in current directory
+        default_config = "audio-config.json"
+        if os.path.exists(default_config):
+            config_file = default_config
     
     # Try to load from config file first
     if config_file and os.path.exists(config_file):
@@ -148,6 +155,8 @@ def load_audio_config(config_file: Optional[str] = None) -> Dict[str, Dict[str, 
             with open(config_file, 'r') as f:
                 file_config = json.load(f)
                 config.update(file_config.get('audio', {}))
+            if verbose:
+                click.echo(f"Loaded audio config from: {config_file}")
         except Exception as e:
             click.echo(f"Warning: Failed to load config file {config_file}: {e}", err=True)
     
@@ -187,7 +196,7 @@ def load_audio_config(config_file: Optional[str] = None) -> Dict[str, Dict[str, 
 @click.option("--audio-providers", default="forvo,wiktionary,espeak,azure,openai,polly", 
               help="Comma-separated list of audio providers in order of preference")
 @click.option("--audio-config", type=click.Path(exists=True), 
-              help="Path to audio configuration JSON file")
+              help="Path to audio configuration JSON file (default: audio-config.json if exists)")
 @click.option("--audio-cache-dir", default="audio_cache", 
               help="Directory to cache audio files")
 @click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
@@ -211,7 +220,7 @@ def main(tsv_file: Path, audio: bool, audio_providers: str, audio_config: Option
         audio_generator = None
         if audio:
             try:
-                config = load_audio_config(audio_config)
+                config = load_audio_config(audio_config, verbose)
                 providers = [p.strip() for p in audio_providers.split(',')]
                 
                 audio_generator = MultiProviderAudioGenerator(
@@ -324,7 +333,7 @@ def main(tsv_file: Path, audio: bool, audio_providers: str, audio_config: Option
         click.echo("\nOptions:")
         click.echo("  --audio                 Generate pronunciation audio files")
         click.echo("  --audio-providers TEXT  Audio providers (default: forvo,wiktionary,espeak,azure,openai,polly)")
-        click.echo("  --audio-config PATH     Audio configuration JSON file")
+        click.echo("  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)")
         click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
         click.echo("  --dry-run              Show what would be done without making changes")
         click.echo("  --verbose, -v          Enable verbose output")

@@ -131,3 +131,7 @@ Thumbs.db
 *.csv
 *.txt
 test_output/
+
+# Audio configuration (contains API keys)
+audio_config.json
+my_audio_config.json

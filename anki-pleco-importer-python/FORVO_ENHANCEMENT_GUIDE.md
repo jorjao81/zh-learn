@@ -13,6 +13,7 @@ The Forvo integration has been significantly enhanced to provide intelligent pro
 
 ### 🔍 **Interactive Selection**
 - **Detailed User Info**: Shows username, gender, country, vote counts, and ratings
+- **Visual Enhancement**: Colored gender icons (♀♂) and country flags (🇨🇳🇹🇼🇺🇸)
 - **Quality Indicators**: Star ratings and vote counts help you choose the best pronunciation
 - **Skip Option**: Option to skip if no pronunciation meets your standards
 
@@ -20,6 +21,12 @@ The Forvo integration has been significantly enhanced to provide intelligent pro
 - **Username-Based Filenames**: Cache files include username for easy identification
 - **Smart Cache Lookup**: Finds existing pronunciations regardless of username
 - **Organized Storage**: Better file organization in the audio cache
+
+### 🔊 **Audio Preview**
+- **Listen Before Selecting**: Preview pronunciations with `p<number>` commands
+- **Cross-Platform Playback**: Works on macOS, Linux, and Windows
+- **Temporary Downloads**: Preview files are automatically cleaned up
+- **Fallback Audio Players**: Uses system audio players if playsound3 unavailable
 
 ## Configuration
 
@@ -65,19 +72,26 @@ Found preferred user 'liufeimagic' for '你好'
 Selected pronunciation by: liufeimagic
 ```
 
-### 2. Interactive Selection
-When no preferred users are found:
+### 2. Interactive Selection with Audio Preview
+When no preferred users are found, you can now preview pronunciations before selecting:
 
 ```
 🎵 学习 - Found 5 pronunciations:
 
- 1. wtj232010 (♂, United States) - 3 votes, rating: 3.0 ⭐⭐⭐
- 2. witenglish (♂, China) - 3 votes, rating: -3.0 
- 3. g03524taiwan (♀, Taiwan) - 0 votes, rating: 0.0 
- 4. hellolovey (♀, China) - 0 votes, rating: 0.0 
- 5. wangdream (♀, China) - 3 votes, rating: 3.0 ⭐⭐⭐ [PREFERRED]
+ 1. wtj232010 (♂ 🇺🇸) - 3 votes, rating: 3.0 ⭐⭐⭐
+ 2. witenglish (♂ 🇨🇳) - 3 votes, rating: -3.0 
+ 3. g03524taiwan (♀ 🇹🇼) - 0 votes, rating: 0.0 
+ 4. hellolovey (♀ 🇨🇳) - 0 votes, rating: 0.0 
+ 5. wangdream (♀ 🇨🇳) - 3 votes, rating: 3.0 ⭐⭐⭐
 
-Select pronunciation (1-5, or 's' to skip): 5
+Commands: p<number> to preview, <number> to select, 's' to skip
+Example: 'p1' to preview option 1, '1' to select option 1
+
+Choice: p1
+🔊 Downloading and playing pronunciation by wtj232010...
+✅ Played pronunciation by wtj232010
+Select this pronunciation? (y/n): y
+✅ Selected pronunciation by wtj232010
 ```
 
 ### 3. Non-Interactive Mode
@@ -132,10 +146,13 @@ The system considers multiple factors when selecting pronunciations:
 4. **User Demographics**: Native speakers often preferred
 
 ### Interactive Selection Tips
+- **Preview First**: Use `p1`, `p2`, etc. to listen before deciding
 - **Check User Info**: Look for native speakers (China, Taiwan)
 - **Consider Ratings**: 3+ stars usually indicate good quality
 - **Vote Counts**: Higher vote counts suggest more community validation
 - **Skip Low Quality**: Don't hesitate to skip poor pronunciations
+- **Multiple Previews**: Listen to several options to compare quality
+- **Direct Selection**: Use `1`, `2`, etc. to select without preview (faster)
 
 ### Batch Processing
 For large vocabulary lists:
@@ -160,6 +177,24 @@ No preferred users found for '罕见词汇', using highest-rated: random_user
 
 ### Cache Not Using Usernames
 **Check**: Verify you're using the latest version with enhanced caching.
+
+### Audio Preview Not Playing
+```
+❌ Could not play audio (file downloaded but playback failed)
+You may need to install an audio player or playsound3
+```
+
+**Solutions:**
+1. Install playsound3: `pip install playsound3`
+2. **macOS**: Audio should work out-of-the-box with `afplay`
+3. **Linux**: Install audio players: `sudo apt install mpg123` or `sudo apt install mpv`
+4. **Windows**: Install FFmpeg for `ffplay` support
+
+### Audio Download Fails
+```
+❌ Could not download audio for preview
+```
+**Check**: Network connection and Forvo API access. Preview downloads are separate from final audio generation.
 
 ## Best Practices
 
