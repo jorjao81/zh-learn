@@ -120,11 +120,24 @@ class AudioGenerator(ABC):
 class AzureSpeechGenerator(AudioGenerator):
     """Azure Speech Services TTS generator."""
 
-    def __init__(self, subscription_key: str, region: str, cache_dir: Optional[str] = None):
+    def __init__(
+        self,
+        subscription_key: str,
+        region: str,
+        cache_dir: Optional[str] = None,
+        voice_name: Optional[str] = None,
+        speaking_rate: float = 0.85,
+    ):
         super().__init__(cache_dir)
         self.subscription_key = subscription_key
         self.region = region
-        self.voice_name = "zh-CN-XiaoxiaoNeural"
+        # Available voices for better quality:
+        # zh-CN-XiaochenNeural - conversational optimized (recommended)
+        # zh-CN-XiaoyanNeural - customer service optimized
+        # zh-CN-XiaoxiaoMultilingualNeural - multilingual with styles
+        # zh-CN-YunjieNeural - latest conversational (preview)
+        self.voice_name = voice_name or "zh-CN-XiaochenNeural"
+        self.speaking_rate = speaking_rate  # 0.5-2.0, default 0.85 (15% slower for clarity)
 
     def is_available(self) -> bool:
         """Check if Azure Speech is available."""
@@ -143,7 +156,7 @@ class AzureSpeechGenerator(AudioGenerator):
         return self.voice_name
 
     def generate_audio(self, text: str, output_file: str) -> Optional[str]:
-        """Generate audio using Azure Speech Services."""
+        """Generate audio using Azure Speech Services with SSML for enhanced quality."""
         if not self.is_available():
             raise TTSProviderNotAvailable("Azure Speech Services not available")
 
@@ -151,24 +164,75 @@ class AzureSpeechGenerator(AudioGenerator):
             import azure.cognitiveservices.speech as speechsdk
 
             speech_config = speechsdk.SpeechConfig(subscription=self.subscription_key, region=self.region)
-            speech_config.speech_synthesis_voice_name = self.voice_name
+            # Set higher quality audio format (48kHz vs default 16kHz)
+            speech_config.set_speech_synthesis_output_format(
+                speechsdk.SpeechSynthesisOutputFormat.Audio48Khz192KBitRateMonoMp3
+            )
 
             synthesizer = speechsdk.SpeechSynthesizer(
                 speech_config=speech_config, audio_config=speechsdk.audio.AudioOutputConfig(filename=output_file)
             )
 
-            result = synthesizer.speak_text_async(text).get()
+            # Create enhanced SSML for better pronunciation and pacing
+            ssml = self._create_enhanced_ssml(text)
+            logger.debug(f"Using enhanced SSML for '{text}' with voice {self.voice_name}")
+
+            result = synthesizer.speak_ssml_async(ssml).get()
 
             if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-                logger.info(f"Azure TTS generated audio for '{text}'")
+                logger.info(f"Azure TTS generated enhanced audio for '{text}' using {self.voice_name}")
                 return output_file
             else:
                 logger.error(f"Azure TTS failed: {result.reason}")
+                if result.reason == speechsdk.ResultReason.Canceled:
+                    cancellation_details = result.cancellation_details
+                    logger.error(f"Cancellation reason: {cancellation_details.reason}")
+                    if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                        logger.error(f"Error details: {cancellation_details.error_details}")
                 return None
 
         except Exception as e:
             logger.error(f"Azure TTS error: {e}")
             return None
+
+    def _create_enhanced_ssml(self, text: str) -> str:
+        """Create enhanced SSML for better pronunciation and naturalness."""
+        # Calculate rate percentage (0.85 = 85% of normal speed = -15%)
+        rate_percentage = (self.speaking_rate - 1.0) * 100
+        rate_str = f"{rate_percentage:+.0f}%" if rate_percentage != 0 else "default"
+
+        # Enhanced SSML with prosody control, pauses, and style
+        ssml = f"""<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" 
+                   xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="zh-CN">
+    <voice name="{self.voice_name}">
+        <mstts:express-as style="calm" styledegree="0.8">
+            <prosody rate="{rate_str}" pitch="+3%" volume="+10%">
+                {self._add_pronunciation_hints(text)}
+            </prosody>
+        </mstts:express-as>
+    </voice>
+</speak>"""
+
+        return ssml
+
+    def _add_pronunciation_hints(self, text: str) -> str:
+        """Add pronunciation hints and pauses for better clarity."""
+        import re
+
+        # Add slight pauses after Chinese punctuation for better pacing
+        text = re.sub(r"([。！？])", r'\1<break time="400ms"/>', text)  # Full stop, exclamation, question
+        text = re.sub(r"([，、；：])", r'\1<break time="200ms"/>', text)  # Comma, enumeration comma, semicolon, colon
+
+        # For single characters, add moderate emphasis for clarity
+        if len(text) <= 2:
+            text = f'<emphasis level="moderate">{text}</emphasis>'
+
+        # For compound words (3-4 characters), add slight pause between logical components
+        elif len(text) == 4:
+            # Common pattern: split 4-character words in the middle
+            text = text[:2] + '<break time="100ms"/>' + text[2:]
+
+        return text
 
 
 class AmazonPollyGenerator(AudioGenerator):
@@ -639,7 +703,11 @@ class AudioGeneratorFactory:
         """Create an audio generator based on provider and configuration."""
         if provider == "azure":
             return AzureSpeechGenerator(
-                subscription_key=config.get("subscription_key"), region=config.get("region"), cache_dir=cache_dir
+                subscription_key=config.get("subscription_key"),
+                region=config.get("region"),
+                cache_dir=cache_dir,
+                voice_name=config.get("voice_name"),
+                speaking_rate=config.get("speaking_rate", 0.85),
             )
         elif provider == "polly":
             return AmazonPollyGenerator(

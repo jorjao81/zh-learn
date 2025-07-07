@@ -2,7 +2,9 @@
   "audio": {
     "azure": {
       "subscription_key": "your_azure_speech_key_here",
-      "region": "your_azure_region_here"
+      "region": "westeurope",
+      "voice_name": "zh-CN-XiaochenNeural",
+      "speaking_rate": 0.85
     },
     "polly": {
       "aws_access_key_id": "your_aws_access_key_here",
