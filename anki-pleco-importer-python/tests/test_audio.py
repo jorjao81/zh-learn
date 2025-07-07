@@ -52,8 +52,13 @@ class TestAudioGenerator:
             filename = generator._get_cache_filename("测试", "mock")
 
             assert filename.parent == Path(temp_dir)
-            assert filename.name.startswith("mock_")
+            assert filename.name.startswith("测试_mock_")
             assert filename.name.endswith(".mp3")
+
+            # Test with details
+            filename_with_details = generator._get_cache_filename("测试", "mock", "user123")
+            assert filename_with_details.name.startswith("测试_mock_user123_")
+            assert filename_with_details.name.endswith(".mp3")
 
     def test_caching_behavior(self):
         """Test that caching works correctly."""
