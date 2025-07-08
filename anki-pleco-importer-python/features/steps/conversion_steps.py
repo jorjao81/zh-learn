@@ -44,6 +44,16 @@ def step_have_pleco_entry_with_values(context, chinese, pinyin, definition):
     )
 
 
+@given('I have a Pleco entry with definition "{definition}"')
+def step_have_pleco_entry_with_definition(context, definition):
+    """Create a Pleco entry with just a definition (for example parsing tests)."""
+    context.pleco_entry = PlecoEntry(
+        chinese="测试",  # Test word
+        pinyin="cèshì",  # Test pinyin
+        definition=definition
+    )
+
+
 @when("I convert them to Anki cards")
 @when("I convert it to an Anki card")
 def step_convert_to_anki(context):
@@ -123,3 +133,39 @@ def step_verify_default_values(context):
             assert actual_value is False, f"Expected {field} to be False, got {actual_value}"
         else:
             assert str(actual_value) == expected_value, f"Expected {field} to be {expected_value}, got {actual_value}"
+
+
+@then("I should get the following examples")
+def step_verify_examples(context):
+    """Verify that the converted Anki card has the expected examples."""
+    if not hasattr(context, 'anki_card'):
+        raise ValueError("No Anki card found in context")
+    
+    # Get expected examples from the table
+    expected_examples = []
+    for row in context.table:
+        example = row["example"]
+        if example.strip():  # Only add non-empty examples
+            expected_examples.append(example)
+    
+    # Get actual examples from the card
+    actual_examples = context.anki_card.examples or []
+    
+    # Handle empty examples case
+    if not expected_examples and not actual_examples:
+        return  # Both are empty, test passes
+    
+    # Check if we have the expected number of examples
+    assert len(actual_examples) == len(expected_examples), (
+        f"Expected {len(expected_examples)} examples, got {len(actual_examples)}\n"
+        f"Expected: {expected_examples}\n"
+        f"Actual: {actual_examples}"
+    )
+    
+    # Check each example
+    for i, (expected, actual) in enumerate(zip(expected_examples, actual_examples)):
+        assert actual == expected, (
+            f"Example {i+1} mismatch:\n"
+            f"Expected: '{expected}'\n"
+            f"Actual: '{actual}'"
+        )
