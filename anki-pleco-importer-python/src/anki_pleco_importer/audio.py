@@ -18,11 +18,13 @@ logger = logging.getLogger(__name__)
 
 class AudioGeneratorError(Exception):
     """Base exception for audio generation errors."""
+
     pass
 
 
 class TTSProviderNotAvailable(AudioGeneratorError):
     """Raised when a TTS provider is not available or configured."""
+
     pass
 
 
@@ -226,7 +228,7 @@ class ForvoGenerator(AudioGenerator):
         # No preferred users found - always show interactive selection if enabled
         if self.interactive_selection:
             return self._interactive_pronunciation_selection(pronunciations, text)
-        
+
         # Interactive selection disabled - use highest-rated pronunciation
         if not self.download_all_when_no_preferred:
             best = max(pronunciations, key=lambda x: (x.get("num_positive_votes", 0), x.get("num_votes", 0)))
@@ -421,7 +423,7 @@ class ForvoGenerator(AudioGenerator):
                 return None
 
             # Use cached selection if available, otherwise select
-            if hasattr(self, '_cached_selection') and self._cached_selection:
+            if hasattr(self, "_cached_selection") and self._cached_selection:
                 selected_pronunciation = self._cached_selection
                 # Clear the cache after using it
                 self._cached_selection = None
@@ -461,7 +463,9 @@ class ForvoGenerator(AudioGenerator):
             logger.error(f"Forvo unexpected error: {e}")
             return None
 
-    def generate_with_cache(self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None) -> Optional[str]:
+    def generate_with_cache(
+        self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None
+    ) -> Optional[str]:
         """Generate audio with Forvo-specific caching that includes username."""
         # Check for any existing cached audio first
         cached_audio = self._find_cached_forvo_audio(text)

@@ -1,0 +1,2116 @@
+{
+  "file_path": "features/examples/images/Screenshot_20250708-202142.png",
+  "text_lines": [
+    "20:21",
+    "1 65%",
+    "F",
+    "Pleco",
+    "V",
+    "DICT",
+    "STROKE",
+    "CHARS",
+    "WORDS",
+    "SENTS",
+    "MEANINGS",
+    "Character meanings",
+    "1 (orig.) a surname",
+    "2 > woman",
+    "3 => concubine",
+    "How to use this info",
+    "V OTC",
+    "FORM",
+    "姬 ji is composed of 臣 yí and 女 “woman;",
+    "female; people in general,\" pointing to",
+    "the original meaning \"a surname.\" [ gives the",
+    "sound.",
+    "COMPONENTS",
+    "女",
+    "[S] In (E, { \"woman; female; people in general\"",
+    "is a form component, pointing to the original",
+    "meaning \"a surname.\"",
+    "[Reference, p. 1086]",
+    "臣",
+    "[S] In HE ji, Di yi is a sound component.",
+    "How to use this info",
+    "MEANINGS"
+  ],
+  "full_ocr_result": {
+    "status": "succeeded",
+    "createdDateTime": "2025-07-08T18:37:43Z",
+    "lastUpdatedDateTime": "2025-07-08T18:37:44Z",
+    "analyzeResult": {
+      "version": "3.2.0",
+      "modelVersion": "2022-04-30",
+      "readResults": [
+        {
+          "page": 1,
+          "angle": 0,
+          "width": 1344,
+          "height": 2992,
+          "unit": "pixel",
+          "lines": [
+            {
+              "boundingBox": [
+                89,
+                80,
+                203,
+                81,
+                202,
+                120,
+                88,
+                118
+              ],
+              "text": "20:21",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    93,
+                    80,
+                    202,
+                    81,
+                    202,
+                    120,
+                    92,
+                    119
+                  ],
+                  "text": "20:21",
+                  "confidence": 0.997
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1066,
+                83,
+                1251,
+                80,
+                1252,
+                118,
+                1066,
+                122
+              ],
+              "text": "1 65%",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1078,
+                    84,
+                    1099,
+                    83,
+                    1100,
+                    121,
+                    1078,
+                    122
+                  ],
+                  "text": "1",
+                  "confidence": 0.046
+                },
+                {
+                  "boundingBox": [
+                    1164,
+                    82,
+                    1246,
+                    81,
+                    1249,
+                    119,
+                    1165,
+                    118
+                  ],
+                  "text": "65%",
+                  "confidence": 0.788
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                60,
+                262,
+                119,
+                254,
+                122,
+                298,
+                62,
+                304
+              ],
+              "text": "F",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.628
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    63,
+                    260,
+                    92,
+                    256,
+                    98,
+                    301,
+                    69,
+                    304
+                  ],
+                  "text": "F",
+                  "confidence": 0.433
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                182,
+                244,
+                333,
+                249,
+                333,
+                310,
+                179,
+                308
+              ],
+              "text": "Pleco",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    180,
+                    244,
+                    327,
+                    247,
+                    326,
+                    311,
+                    179,
+                    307
+                  ],
+                  "text": "Pleco",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1258,
+                255,
+                1307,
+                256,
+                1304,
+                302,
+                1254,
+                301
+              ],
+              "text": "V",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1254,
+                    255,
+                    1280,
+                    255,
+                    1279,
+                    301,
+                    1254,
+                    301
+                  ],
+                  "text": "V",
+                  "confidence": 0.643
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                60,
+                410,
+                167,
+                407,
+                166,
+                450,
+                60,
+                450
+              ],
+              "text": "DICT",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    60,
+                    408,
+                    158,
+                    407,
+                    159,
+                    450,
+                    60,
+                    451
+                  ],
+                  "text": "DICT",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                287,
+                408,
+                465,
+                408,
+                465,
+                450,
+                287,
+                450
+              ],
+              "text": "STROKE",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    288,
+                    410,
+                    452,
+                    409,
+                    452,
+                    451,
+                    287,
+                    450
+                  ],
+                  "text": "STROKE",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                585,
+                408,
+                731,
+                408,
+                731,
+                451,
+                585,
+                451
+              ],
+              "text": "CHARS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    588,
+                    411,
+                    725,
+                    408,
+                    724,
+                    452,
+                    586,
+                    448
+                  ],
+                  "text": "CHARS",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                852,
+                409,
+                1016,
+                408,
+                1016,
+                449,
+                852,
+                450
+              ],
+              "text": "WORDS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    854,
+                    409,
+                    1010,
+                    409,
+                    1009,
+                    450,
+                    853,
+                    450
+                  ],
+                  "text": "WORDS",
+                  "confidence": 0.991
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1142,
+                409,
+                1284,
+                409,
+                1283,
+                450,
+                1141,
+                449
+              ],
+              "text": "SENTS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1142,
+                    411,
+                    1275,
+                    409,
+                    1275,
+                    451,
+                    1142,
+                    448
+                  ],
+                  "text": "SENTS",
+                  "confidence": 0.993
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                47,
+                541,
+                333,
+                541,
+                333,
+                593,
+                47,
+                594
+              ],
+              "text": "MEANINGS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    49,
+                    542,
+                    322,
+                    543,
+                    322,
+                    592,
+                    47,
+                    593
+                  ],
+                  "text": "MEANINGS",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                46,
+                654,
+                582,
+                655,
+                582,
+                716,
+                46,
+                711
+              ],
+              "text": "Character meanings",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    656,
+                    302,
+                    655,
+                    303,
+                    714,
+                    46,
+                    708
+                  ],
+                  "text": "Character",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    314,
+                    655,
+                    576,
+                    656,
+                    579,
+                    717,
+                    314,
+                    714
+                  ],
+                  "text": "meanings",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                46,
+                875,
+                520,
+                877,
+                520,
+                937,
+                46,
+                936
+              ],
+              "text": "1 (orig.) a surname",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    49,
+                    875,
+                    72,
+                    876,
+                    73,
+                    937,
+                    50,
+                    937
+                  ],
+                  "text": "1",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    84,
+                    876,
+                    235,
+                    879,
+                    236,
+                    937,
+                    85,
+                    937
+                  ],
+                  "text": "(orig.)",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    246,
+                    879,
+                    274,
+                    880,
+                    275,
+                    937,
+                    247,
+                    937
+                  ],
+                  "text": "a",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    285,
+                    880,
+                    517,
+                    880,
+                    518,
+                    937,
+                    286,
+                    937
+                  ],
+                  "text": "surname",
+                  "confidence": 0.997
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                40,
+                991,
+                334,
+                992,
+                334,
+                1041,
+                40,
+                1040
+              ],
+              "text": "2 > woman",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    992,
+                    75,
+                    992,
+                    74,
+                    1041,
+                    46,
+                    1041
+                  ],
+                  "text": "2",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    98,
+                    992,
+                    126,
+                    992,
+                    125,
+                    1041,
+                    97,
+                    1041
+                  ],
+                  "text": ">",
+                  "confidence": 0.742
+                },
+                {
+                  "boundingBox": [
+                    136,
+                    992,
+                    319,
+                    994,
+                    321,
+                    1041,
+                    136,
+                    1041
+                  ],
+                  "text": "woman",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                95,
+                1100,
+                489,
+                1100,
+                489,
+                1165,
+                95,
+                1167
+              ],
+              "text": "3 => concubine",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    101,
+                    1101,
+                    131,
+                    1101,
+                    129,
+                    1168,
+                    99,
+                    1168
+                  ],
+                  "text": "3",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    144,
+                    1101,
+                    204,
+                    1101,
+                    202,
+                    1166,
+                    142,
+                    1168
+                  ],
+                  "text": "=>",
+                  "confidence": 0.166
+                },
+                {
+                  "boundingBox": [
+                    217,
+                    1101,
+                    488,
+                    1101,
+                    489,
+                    1166,
+                    215,
+                    1166
+                  ],
+                  "text": "concubine",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                1267,
+                543,
+                1264,
+                544,
+                1320,
+                44,
+                1323
+              ],
+              "text": "How to use this info",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    1268,
+                    146,
+                    1268,
+                    144,
+                    1323,
+                    44,
+                    1324
+                  ],
+                  "text": "How",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    169,
+                    1268,
+                    220,
+                    1268,
+                    218,
+                    1322,
+                    167,
+                    1323
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    231,
+                    1268,
+                    322,
+                    1267,
+                    321,
+                    1322,
+                    229,
+                    1322
+                  ],
+                  "text": "use",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    333,
+                    1267,
+                    428,
+                    1266,
+                    426,
+                    1322,
+                    331,
+                    1322
+                  ],
+                  "text": "this",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    439,
+                    1266,
+                    540,
+                    1265,
+                    539,
+                    1322,
+                    437,
+                    1322
+                  ],
+                  "text": "info",
+                  "confidence": 0.986
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1166,
+                1389,
+                1302,
+                1388,
+                1304,
+                1434,
+                1166,
+                1434
+              ],
+              "text": "V OTC",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1168,
+                    1388,
+                    1195,
+                    1388,
+                    1195,
+                    1434,
+                    1168,
+                    1434
+                  ],
+                  "text": "V",
+                  "confidence": 0.408
+                },
+                {
+                  "boundingBox": [
+                    1205,
+                    1388,
+                    1293,
+                    1388,
+                    1293,
+                    1434,
+                    1205,
+                    1434
+                  ],
+                  "text": "OTC",
+                  "confidence": 0.995
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                46,
+                1481,
+                202,
+                1481,
+                202,
+                1532,
+                46,
+                1531
+              ],
+              "text": "FORM",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    1481,
+                    181,
+                    1481,
+                    179,
+                    1533,
+                    47,
+                    1531
+                  ],
+                  "text": "FORM",
+                  "confidence": 0.989
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                42,
+                1557,
+                1111,
+                1559,
+                1111,
+                1631,
+                42,
+                1628
+              ],
+              "text": "姬 ji is composed of 臣 yí and 女 “woman;",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    48,
+                    1561,
+                    89,
+                    1560,
+                    86,
+                    1624,
+                    45,
+                    1623
+                  ],
+                  "text": "姬",
+                  "confidence": 0.98
+                },
+                {
+                  "boundingBox": [
+                    103,
+                    1560,
+                    147,
+                    1560,
+                    144,
+                    1625,
+                    100,
+                    1624
+                  ],
+                  "text": "ji",
+                  "confidence": 0.054
+                },
+                {
+                  "boundingBox": [
+                    148,
+                    1560,
+                    201,
+                    1559,
+                    199,
+                    1626,
+                    145,
+                    1625
+                  ],
+                  "text": "is",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    202,
+                    1559,
+                    470,
+                    1558,
+                    469,
+                    1630,
+                    200,
+                    1626
+                  ],
+                  "text": "composed",
+                  "confidence": 0.992
+                },
+                {
+                  "boundingBox": [
+                    483,
+                    1558,
+                    551,
+                    1558,
+                    551,
+                    1631,
+                    482,
+                    1630
+                  ],
+                  "text": "of",
+                  "confidence": 0.983
+                },
+                {
+                  "boundingBox": [
+                    565,
+                    1558,
+                    606,
+                    1558,
+                    606,
+                    1631,
+                    565,
+                    1631
+                  ],
+                  "text": "臣",
+                  "confidence": 0.98
+                },
+                {
+                  "boundingBox": [
+                    628,
+                    1558,
+                    682,
+                    1558,
+                    682,
+                    1631,
+                    628,
+                    1631
+                  ],
+                  "text": "yí",
+                  "confidence": 0.853
+                },
+                {
+                  "boundingBox": [
+                    683,
+                    1558,
+                    787,
+                    1559,
+                    788,
+                    1631,
+                    683,
+                    1631
+                  ],
+                  "text": "and",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    810,
+                    1559,
+                    850,
+                    1559,
+                    852,
+                    1631,
+                    811,
+                    1631
+                  ],
+                  "text": "女",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    864,
+                    1560,
+                    1107,
+                    1563,
+                    1109,
+                    1628,
+                    865,
+                    1631
+                  ],
+                  "text": "“woman;",
+                  "confidence": 0.961
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                49,
+                1639,
+                1003,
+                1639,
+                1003,
+                1708,
+                49,
+                1706
+              ],
+              "text": "female; people in general,\" pointing to",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    50,
+                    1641,
+                    225,
+                    1640,
+                    225,
+                    1704,
+                    49,
+                    1699
+                  ],
+                  "text": "female;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    238,
+                    1640,
+                    411,
+                    1640,
+                    410,
+                    1708,
+                    238,
+                    1704
+                  ],
+                  "text": "people",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    424,
+                    1639,
+                    471,
+                    1639,
+                    471,
+                    1708,
+                    423,
+                    1708
+                  ],
+                  "text": "in",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    484,
+                    1639,
+                    708,
+                    1639,
+                    708,
+                    1708,
+                    484,
+                    1708
+                  ],
+                  "text": "general,\"",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    721,
+                    1639,
+                    932,
+                    1640,
+                    932,
+                    1705,
+                    721,
+                    1708
+                  ],
+                  "text": "pointing",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    945,
+                    1640,
+                    1002,
+                    1640,
+                    1003,
+                    1704,
+                    945,
+                    1705
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                1713,
+                1226,
+                1712,
+                1226,
+                1779,
+                44,
+                1780
+              ],
+              "text": "the original meaning \"a surname.\" [ gives the",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    48,
+                    1713,
+                    121,
+                    1713,
+                    117,
+                    1778,
+                    45,
+                    1777
+                  ],
+                  "text": "the",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    134,
+                    1713,
+                    328,
+                    1714,
+                    324,
+                    1780,
+                    130,
+                    1778
+                  ],
+                  "text": "original",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    341,
+                    1714,
+                    561,
+                    1714,
+                    558,
+                    1781,
+                    337,
+                    1780
+                  ],
+                  "text": "meaning",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    574,
+                    1714,
+                    626,
+                    1714,
+                    622,
+                    1781,
+                    571,
+                    1781
+                  ],
+                  "text": "\"a",
+                  "confidence": 0.934
+                },
+                {
+                  "boundingBox": [
+                    639,
+                    1714,
+                    906,
+                    1714,
+                    903,
+                    1780,
+                    635,
+                    1781
+                  ],
+                  "text": "surname.\"",
+                  "confidence": 0.981
+                },
+                {
+                  "boundingBox": [
+                    919,
+                    1714,
+                    957,
+                    1713,
+                    954,
+                    1780,
+                    916,
+                    1780
+                  ],
+                  "text": "[",
+                  "confidence": 0.4
+                },
+                {
+                  "boundingBox": [
+                    997,
+                    1713,
+                    1122,
+                    1713,
+                    1119,
+                    1778,
+                    994,
+                    1779
+                  ],
+                  "text": "gives",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    1135,
+                    1713,
+                    1227,
+                    1712,
+                    1224,
+                    1776,
+                    1132,
+                    1777
+                  ],
+                  "text": "the",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                42,
+                1794,
+                222,
+                1791,
+                223,
+                1843,
+                42,
+                1846
+              ],
+              "text": "sound.",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    42,
+                    1795,
+                    220,
+                    1792,
+                    222,
+                    1844,
+                    42,
+                    1846
+                  ],
+                  "text": "sound.",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                45,
+                1915,
+                427,
+                1914,
+                427,
+                1968,
+                45,
+                1969
+              ],
+              "text": "COMPONENTS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    1917,
+                    415,
+                    1915,
+                    417,
+                    1969,
+                    45,
+                    1969
+                  ],
+                  "text": "COMPONENTS",
+                  "confidence": 0.995
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                65,
+                2023,
+                141,
+                2023,
+                138,
+                2115,
+                61,
+                2116
+              ],
+              "text": "女",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    76,
+                    2023,
+                    132,
+                    2023,
+                    132,
+                    2116,
+                    76,
+                    2116
+                  ],
+                  "text": "女",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                2139,
+                1251,
+                2141,
+                1251,
+                2213,
+                44,
+                2211
+              ],
+              "text": "[S] In (E, { \"woman; female; people in general\"",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    2140,
+                    105,
+                    2141,
+                    104,
+                    2211,
+                    44,
+                    2211
+                  ],
+                  "text": "[S]",
+                  "confidence": 0.957
+                },
+                {
+                  "boundingBox": [
+                    118,
+                    2141,
+                    166,
+                    2142,
+                    166,
+                    2212,
+                    117,
+                    2211
+                  ],
+                  "text": "In",
+                  "confidence": 0.941
+                },
+                {
+                  "boundingBox": [
+                    180,
+                    2143,
+                    263,
+                    2144,
+                    262,
+                    2212,
+                    179,
+                    2212
+                  ],
+                  "text": "(E,",
+                  "confidence": 0.166
+                },
+                {
+                  "boundingBox": [
+                    276,
+                    2144,
+                    314,
+                    2145,
+                    313,
+                    2213,
+                    275,
+                    2212
+                  ],
+                  "text": "{",
+                  "confidence": 0
+                },
+                {
+                  "boundingBox": [
+                    342,
+                    2145,
+                    574,
+                    2147,
+                    573,
+                    2213,
+                    341,
+                    2213
+                  ],
+                  "text": "\"woman;",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    587,
+                    2147,
+                    771,
+                    2148,
+                    770,
+                    2213,
+                    586,
+                    2213
+                  ],
+                  "text": "female;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    784,
+                    2148,
+                    960,
+                    2147,
+                    958,
+                    2212,
+                    783,
+                    2213
+                  ],
+                  "text": "people",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    973,
+                    2147,
+                    1021,
+                    2147,
+                    1019,
+                    2212,
+                    971,
+                    2212
+                  ],
+                  "text": "in",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    1034,
+                    2147,
+                    1250,
+                    2144,
+                    1248,
+                    2210,
+                    1033,
+                    2212
+                  ],
+                  "text": "general\"",
+                  "confidence": 0.993
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                41,
+                2222,
+                1178,
+                2222,
+                1178,
+                2291,
+                41,
+                2292
+              ],
+              "text": "is a form component, pointing to the original",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    44,
+                    2222,
+                    80,
+                    2223,
+                    77,
+                    2292,
+                    41,
+                    2292
+                  ],
+                  "text": "is",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    93,
+                    2223,
+                    121,
+                    2223,
+                    118,
+                    2292,
+                    90,
+                    2292
+                  ],
+                  "text": "a",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    134,
+                    2223,
+                    247,
+                    2223,
+                    244,
+                    2292,
+                    131,
+                    2292
+                  ],
+                  "text": "form",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    266,
+                    2223,
+                    571,
+                    2224,
+                    570,
+                    2292,
+                    264,
+                    2292
+                  ],
+                  "text": "component,",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    585,
+                    2224,
+                    799,
+                    2224,
+                    798,
+                    2292,
+                    584,
+                    2292
+                  ],
+                  "text": "pointing",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    812,
+                    2224,
+                    863,
+                    2224,
+                    862,
+                    2292,
+                    812,
+                    2292
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    876,
+                    2224,
+                    958,
+                    2224,
+                    958,
+                    2292,
+                    876,
+                    2292
+                  ],
+                  "text": "the",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    972,
+                    2224,
+                    1178,
+                    2223,
+                    1179,
+                    2292,
+                    972,
+                    2292
+                  ],
+                  "text": "original",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                47,
+                2300,
+                599,
+                2298,
+                600,
+                2358,
+                47,
+                2363
+              ],
+              "text": "meaning \"a surname.\"",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    51,
+                    2301,
+                    263,
+                    2301,
+                    260,
+                    2363,
+                    48,
+                    2364
+                  ],
+                  "text": "meaning",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    275,
+                    2301,
+                    327,
+                    2301,
+                    324,
+                    2362,
+                    272,
+                    2363
+                  ],
+                  "text": "\"a",
+                  "confidence": 0.9
+                },
+                {
+                  "boundingBox": [
+                    339,
+                    2301,
+                    598,
+                    2299,
+                    594,
+                    2358,
+                    336,
+                    2362
+                  ],
+                  "text": "surname.\"",
+                  "confidence": 0.991
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                45,
+                2373,
+                543,
+                2373,
+                543,
+                2442,
+                45,
+                2441
+              ],
+              "text": "[Reference, p. 1086]",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    2373,
+                    324,
+                    2374,
+                    322,
+                    2440,
+                    45,
+                    2443
+                  ],
+                  "text": "[Reference,",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    337,
+                    2374,
+                    381,
+                    2375,
+                    379,
+                    2440,
+                    335,
+                    2440
+                  ],
+                  "text": "p.",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    394,
+                    2375,
+                    541,
+                    2375,
+                    539,
+                    2443,
+                    392,
+                    2441
+                  ],
+                  "text": "1086]",
+                  "confidence": 0.997
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                70,
+                2470,
+                151,
+                2466,
+                153,
+                2550,
+                72,
+                2555
+              ],
+              "text": "臣",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    81,
+                    2469,
+                    132,
+                    2467,
+                    137,
+                    2551,
+                    86,
+                    2554
+                  ],
+                  "text": "臣",
+                  "confidence": 0.938
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                47,
+                2586,
+                1035,
+                2589,
+                1034,
+                2661,
+                47,
+                2658
+              ],
+              "text": "[S] In HE ji, Di yi is a sound component.",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    49,
+                    2586,
+                    104,
+                    2586,
+                    103,
+                    2660,
+                    47,
+                    2660
+                  ],
+                  "text": "[S]",
+                  "confidence": 0.982
+                },
+                {
+                  "boundingBox": [
+                    119,
+                    2586,
+                    166,
+                    2587,
+                    165,
+                    2660,
+                    117,
+                    2660
+                  ],
+                  "text": "In",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    180,
+                    2587,
+                    237,
+                    2587,
+                    236,
+                    2661,
+                    179,
+                    2660
+                  ],
+                  "text": "HE",
+                  "confidence": 0.024
+                },
+                {
+                  "boundingBox": [
+                    251,
+                    2587,
+                    308,
+                    2587,
+                    307,
+                    2661,
+                    250,
+                    2661
+                  ],
+                  "text": "ji,",
+                  "confidence": 0.625
+                },
+                {
+                  "boundingBox": [
+                    323,
+                    2587,
+                    384,
+                    2588,
+                    383,
+                    2661,
+                    321,
+                    2661
+                  ],
+                  "text": "Di",
+                  "confidence": 0.006
+                },
+                {
+                  "boundingBox": [
+                    399,
+                    2588,
+                    441,
+                    2588,
+                    439,
+                    2661,
+                    397,
+                    2661
+                  ],
+                  "text": "yi",
+                  "confidence": 0.616
+                },
+                {
+                  "boundingBox": [
+                    456,
+                    2588,
+                    493,
+                    2588,
+                    491,
+                    2661,
+                    454,
+                    2661
+                  ],
+                  "text": "is",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    508,
+                    2588,
+                    531,
+                    2588,
+                    529,
+                    2661,
+                    506,
+                    2661
+                  ],
+                  "text": "a",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    546,
+                    2588,
+                    707,
+                    2589,
+                    705,
+                    2661,
+                    544,
+                    2661
+                  ],
+                  "text": "sound",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    721,
+                    2590,
+                    1036,
+                    2592,
+                    1033,
+                    2661,
+                    719,
+                    2661
+                  ],
+                  "text": "component.",
+                  "confidence": 0.992
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                48,
+                2709,
+                544,
+                2709,
+                544,
+                2763,
+                48,
+                2763
+              ],
+              "text": "How to use this info",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    50,
+                    2712,
+                    145,
+                    2711,
+                    144,
+                    2763,
+                    48,
+                    2762
+                  ],
+                  "text": "How",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    171,
+                    2711,
+                    222,
+                    2711,
+                    220,
+                    2764,
+                    169,
+                    2763
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    233,
+                    2711,
+                    323,
+                    2711,
+                    322,
+                    2764,
+                    231,
+                    2764
+                  ],
+                  "text": "use",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    333,
+                    2711,
+                    430,
+                    2710,
+                    429,
+                    2764,
+                    332,
+                    2764
+                  ],
+                  "text": "this",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    440,
+                    2710,
+                    539,
+                    2710,
+                    539,
+                    2764,
+                    440,
+                    2764
+                  ],
+                  "text": "info",
+                  "confidence": 0.986
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                46,
+                2834,
+                333,
+                2834,
+                333,
+                2884,
+                46,
+                2884
+              ],
+              "text": "MEANINGS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    48,
+                    2835,
+                    323,
+                    2834,
+                    323,
+                    2885,
+                    47,
+                    2884
+                  ],
+                  "text": "MEANINGS",
+                  "confidence": 0.995
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "processed_at": "2025-07-08 20:37:45"
+}

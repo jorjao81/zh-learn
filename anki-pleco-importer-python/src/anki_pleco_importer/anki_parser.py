@@ -1,0 +1,173 @@
+"""Parser for Anki export format."""
+
+import re
+from dataclasses import dataclass
+from typing import List, Dict, Set, Optional, Tuple
+from pathlib import Path
+
+
+@dataclass
+class AnkiCard:
+    """Represents a single Anki card."""
+
+    notetype: str
+    pinyin: str
+    characters: str
+    audio: str
+    definitions: str
+    components: str = ""
+    radicals: str = ""
+    tags: str = ""
+
+    def get_clean_characters(self) -> str:
+        """Extract clean Chinese characters without HTML tags."""
+        if not self.characters:
+            return ""
+        # Remove HTML tags
+        clean = re.sub(r"<[^>]+>", "", self.characters)
+        return clean.strip()
+
+
+class AnkiExportParser:
+    """Parser for Anki export files."""
+
+    def __init__(self):
+        self.cards: List[AnkiCard] = []
+        self.separator = "\t"
+        self.html_mode = False
+
+    def parse_file(self, file_path: Path) -> List[AnkiCard]:
+        """Parse an Anki export file and return list of cards."""
+        self.cards = []
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+
+                # Handle header lines
+                if line.startswith("#"):
+                    self._parse_header(line)
+                    continue
+
+                # Parse card data
+                parts = line.split(self.separator)
+                if len(parts) >= 5:  # Minimum required fields
+                    card = AnkiCard(
+                        notetype=parts[0] if len(parts) > 0 else "",
+                        pinyin=parts[1] if len(parts) > 1 else "",
+                        characters=parts[2] if len(parts) > 2 else "",
+                        audio=parts[3] if len(parts) > 3 else "",
+                        definitions=parts[4] if len(parts) > 4 else "",
+                        components=parts[5] if len(parts) > 5 else "",
+                        radicals=parts[6] if len(parts) > 6 else "",
+                        tags=parts[16] if len(parts) > 16 else "",
+                    )
+                    self.cards.append(card)
+
+        return self.cards
+
+    def _parse_header(self, line: str):
+        """Parse header lines to extract format information."""
+        if line.startswith("#separator:"):
+            sep_name = line.split(":")[1]
+            if sep_name == "tab":
+                self.separator = "\t"
+            elif sep_name == "comma":
+                self.separator = ","
+        elif line.startswith("#html:"):
+            self.html_mode = line.split(":")[1].lower() == "true"
+
+    def get_all_characters(self) -> Set[str]:
+        """Get all unique Chinese characters from the cards."""
+        characters = set()
+        for card in self.cards:
+            clean_chars = card.get_clean_characters()
+            for char in clean_chars:
+                if self._is_chinese_character(char):
+                    characters.add(char)
+        return characters
+
+    def get_character_frequency(self) -> Dict[str, int]:
+        """Get frequency count of each character across all cards."""
+        freq: Dict[str, int] = {}
+        for card in self.cards:
+            clean_chars = card.get_clean_characters()
+            for char in clean_chars:
+                if self._is_chinese_character(char):
+                    freq[char] = freq.get(char, 0) + 1
+        return freq
+
+    def get_single_character_words(self) -> Set[str]:
+        """Get all single-character words (individual characters that are words)."""
+        single_chars = set()
+        for card in self.cards:
+            clean_chars = card.get_clean_characters()
+            if len(clean_chars) == 1 and self._is_chinese_character(clean_chars):
+                single_chars.add(clean_chars)
+        return single_chars
+
+    def get_multi_character_words(self) -> List[str]:
+        """Get all multi-character words."""
+        multi_chars = []
+        for card in self.cards:
+            clean_chars = card.get_clean_characters()
+            if len(clean_chars) > 1 and all(
+                self._is_chinese_character(c) for c in clean_chars
+            ):
+                multi_chars.append(clean_chars)
+        return multi_chars
+
+    def get_component_characters(self) -> Set[str]:
+        """Extract characters mentioned as components/radicals."""
+        components = set()
+        for card in self.cards:
+            # Look for characters in components and radicals fields
+            for field in [card.components, card.radicals]:
+                if field:
+                    # Extract characters from component descriptions
+                    # Look for patterns like 女(woman), 子(child), etc.
+                    matches = re.findall(r"([一-龯])", field)
+                    for match in matches:
+                        if self._is_chinese_character(match):
+                            components.add(match)
+        return components
+
+    def _is_chinese_character(self, char: str) -> bool:
+        """Check if a character is a Chinese character."""
+        return "\u4e00" <= char <= "\u9fff"
+
+    def analyze_candidate_characters(self) -> List[Tuple[str, int, int]]:
+        """
+        Find candidate characters to learn based on:
+        1. Characters that appear in many multi-character words
+        2. Characters that are components in other characters
+        3. Characters that are NOT already single-character words
+        """
+        single_chars = self.get_single_character_words()
+        multi_words = self.get_multi_character_words()
+        component_chars = self.get_component_characters()
+
+        # Count frequency in multi-character words
+        multi_char_freq: Dict[str, int] = {}
+        for word in multi_words:
+            for char in word:
+                if char not in single_chars:  # Only count if not already a single word
+                    multi_char_freq[char] = multi_char_freq.get(char, 0) + 1
+
+        # Calculate scores for candidate characters
+        candidates: List[Tuple[str, int, int]] = []
+        for char in multi_char_freq:
+            score = multi_char_freq[char]
+
+            # Give extra weight if it's a component character
+            if char in component_chars:
+                score += 10  # Heavy weight for component characters
+
+            candidates.append((char, score, multi_char_freq[char]))
+
+        # Sort by score (descending)
+        candidates.sort(key=lambda x: x[1], reverse=True)
+
+        return candidates

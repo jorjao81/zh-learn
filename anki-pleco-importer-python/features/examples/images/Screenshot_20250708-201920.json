@@ -1,0 +1,2430 @@
+{
+  "file_path": "features/examples/images/Screenshot_20250708-201920.png",
+  "text_lines": [
+    "20:19",
+    "1 65%",
+    "Pleco",
+    "DICT",
+    "STROKE",
+    "CHARS",
+    "WORDS",
+    "SENTS",
+    "MEANINGS",
+    "Character meanings",
+    "zòng",
+    "1 (orig.) to loosen; to ease up, relax",
+    "2 > to indulge s.o.",
+    "3 O vertical; longitudinal",
+    "How to use this info",
+    "V OTC",
+    "FORM",
+    "\"it zong (also zong, zong) is composed of TÉ cóng",
+    "(also zòng, cong, zong) and # \"silk threads;",
+    "fine silk; things done with silk threads,\" pointing",
+    "to the original meaning \"to loosen; to ease up,",
+    "relax.\" 從 gives the sound.",
+    "COMPONENTS",
+    "[S] In Kit, \"silk threads; fine silk; things done",
+    "with silk threads\" is a meaning component,",
+    "pointing to the original meaning \"to loosen; to",
+    "ease up, relax.\"",
+    "[Reference, p. 1224;",
+    "Reference, p. 1846]",
+    "從",
+    "[S] In 縱 zong (also zong, zong),從 cóng (also"
+  ],
+  "full_ocr_result": {
+    "status": "succeeded",
+    "createdDateTime": "2025-07-08T18:37:37Z",
+    "lastUpdatedDateTime": "2025-07-08T18:37:37Z",
+    "analyzeResult": {
+      "version": "3.2.0",
+      "modelVersion": "2022-04-30",
+      "readResults": [
+        {
+          "page": 1,
+          "angle": 0.0653,
+          "width": 1344,
+          "height": 2992,
+          "unit": "pixel",
+          "lines": [
+            {
+              "boundingBox": [
+                90,
+                78,
+                204,
+                78,
+                204,
+                119,
+                90,
+                119
+              ],
+              "text": "20:19",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    92,
+                    78,
+                    201,
+                    78,
+                    201,
+                    119,
+                    92,
+                    119
+                  ],
+                  "text": "20:19",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1065,
+                84,
+                1251,
+                81,
+                1252,
+                118,
+                1065,
+                122
+              ],
+              "text": "1 65%",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1078,
+                    84,
+                    1100,
+                    84,
+                    1099,
+                    121,
+                    1078,
+                    122
+                  ],
+                  "text": "1",
+                  "confidence": 0.026
+                },
+                {
+                  "boundingBox": [
+                    1162,
+                    82,
+                    1244,
+                    82,
+                    1247,
+                    119,
+                    1163,
+                    119
+                  ],
+                  "text": "65%",
+                  "confidence": 0.933
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                178,
+                252,
+                330,
+                253,
+                329,
+                306,
+                177,
+                303
+              ],
+              "text": "Pleco",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    179,
+                    252,
+                    320,
+                    253,
+                    321,
+                    307,
+                    177,
+                    302
+                  ],
+                  "text": "Pleco",
+                  "confidence": 0.995
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                60,
+                408,
+                165,
+                407,
+                164,
+                449,
+                60,
+                450
+              ],
+              "text": "DICT",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    60,
+                    408,
+                    156,
+                    407,
+                    157,
+                    449,
+                    60,
+                    450
+                  ],
+                  "text": "DICT",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                286,
+                407,
+                466,
+                407,
+                466,
+                451,
+                286,
+                450
+              ],
+              "text": "STROKE",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    287,
+                    409,
+                    454,
+                    408,
+                    455,
+                    452,
+                    286,
+                    451
+                  ],
+                  "text": "STROKE",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                585,
+                408,
+                731,
+                408,
+                731,
+                451,
+                585,
+                451
+              ],
+              "text": "CHARS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    588,
+                    410,
+                    723,
+                    408,
+                    723,
+                    452,
+                    586,
+                    449
+                  ],
+                  "text": "CHARS",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                853,
+                408,
+                1014,
+                408,
+                1015,
+                449,
+                853,
+                449
+              ],
+              "text": "WORDS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    855,
+                    409,
+                    1009,
+                    408,
+                    1009,
+                    450,
+                    854,
+                    450
+                  ],
+                  "text": "WORDS",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1142,
+                409,
+                1283,
+                409,
+                1283,
+                450,
+                1142,
+                449
+              ],
+              "text": "SENTS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1142,
+                    411,
+                    1273,
+                    410,
+                    1273,
+                    451,
+                    1142,
+                    448
+                  ],
+                  "text": "SENTS",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                47,
+                543,
+                332,
+                543,
+                332,
+                595,
+                47,
+                595
+              ],
+              "text": "MEANINGS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    50,
+                    543,
+                    322,
+                    544,
+                    324,
+                    596,
+                    47,
+                    595
+                  ],
+                  "text": "MEANINGS",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                656,
+                581,
+                657,
+                580,
+                718,
+                44,
+                713
+              ],
+              "text": "Character meanings",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    46,
+                    657,
+                    300,
+                    656,
+                    300,
+                    716,
+                    44,
+                    711
+                  ],
+                  "text": "Character",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    312,
+                    656,
+                    580,
+                    657,
+                    581,
+                    719,
+                    312,
+                    716
+                  ],
+                  "text": "meanings",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                45,
+                764,
+                182,
+                770,
+                179,
+                836,
+                42,
+                832
+              ],
+              "text": "zòng",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    44,
+                    764,
+                    178,
+                    769,
+                    175,
+                    837,
+                    42,
+                    832
+                  ],
+                  "text": "zòng",
+                  "confidence": 0.992
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                876,
+                921,
+                877,
+                921,
+                942,
+                44,
+                941
+              ],
+              "text": "1 (orig.) to loosen; to ease up, relax",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    46,
+                    876,
+                    73,
+                    876,
+                    71,
+                    942,
+                    44,
+                    942
+                  ],
+                  "text": "1",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    85,
+                    877,
+                    233,
+                    878,
+                    232,
+                    942,
+                    83,
+                    942
+                  ],
+                  "text": "(orig.)",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    245,
+                    878,
+                    297,
+                    878,
+                    296,
+                    941,
+                    244,
+                    942
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    309,
+                    879,
+                    497,
+                    880,
+                    497,
+                    941,
+                    308,
+                    941
+                  ],
+                  "text": "loosen;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    509,
+                    880,
+                    557,
+                    880,
+                    557,
+                    940,
+                    509,
+                    941
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    569,
+                    880,
+                    685,
+                    881,
+                    686,
+                    940,
+                    569,
+                    940
+                  ],
+                  "text": "ease",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    697,
+                    881,
+                    777,
+                    882,
+                    778,
+                    939,
+                    698,
+                    940
+                  ],
+                  "text": "up,",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    789,
+                    882,
+                    918,
+                    882,
+                    920,
+                    938,
+                    790,
+                    939
+                  ],
+                  "text": "relax",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                41,
+                983,
+                492,
+                986,
+                492,
+                1052,
+                41,
+                1051
+              ],
+              "text": "2 > to indulge s.o.",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    44,
+                    984,
+                    73,
+                    985,
+                    71,
+                    1052,
+                    42,
+                    1052
+                  ],
+                  "text": "2",
+                  "confidence": 0.983
+                },
+                {
+                  "boundingBox": [
+                    85,
+                    985,
+                    122,
+                    986,
+                    120,
+                    1051,
+                    83,
+                    1052
+                  ],
+                  "text": ">",
+                  "confidence": 0.744
+                },
+                {
+                  "boundingBox": [
+                    134,
+                    986,
+                    178,
+                    987,
+                    177,
+                    1050,
+                    132,
+                    1051
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    190,
+                    987,
+                    387,
+                    991,
+                    389,
+                    1049,
+                    189,
+                    1050
+                  ],
+                  "text": "indulge",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    399,
+                    991,
+                    487,
+                    992,
+                    489,
+                    1049,
+                    401,
+                    1049
+                  ],
+                  "text": "s.o.",
+                  "confidence": 0.986
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                1101,
+                688,
+                1105,
+                688,
+                1170,
+                44,
+                1166
+              ],
+              "text": "3 O vertical; longitudinal",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    50,
+                    1101,
+                    72,
+                    1102,
+                    69,
+                    1167,
+                    48,
+                    1167
+                  ],
+                  "text": "3",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    84,
+                    1102,
+                    121,
+                    1102,
+                    119,
+                    1167,
+                    82,
+                    1167
+                  ],
+                  "text": "O",
+                  "confidence": 0.675
+                },
+                {
+                  "boundingBox": [
+                    152,
+                    1103,
+                    355,
+                    1104,
+                    354,
+                    1168,
+                    150,
+                    1167
+                  ],
+                  "text": "vertical;",
+                  "confidence": 0.992
+                },
+                {
+                  "boundingBox": [
+                    368,
+                    1104,
+                    686,
+                    1106,
+                    687,
+                    1171,
+                    367,
+                    1168
+                  ],
+                  "text": "longitudinal",
+                  "confidence": 0.993
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                45,
+                1269,
+                542,
+                1267,
+                542,
+                1323,
+                45,
+                1324
+              ],
+              "text": "How to use this info",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    1269,
+                    144,
+                    1269,
+                    143,
+                    1325,
+                    45,
+                    1325
+                  ],
+                  "text": "How",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    167,
+                    1269,
+                    222,
+                    1269,
+                    221,
+                    1325,
+                    166,
+                    1325
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    233,
+                    1269,
+                    320,
+                    1269,
+                    320,
+                    1325,
+                    232,
+                    1325
+                  ],
+                  "text": "use",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    331,
+                    1269,
+                    427,
+                    1268,
+                    427,
+                    1324,
+                    331,
+                    1325
+                  ],
+                  "text": "this",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    438,
+                    1268,
+                    539,
+                    1268,
+                    540,
+                    1324,
+                    438,
+                    1324
+                  ],
+                  "text": "info",
+                  "confidence": 0.991
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                1168,
+                1392,
+                1306,
+                1392,
+                1306,
+                1437,
+                1168,
+                1435
+              ],
+              "text": "V OTC",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    1169,
+                    1394,
+                    1193,
+                    1394,
+                    1193,
+                    1435,
+                    1169,
+                    1435
+                  ],
+                  "text": "V",
+                  "confidence": 0.61
+                },
+                {
+                  "boundingBox": [
+                    1205,
+                    1394,
+                    1291,
+                    1393,
+                    1291,
+                    1437,
+                    1205,
+                    1435
+                  ],
+                  "text": "OTC",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                49,
+                1481,
+                203,
+                1481,
+                203,
+                1534,
+                49,
+                1535
+              ],
+              "text": "FORM",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    51,
+                    1483,
+                    179,
+                    1481,
+                    178,
+                    1535,
+                    50,
+                    1533
+                  ],
+                  "text": "FORM",
+                  "confidence": 0.981
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                1560,
+                1278,
+                1560,
+                1278,
+                1632,
+                44,
+                1630
+              ],
+              "text": "\"it zong (also zong, zong) is composed of TÉ cóng",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    1563,
+                    98,
+                    1563,
+                    98,
+                    1628,
+                    45,
+                    1627
+                  ],
+                  "text": "\"it",
+                  "confidence": 0.048
+                },
+                {
+                  "boundingBox": [
+                    112,
+                    1563,
+                    233,
+                    1564,
+                    233,
+                    1629,
+                    111,
+                    1628
+                  ],
+                  "text": "zong",
+                  "confidence": 0.864
+                },
+                {
+                  "boundingBox": [
+                    246,
+                    1564,
+                    363,
+                    1564,
+                    363,
+                    1631,
+                    246,
+                    1629
+                  ],
+                  "text": "(also",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    377,
+                    1564,
+                    516,
+                    1564,
+                    517,
+                    1632,
+                    377,
+                    1631
+                  ],
+                  "text": "zong,",
+                  "confidence": 0.941
+                },
+                {
+                  "boundingBox": [
+                    529,
+                    1564,
+                    664,
+                    1564,
+                    665,
+                    1633,
+                    530,
+                    1632
+                  ],
+                  "text": "zong)",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    678,
+                    1564,
+                    718,
+                    1564,
+                    719,
+                    1633,
+                    679,
+                    1633
+                  ],
+                  "text": "is",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    731,
+                    1564,
+                    996,
+                    1563,
+                    998,
+                    1633,
+                    733,
+                    1633
+                  ],
+                  "text": "composed",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    1010,
+                    1563,
+                    1064,
+                    1562,
+                    1066,
+                    1633,
+                    1012,
+                    1633
+                  ],
+                  "text": "of",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    1077,
+                    1562,
+                    1131,
+                    1562,
+                    1133,
+                    1633,
+                    1079,
+                    1633
+                  ],
+                  "text": "TÉ",
+                  "confidence": 0.002
+                },
+                {
+                  "boundingBox": [
+                    1145,
+                    1562,
+                    1274,
+                    1560,
+                    1276,
+                    1632,
+                    1147,
+                    1633
+                  ],
+                  "text": "cóng",
+                  "confidence": 0.788
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                43,
+                1647,
+                1147,
+                1647,
+                1147,
+                1719,
+                43,
+                1720
+              ],
+              "text": "(also zòng, cong, zong) and # \"silk threads;",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    1652,
+                    157,
+                    1650,
+                    155,
+                    1719,
+                    43,
+                    1718
+                  ],
+                  "text": "(also",
+                  "confidence": 0.994
+                },
+                {
+                  "boundingBox": [
+                    171,
+                    1650,
+                    307,
+                    1649,
+                    305,
+                    1719,
+                    169,
+                    1719
+                  ],
+                  "text": "zòng,",
+                  "confidence": 0.608
+                },
+                {
+                  "boundingBox": [
+                    321,
+                    1649,
+                    457,
+                    1648,
+                    455,
+                    1720,
+                    319,
+                    1719
+                  ],
+                  "text": "cong,",
+                  "confidence": 0.801
+                },
+                {
+                  "boundingBox": [
+                    471,
+                    1648,
+                    612,
+                    1648,
+                    610,
+                    1720,
+                    469,
+                    1720
+                  ],
+                  "text": "zong)",
+                  "confidence": 0.642
+                },
+                {
+                  "boundingBox": [
+                    626,
+                    1648,
+                    720,
+                    1647,
+                    718,
+                    1720,
+                    624,
+                    1720
+                  ],
+                  "text": "and",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    734,
+                    1647,
+                    775,
+                    1647,
+                    773,
+                    1720,
+                    732,
+                    1720
+                  ],
+                  "text": "#",
+                  "confidence": 0.005
+                },
+                {
+                  "boundingBox": [
+                    804,
+                    1647,
+                    917,
+                    1647,
+                    915,
+                    1720,
+                    802,
+                    1720
+                  ],
+                  "text": "\"silk",
+                  "confidence": 0.815
+                },
+                {
+                  "boundingBox": [
+                    931,
+                    1647,
+                    1148,
+                    1648,
+                    1146,
+                    1720,
+                    929,
+                    1720
+                  ],
+                  "text": "threads;",
+                  "confidence": 0.993
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                47,
+                1727,
+                1252,
+                1729,
+                1252,
+                1795,
+                47,
+                1791
+              ],
+              "text": "fine silk; things done with silk threads,\" pointing",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    51,
+                    1727,
+                    137,
+                    1727,
+                    133,
+                    1791,
+                    47,
+                    1790
+                  ],
+                  "text": "fine",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    150,
+                    1727,
+                    249,
+                    1727,
+                    246,
+                    1792,
+                    146,
+                    1791
+                  ],
+                  "text": "silk;",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    262,
+                    1727,
+                    418,
+                    1727,
+                    416,
+                    1793,
+                    259,
+                    1792
+                  ],
+                  "text": "things",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    431,
+                    1727,
+                    556,
+                    1727,
+                    555,
+                    1794,
+                    429,
+                    1793
+                  ],
+                  "text": "done",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    569,
+                    1727,
+                    681,
+                    1727,
+                    681,
+                    1795,
+                    568,
+                    1794
+                  ],
+                  "text": "with",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    694,
+                    1727,
+                    777,
+                    1728,
+                    777,
+                    1795,
+                    694,
+                    1795
+                  ],
+                  "text": "silk",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    790,
+                    1728,
+                    1014,
+                    1728,
+                    1016,
+                    1795,
+                    790,
+                    1795
+                  ],
+                  "text": "threads,\"",
+                  "confidence": 0.993
+                },
+                {
+                  "boundingBox": [
+                    1027,
+                    1728,
+                    1247,
+                    1729,
+                    1249,
+                    1795,
+                    1029,
+                    1795
+                  ],
+                  "text": "pointing",
+                  "confidence": 0.996
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                43,
+                1804,
+                1201,
+                1808,
+                1201,
+                1870,
+                42,
+                1866
+              ],
+              "text": "to the original meaning \"to loosen; to ease up,",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    47,
+                    1804,
+                    95,
+                    1804,
+                    90,
+                    1865,
+                    43,
+                    1865
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    107,
+                    1804,
+                    188,
+                    1804,
+                    184,
+                    1867,
+                    103,
+                    1866
+                  ],
+                  "text": "the",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    200,
+                    1804,
+                    394,
+                    1804,
+                    391,
+                    1869,
+                    196,
+                    1867
+                  ],
+                  "text": "original",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    406,
+                    1804,
+                    625,
+                    1806,
+                    622,
+                    1870,
+                    403,
+                    1869
+                  ],
+                  "text": "meaning",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    637,
+                    1806,
+                    714,
+                    1806,
+                    711,
+                    1870,
+                    634,
+                    1870
+                  ],
+                  "text": "\"to",
+                  "confidence": 0.847
+                },
+                {
+                  "boundingBox": [
+                    726,
+                    1806,
+                    912,
+                    1809,
+                    910,
+                    1870,
+                    723,
+                    1870
+                  ],
+                  "text": "loosen;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    924,
+                    1809,
+                    976,
+                    1809,
+                    975,
+                    1870,
+                    922,
+                    1870
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    989,
+                    1810,
+                    1102,
+                    1811,
+                    1101,
+                    1869,
+                    987,
+                    1870
+                  ],
+                  "text": "ease",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    1114,
+                    1811,
+                    1200,
+                    1813,
+                    1199,
+                    1868,
+                    1113,
+                    1869
+                  ],
+                  "text": "up,",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                42,
+                1884,
+                696,
+                1884,
+                696,
+                1951,
+                42,
+                1950
+              ],
+              "text": "relax.\" 從 gives the sound.",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    1885,
+                    207,
+                    1885,
+                    205,
+                    1951,
+                    43,
+                    1949
+                  ],
+                  "text": "relax.\"",
+                  "confidence": 0.221
+                },
+                {
+                  "boundingBox": [
+                    229,
+                    1884,
+                    268,
+                    1884,
+                    266,
+                    1952,
+                    227,
+                    1952
+                  ],
+                  "text": "從",
+                  "confidence": 0.988
+                },
+                {
+                  "boundingBox": [
+                    289,
+                    1884,
+                    418,
+                    1885,
+                    417,
+                    1952,
+                    288,
+                    1952
+                  ],
+                  "text": "gives",
+                  "confidence": 0.994
+                },
+                {
+                  "boundingBox": [
+                    419,
+                    1885,
+                    510,
+                    1885,
+                    509,
+                    1952,
+                    418,
+                    1952
+                  ],
+                  "text": "the",
+                  "confidence": 0.989
+                },
+                {
+                  "boundingBox": [
+                    514,
+                    1885,
+                    693,
+                    1886,
+                    693,
+                    1949,
+                    513,
+                    1952
+                  ],
+                  "text": "sound.",
+                  "confidence": 0.989
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                41,
+                2007,
+                429,
+                2009,
+                428,
+                2074,
+                41,
+                2073
+              ],
+              "text": "COMPONENTS",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.945
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    2007,
+                    424,
+                    2011,
+                    423,
+                    2074,
+                    41,
+                    2074
+                  ],
+                  "text": "COMPONENTS",
+                  "confidence": 0.993
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                44,
+                2241,
+                1210,
+                2248,
+                1210,
+                2313,
+                44,
+                2308
+              ],
+              "text": "[S] In Kit, \"silk threads; fine silk; things done",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    45,
+                    2242,
+                    94,
+                    2242,
+                    96,
+                    2310,
+                    47,
+                    2310
+                  ],
+                  "text": "[S]",
+                  "confidence": 0.886
+                },
+                {
+                  "boundingBox": [
+                    107,
+                    2242,
+                    146,
+                    2242,
+                    148,
+                    2310,
+                    109,
+                    2310
+                  ],
+                  "text": "In",
+                  "confidence": 0.968
+                },
+                {
+                  "boundingBox": [
+                    159,
+                    2242,
+                    271,
+                    2243,
+                    273,
+                    2311,
+                    161,
+                    2310
+                  ],
+                  "text": "Kit,",
+                  "confidence": 0.092
+                },
+                {
+                  "boundingBox": [
+                    333,
+                    2243,
+                    442,
+                    2244,
+                    444,
+                    2312,
+                    335,
+                    2311
+                  ],
+                  "text": "\"silk",
+                  "confidence": 0.961
+                },
+                {
+                  "boundingBox": [
+                    455,
+                    2244,
+                    660,
+                    2245,
+                    661,
+                    2313,
+                    457,
+                    2312
+                  ],
+                  "text": "threads;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    673,
+                    2246,
+                    773,
+                    2246,
+                    773,
+                    2313,
+                    674,
+                    2313
+                  ],
+                  "text": "fine",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    786,
+                    2247,
+                    886,
+                    2247,
+                    886,
+                    2313,
+                    786,
+                    2313
+                  ],
+                  "text": "silk;",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    899,
+                    2248,
+                    1069,
+                    2249,
+                    1068,
+                    2313,
+                    899,
+                    2313
+                  ],
+                  "text": "things",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    1082,
+                    2249,
+                    1211,
+                    2251,
+                    1211,
+                    2313,
+                    1081,
+                    2313
+                  ],
+                  "text": "done",
+                  "confidence": 0.992
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                50,
+                2325,
+                1130,
+                2328,
+                1130,
+                2389,
+                49,
+                2384
+              ],
+              "text": "with silk threads\" is a meaning component,",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    51,
+                    2326,
+                    152,
+                    2326,
+                    151,
+                    2382,
+                    50,
+                    2380
+                  ],
+                  "text": "with",
+                  "confidence": 0.979
+                },
+                {
+                  "boundingBox": [
+                    163,
+                    2326,
+                    250,
+                    2326,
+                    249,
+                    2384,
+                    163,
+                    2382
+                  ],
+                  "text": "silk",
+                  "confidence": 0.987
+                },
+                {
+                  "boundingBox": [
+                    262,
+                    2326,
+                    478,
+                    2326,
+                    477,
+                    2387,
+                    261,
+                    2384
+                  ],
+                  "text": "threads\"",
+                  "confidence": 0.992
+                },
+                {
+                  "boundingBox": [
+                    489,
+                    2326,
+                    533,
+                    2327,
+                    532,
+                    2388,
+                    489,
+                    2388
+                  ],
+                  "text": "is",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    544,
+                    2327,
+                    572,
+                    2327,
+                    572,
+                    2388,
+                    544,
+                    2388
+                  ],
+                  "text": "a",
+                  "confidence": 0.995
+                },
+                {
+                  "boundingBox": [
+                    584,
+                    2327,
+                    807,
+                    2327,
+                    807,
+                    2389,
+                    583,
+                    2388
+                  ],
+                  "text": "meaning",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    819,
+                    2327,
+                    1131,
+                    2328,
+                    1131,
+                    2389,
+                    819,
+                    2389
+                  ],
+                  "text": "component,",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                46,
+                2400,
+                1208,
+                2399,
+                1208,
+                2463,
+                46,
+                2465
+              ],
+              "text": "pointing to the original meaning \"to loosen; to",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    46,
+                    2404,
+                    251,
+                    2401,
+                    252,
+                    2465,
+                    47,
+                    2465
+                  ],
+                  "text": "pointing",
+                  "confidence": 0.994
+                },
+                {
+                  "boundingBox": [
+                    264,
+                    2401,
+                    314,
+                    2401,
+                    315,
+                    2465,
+                    264,
+                    2465
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    327,
+                    2401,
+                    411,
+                    2400,
+                    411,
+                    2465,
+                    327,
+                    2465
+                  ],
+                  "text": "the",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    423,
+                    2400,
+                    617,
+                    2399,
+                    616,
+                    2465,
+                    423,
+                    2465
+                  ],
+                  "text": "original",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    629,
+                    2399,
+                    848,
+                    2399,
+                    847,
+                    2465,
+                    629,
+                    2465
+                  ],
+                  "text": "meaning",
+                  "confidence": 0.997
+                },
+                {
+                  "boundingBox": [
+                    861,
+                    2399,
+                    936,
+                    2400,
+                    935,
+                    2464,
+                    859,
+                    2465
+                  ],
+                  "text": "\"to",
+                  "confidence": 0.853
+                },
+                {
+                  "boundingBox": [
+                    949,
+                    2400,
+                    1134,
+                    2401,
+                    1132,
+                    2463,
+                    947,
+                    2464
+                  ],
+                  "text": "loosen;",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    1147,
+                    2401,
+                    1206,
+                    2402,
+                    1204,
+                    2463,
+                    1144,
+                    2463
+                  ],
+                  "text": "to",
+                  "confidence": 0.998
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                42,
+                2479,
+                418,
+                2477,
+                419,
+                2533,
+                42,
+                2536
+              ],
+              "text": "ease up, relax.\"",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    42,
+                    2480,
+                    155,
+                    2481,
+                    155,
+                    2536,
+                    43,
+                    2536
+                  ],
+                  "text": "ease",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    166,
+                    2481,
+                    250,
+                    2481,
+                    250,
+                    2536,
+                    166,
+                    2536
+                  ],
+                  "text": "up,",
+                  "confidence": 0.994
+                },
+                {
+                  "boundingBox": [
+                    261,
+                    2481,
+                    419,
+                    2477,
+                    419,
+                    2533,
+                    261,
+                    2536
+                  ],
+                  "text": "relax.\"",
+                  "confidence": 0.968
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                42,
+                2546,
+                543,
+                2549,
+                543,
+                2619,
+                42,
+                2617
+              ],
+              "text": "[Reference, p. 1224;",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    44,
+                    2547,
+                    324,
+                    2549,
+                    323,
+                    2617,
+                    42,
+                    2619
+                  ],
+                  "text": "[Reference,",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    337,
+                    2549,
+                    383,
+                    2549,
+                    383,
+                    2617,
+                    337,
+                    2617
+                  ],
+                  "text": "p.",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    396,
+                    2549,
+                    542,
+                    2551,
+                    543,
+                    2619,
+                    396,
+                    2617
+                  ],
+                  "text": "1224;",
+                  "confidence": 0.994
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                45,
+                2622,
+                527,
+                2625,
+                526,
+                2690,
+                44,
+                2687
+              ],
+              "text": "Reference, p. 1846]",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    46,
+                    2622,
+                    306,
+                    2625,
+                    305,
+                    2690,
+                    45,
+                    2688
+                  ],
+                  "text": "Reference,",
+                  "confidence": 0.992
+                },
+                {
+                  "boundingBox": [
+                    319,
+                    2625,
+                    366,
+                    2625,
+                    365,
+                    2690,
+                    318,
+                    2690
+                  ],
+                  "text": "p.",
+                  "confidence": 0.998
+                },
+                {
+                  "boundingBox": [
+                    379,
+                    2625,
+                    525,
+                    2625,
+                    525,
+                    2691,
+                    378,
+                    2690
+                  ],
+                  "text": "1846]",
+                  "confidence": 0.997
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                67,
+                2731,
+                153,
+                2727,
+                160,
+                2825,
+                72,
+                2830
+              ],
+              "text": "從",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    70,
+                    2731,
+                    129,
+                    2728,
+                    135,
+                    2827,
+                    75,
+                    2830
+                  ],
+                  "text": "從",
+                  "confidence": 0.992
+                }
+              ]
+            },
+            {
+              "boundingBox": [
+                52,
+                2855,
+                1176,
+                2855,
+                1176,
+                2922,
+                52,
+                2922
+              ],
+              "text": "[S] In 縱 zong (also zong, zong),從 cóng (also",
+              "appearance": {
+                "style": {
+                  "name": "other",
+                  "confidence": 0.972
+                }
+              },
+              "words": [
+                {
+                  "boundingBox": [
+                    55,
+                    2857,
+                    107,
+                    2857,
+                    105,
+                    2920,
+                    52,
+                    2919
+                  ],
+                  "text": "[S]",
+                  "confidence": 0.956
+                },
+                {
+                  "boundingBox": [
+                    108,
+                    2857,
+                    173,
+                    2857,
+                    171,
+                    2920,
+                    106,
+                    2920
+                  ],
+                  "text": "In",
+                  "confidence": 0.936
+                },
+                {
+                  "boundingBox": [
+                    194,
+                    2857,
+                    233,
+                    2857,
+                    231,
+                    2921,
+                    192,
+                    2921
+                  ],
+                  "text": "縱",
+                  "confidence": 0.974
+                },
+                {
+                  "boundingBox": [
+                    254,
+                    2857,
+                    382,
+                    2857,
+                    381,
+                    2922,
+                    253,
+                    2921
+                  ],
+                  "text": "zong",
+                  "confidence": 0.938
+                },
+                {
+                  "boundingBox": [
+                    383,
+                    2857,
+                    517,
+                    2857,
+                    516,
+                    2923,
+                    382,
+                    2922
+                  ],
+                  "text": "(also",
+                  "confidence": 0.991
+                },
+                {
+                  "boundingBox": [
+                    521,
+                    2857,
+                    666,
+                    2856,
+                    666,
+                    2923,
+                    520,
+                    2923
+                  ],
+                  "text": "zong,",
+                  "confidence": 0.951
+                },
+                {
+                  "boundingBox": [
+                    667,
+                    2856,
+                    843,
+                    2856,
+                    844,
+                    2923,
+                    667,
+                    2923
+                  ],
+                  "text": "zong),",
+                  "confidence": 0.923
+                },
+                {
+                  "boundingBox": [
+                    856,
+                    2856,
+                    895,
+                    2856,
+                    895,
+                    2923,
+                    857,
+                    2923
+                  ],
+                  "text": "從",
+                  "confidence": 0.996
+                },
+                {
+                  "boundingBox": [
+                    908,
+                    2856,
+                    1035,
+                    2856,
+                    1037,
+                    2922,
+                    908,
+                    2923
+                  ],
+                  "text": "cóng",
+                  "confidence": 0.186
+                },
+                {
+                  "boundingBox": [
+                    1036,
+                    2856,
+                    1170,
+                    2856,
+                    1172,
+                    2921,
+                    1038,
+                    2922
+                  ],
+                  "text": "(also",
+                  "confidence": 0.991
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "processed_at": "2025-07-08 20:37:39"
+}

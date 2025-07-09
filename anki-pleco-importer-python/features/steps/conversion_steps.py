@@ -112,10 +112,10 @@ def step_verify_anki_card(context):
                 expected_examples = expected_examples.replace('\\n', '\n')
                 assert actual_examples == expected_examples, f"Card {i}: expected examples '{expected_examples}', got '{actual_examples}'"
         
-        if "semantic_component" in row:
-            expected_semantic_component = row["semantic_component"]
-            actual_semantic_component = actual_card.semantic_component
-            assert actual_semantic_component == expected_semantic_component, f"Card {i}: expected semantic_component '{expected_semantic_component}', got '{actual_semantic_component}'"
+        if "structural_decomposition" in row:
+            expected_structural_decomposition = row["structural_decomposition"]
+            actual_structural_decomposition = actual_card.structural_decomposition
+            assert actual_structural_decomposition == expected_structural_decomposition, f"Card {i}: expected structural_decomposition '{expected_structural_decomposition}', got '{actual_structural_decomposition}'"
 
 
 @then("the Anki card should have the following default values")

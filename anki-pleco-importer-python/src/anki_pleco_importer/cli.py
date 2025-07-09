@@ -12,6 +12,7 @@ from typing import List, Dict, Any, Optional
 from .parser import PlecoTSVParser
 from .pleco import pleco_to_anki
 from .audio import MultiProviderAudioGenerator
+from .anki_parser import AnkiExportParser
 
 
 def format_html_for_terminal(text: str) -> str:
@@ -175,7 +176,14 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
     return config
 
 
-@click.command()
+@click.group()
+@click.version_option()
+def cli() -> None:
+    """Convert Pleco flashcard exports to Anki-compatible format."""
+    pass
+
+
+@cli.command()
 @click.argument("tsv_file", type=click.Path(exists=True, path_type=Path), required=False)
 @click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
 @click.option(
@@ -192,8 +200,7 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
 @click.option("--audio-dest-dir", type=click.Path(), help="Directory to copy selected audio files to")
 @click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
-@click.version_option()
-def main(
+def convert(
     tsv_file: Path,
     audio: bool,
     audio_providers: str,
@@ -268,7 +275,7 @@ def main(
                             anki_card.pronunciation = audio_file
                             if verbose:
                                 click.echo(f"    Audio saved to: {audio_file}")
-                            
+
                             # Copy to destination directory if specified
                             if audio_dest_dir:
                                 try:
@@ -278,7 +285,12 @@ def main(
                                     if verbose:
                                         click.echo(f"    Audio copied to: {dest_path}")
                                 except Exception as copy_error:
-                                    click.echo(click.style(f"    Warning: Failed to copy audio to destination: {copy_error}", fg="yellow"))
+                                    click.echo(
+                                        click.style(
+                                            f"    Warning: Failed to copy audio to destination: {copy_error}",
+                                            fg="yellow",
+                                        )
+                                    )
                         elif verbose:
                             click.echo(f"    No audio generated for '{anki_card.simplified}'")
 
@@ -309,9 +321,9 @@ def main(
                     examples_box = format_meaning_box(examples_text)
                     click.echo(examples_box)
 
-                if anki_card.semantic_component:
+                if anki_card.structural_decomposition:
                     click.echo(f"    {click.style('Components:', fg='magenta', bold=True)}")
-                    component_box = format_meaning_box(anki_card.semantic_component)
+                    component_box = format_meaning_box(anki_card.structural_decomposition)
                     click.echo(component_box)
 
                 click.echo()
@@ -329,7 +341,7 @@ def main(
                             "meaning": card.meaning,
                             "examples": "; ".join(card.examples) if card.examples else None,
                             "phonetic_component": card.phonetic_component,
-                            "semantic_component": card.semantic_component,
+                            "structural_decomposition": card.structural_decomposition,
                             "similar_characters": (
                                 "; ".join(card.similar_characters) if card.similar_characters else None
                             ),
@@ -351,13 +363,17 @@ def main(
                 )
                 if audio_count > 0:
                     click.echo(click.style(f"Generated audio for {audio_count}/{len(anki_cards)} cards", fg="green"))
-                
+
                 # Report skipped words
                 if audio_generator:
                     skipped_words = audio_generator.get_skipped_words()
                     if skipped_words:
                         click.echo()
-                        click.echo(click.style(f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True))
+                        click.echo(
+                            click.style(
+                                f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True
+                            )
+                        )
                         for word in skipped_words:
                             click.echo(f"  • {word}")
                         click.echo()
@@ -365,16 +381,24 @@ def main(
                 audio_count = sum(1 for card in anki_cards if card.pronunciation)
                 click.echo(click.style(f"Dry run: Would convert {len(anki_cards)} cards", fg="blue", bold=True))
                 if audio and audio_generator:
-                    providers_text = ', '.join(audio_generator.get_available_providers())
-                    click.echo(click.style(f"Dry run: Would generate audio for cards using providers: {providers_text}", fg="blue"))
+                    providers_text = ", ".join(audio_generator.get_available_providers())
+                    click.echo(
+                        click.style(
+                            f"Dry run: Would generate audio for cards using providers: {providers_text}", fg="blue"
+                        )
+                    )
                     if audio_dest_dir:
                         click.echo(click.style(f"Dry run: Would copy audio files to: {audio_dest_dir}", fg="blue"))
-                    
+
                     # Report skipped words even in dry-run
                     skipped_words = audio_generator.get_skipped_words()
                     if skipped_words:
                         click.echo()
-                        click.echo(click.style(f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True))
+                        click.echo(
+                            click.style(
+                                f"Words with no pronunciation selected ({len(skipped_words)}):", fg="yellow", bold=True
+                            )
+                        )
                         for word in skipped_words:
                             click.echo(f"  • {word}")
                         click.echo()
@@ -399,6 +423,80 @@ def main(
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")
         click.echo("  FORVO_API_KEY          Forvo API key")
+
+
+@cli.command()
+@click.argument("anki_file", type=click.Path(exists=True, path_type=Path))
+@click.option("--top-candidates", "-n", default=20, help="Number of top candidate characters to show")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
+    """Generate summary statistics for an Anki export file."""
+    
+    try:
+        parser = AnkiExportParser()
+        cards = parser.parse_file(anki_file)
+        
+        click.echo(click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True))
+        click.echo("=" * 50)
+        
+        # Basic statistics
+        click.echo(f"Total cards: {len(cards)}")
+        
+        # Character analysis
+        all_chars = parser.get_all_characters()
+        click.echo(f"Total unique characters: {len(all_chars)}")
+        
+        single_chars = parser.get_single_character_words()
+        click.echo(f"Single-character words: {len(single_chars)}")
+        
+        multi_words = parser.get_multi_character_words()
+        click.echo(f"Multi-character words: {len(multi_words)}")
+        
+        component_chars = parser.get_component_characters()
+        click.echo(f"Characters mentioned as components: {len(component_chars)}")
+        
+        # Character frequency
+        if verbose:
+            char_freq = parser.get_character_frequency()
+            click.echo(f"\nMost frequent characters:")
+            sorted_chars = sorted(char_freq.items(), key=lambda x: x[1], reverse=True)
+            for char, count in sorted_chars[:10]:
+                click.echo(f"  {char}: {count} times")
+        
+        # Candidate characters analysis
+        click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
+        click.echo("(Characters that appear in many words OR as components, but are not single-character words)")
+        
+        candidates = parser.analyze_candidate_characters()
+        
+        if candidates:
+            click.echo(f"\nTop {min(top_candidates, len(candidates))} candidates:")
+            for i, (char, score, word_count) in enumerate(candidates[:top_candidates], 1):
+                is_component = char in component_chars
+                component_indicator = " 🔧" if is_component else ""
+                click.echo(f"{i:2d}. {char} (score: {score}, appears in {word_count} words){component_indicator}")
+                
+                if verbose:
+                    # Show some words containing this character
+                    words_with_char = [word for word in multi_words if char in word][:5]
+                    if words_with_char:
+                        click.echo(f"      Found in: {', '.join(words_with_char)}")
+        else:
+            click.echo("No candidate characters found.")
+        
+        click.echo(f"\n🔧 = Character is also used as a component in other characters")
+        
+    except Exception as e:
+        click.echo(f"Error analyzing file: {e}", err=True)
+        if verbose:
+            import traceback
+            traceback.print_exc()
+        raise click.Abort()
+
+
+def main() -> None:
+    """Entry point for the CLI."""
+    cli()
 
 
 if __name__ == "__main__":

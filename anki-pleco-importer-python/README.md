@@ -73,7 +73,7 @@ class AnkiCard:
     meaning: str = ""                     # Formatted definition with HTML
     examples: Optional[List[str]] = None  # Chinese examples with translations
     phonetic_component: Optional[str] = None # used only for single characters
-    semantic_component: Optional[str] = None  # Character decomposition
+    structural_decomposition: Optional[str] = None  # Character decomposition
     similar_characters: Optional[List[str]] = None
     passive: bool = False                 # Default: True in conversion
     alternate_pronunciations: Optional[List[str]] = None

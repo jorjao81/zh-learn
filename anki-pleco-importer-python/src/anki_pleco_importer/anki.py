@@ -13,7 +13,7 @@ class AnkiCard(BaseModel):
     meaning: str
     examples: Optional[List[str]] = None
     phonetic_component: Optional[str] = None
-    semantic_component: Optional[str] = None
+    structural_decomposition: Optional[str] = None
     similar_characters: Optional[List[str]] = None
     passive: bool = False
     alternate_pronunciations: Optional[List[str]] = None

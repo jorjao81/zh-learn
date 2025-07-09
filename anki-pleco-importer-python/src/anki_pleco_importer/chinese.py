@@ -100,7 +100,7 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
     return result
 
 
-def get_semantic_components(chinese_text: str) -> str:
+def get_structural_decomposition(chinese_text: str) -> str:
     """Get semantic components for Chinese characters using hanzipy.
 
     Args:
