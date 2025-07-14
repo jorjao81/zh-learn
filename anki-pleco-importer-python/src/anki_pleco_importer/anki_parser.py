@@ -2,8 +2,18 @@
 
 import re
 from dataclasses import dataclass
-from typing import List, Dict, Set, Optional, Tuple
+from typing import List, Dict, Set, Optional, NamedTuple
 from pathlib import Path
+import pypinyin
+
+
+class CandidateCharacter(NamedTuple):
+    """Represents a candidate character with its analysis data."""
+
+    character: str
+    score: int
+    word_count: int
+    pinyin: str
 
 
 @dataclass
@@ -31,7 +41,7 @@ class AnkiCard:
 class AnkiExportParser:
     """Parser for Anki export files."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.cards: List[AnkiCard] = []
         self.separator = "\t"
         self.html_mode = False
@@ -68,7 +78,7 @@ class AnkiExportParser:
 
         return self.cards
 
-    def _parse_header(self, line: str):
+    def _parse_header(self, line: str) -> None:
         """Parse header lines to extract format information."""
         if line.startswith("#separator:"):
             sep_name = line.split(":")[1]
@@ -113,9 +123,7 @@ class AnkiExportParser:
         multi_chars = []
         for card in self.cards:
             clean_chars = card.get_clean_characters()
-            if len(clean_chars) > 1 and all(
-                self._is_chinese_character(c) for c in clean_chars
-            ):
+            if len(clean_chars) > 1 and all(self._is_chinese_character(c) for c in clean_chars):
                 multi_chars.append(clean_chars)
         return multi_chars
 
@@ -138,7 +146,31 @@ class AnkiExportParser:
         """Check if a character is a Chinese character."""
         return "\u4e00" <= char <= "\u9fff"
 
-    def analyze_candidate_characters(self) -> List[Tuple[str, int, int]]:
+    def get_character_pinyin(self, character: str) -> Optional[str]:
+        """
+        Get the most common pinyin for a character by finding it in single-character words.
+        If not found as single character, use hanzipy to get the pinyin.
+        """
+        if len(character) != 1:
+            return None
+
+        # First try to find it as a single-character word
+        for card in self.cards:
+            clean_chars = card.get_clean_characters()
+            if clean_chars == character:
+                return card.pinyin
+
+        # If not found as single character, use pypinyin to get the pinyin
+        try:
+            pinyin_result = pypinyin.pinyin(character, style=pypinyin.TONE)
+            if pinyin_result and len(pinyin_result) > 0 and len(pinyin_result[0]) > 0:
+                return pinyin_result[0][0]
+        except Exception:
+            pass
+
+        return None
+
+    def analyze_candidate_characters(self) -> List[CandidateCharacter]:
         """
         Find candidate characters to learn based on:
         1. Characters that appear in many multi-character words
@@ -157,7 +189,7 @@ class AnkiExportParser:
                     multi_char_freq[char] = multi_char_freq.get(char, 0) + 1
 
         # Calculate scores for candidate characters
-        candidates: List[Tuple[str, int, int]] = []
+        candidates: List[CandidateCharacter] = []
         for char in multi_char_freq:
             score = multi_char_freq[char]
 
@@ -165,9 +197,19 @@ class AnkiExportParser:
             if char in component_chars:
                 score += 10  # Heavy weight for component characters
 
-            candidates.append((char, score, multi_char_freq[char]))
+            # Get pinyin for the character
+            pinyin = self.get_character_pinyin(char) or "?"
+
+            candidates.append(
+                CandidateCharacter(
+                    character=char,
+                    score=score,
+                    word_count=multi_char_freq[char],
+                    pinyin=pinyin,
+                )
+            )
 
         # Sort by score (descending)
-        candidates.sort(key=lambda x: x[1], reverse=True)
+        candidates.sort(key=lambda x: x.score, reverse=True)
 
         return candidates

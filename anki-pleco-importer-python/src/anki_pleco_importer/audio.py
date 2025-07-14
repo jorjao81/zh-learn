@@ -8,7 +8,7 @@ import subprocess
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import List, Dict, Optional, Any
 import logging
 
 import requests
@@ -82,7 +82,10 @@ class AudioGenerator(ABC):
         pass
 
     def generate_with_cache(
-        self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None
+        self,
+        text: str,
+        output_file: Optional[str] = None,
+        cache_details: Optional[str] = None,
     ) -> Optional[str]:
         """Generate audio with caching support."""
         provider = self.get_provider_name()
@@ -124,7 +127,7 @@ class ForvoGenerator(AudioGenerator):
         api_key: str,
         cache_dir: Optional[str] = None,
         use_paid_api: bool = True,
-        preferred_users: Optional[list[str]] = None,
+        preferred_users: Optional[List[str]] = None,
         download_all_when_no_preferred: bool = True,
         interactive_selection: bool = True,
     ):
@@ -138,7 +141,7 @@ class ForvoGenerator(AudioGenerator):
         self.preferred_users = preferred_users or []
         self.download_all_when_no_preferred = download_all_when_no_preferred
         self.interactive_selection = interactive_selection
-        self._cached_selection = None
+        self._cached_selection: Optional[Dict[str, Any]] = None
 
     def is_available(self) -> bool:
         """Check if Forvo API is available."""
@@ -161,7 +164,7 @@ class ForvoGenerator(AudioGenerator):
         sex = pronunciation.get("sex", "?")
         country = pronunciation.get("country", "unknown")
         votes = pronunciation.get("num_votes", 0)
-        positive_votes = pronunciation.get("num_positive_votes", 0)
+        # positive_votes = pronunciation.get("num_positive_votes", 0)
         rating = pronunciation.get("rate", 0)
 
         # Colored gender icons
@@ -213,7 +216,7 @@ class ForvoGenerator(AudioGenerator):
 
         return f"{username} ({gender_icon} {country_display}) - {votes} votes, rating: {rating:.1f} {stars}{preferred}"
 
-    def _select_best_pronunciation(self, pronunciations: list[Dict], text: str) -> Optional[Dict]:
+    def _select_best_pronunciation(self, pronunciations: List[Dict], text: str) -> Optional[Dict]:
         """Select the best pronunciation based on preferences."""
         if not pronunciations:
             return None
@@ -231,7 +234,10 @@ class ForvoGenerator(AudioGenerator):
 
         # Interactive selection disabled - use highest-rated pronunciation
         if not self.download_all_when_no_preferred:
-            best = max(pronunciations, key=lambda x: (x.get("num_positive_votes", 0), x.get("num_votes", 0)))
+            best = max(
+                pronunciations,
+                key=lambda x: (x.get("num_positive_votes", 0), x.get("num_votes", 0)),
+            )
             logger.info(f"No preferred users found for '{text}', using highest-rated: {best.get('username')}")
             return best
         else:
@@ -258,16 +264,28 @@ class ForvoGenerator(AudioGenerator):
                 return True
             elif system == "Linux":
                 # Try mpg123 first, then mpv
-                for player, args in [("mpg123", ["-q"]), ("mpv", ["--no-video"]), ("ffplay", ["-nodisp", "-autoexit"])]:
+                for player, args in [
+                    ("mpg123", ["-q"]),
+                    ("mpv", ["--no-video"]),
+                    ("ffplay", ["-nodisp", "-autoexit"]),
+                ]:
                     try:
-                        subprocess.run([player] + args + [file_path], check=True, capture_output=True)
+                        subprocess.run(
+                            [player] + args + [file_path],
+                            check=True,
+                            capture_output=True,
+                        )
                         return True
                     except (subprocess.CalledProcessError, FileNotFoundError):
                         continue
             elif system == "Windows":
                 # Try ffplay if available
                 try:
-                    subprocess.run(["ffplay", "-nodisp", "-autoexit", file_path], check=True, capture_output=True)
+                    subprocess.run(
+                        ["ffplay", "-nodisp", "-autoexit", file_path],
+                        check=True,
+                        capture_output=True,
+                    )
                     return True
                 except (subprocess.CalledProcessError, FileNotFoundError):
                     pass
@@ -304,7 +322,7 @@ class ForvoGenerator(AudioGenerator):
             logger.warning(f"Failed to download preview audio: {e}")
             return None
 
-    def _cleanup_preview_files(self, preview_files: list[str]):
+    def _cleanup_preview_files(self, preview_files: List[str]) -> None:
         """Clean up temporary preview files."""
         for file_path in preview_files:
             try:
@@ -313,7 +331,7 @@ class ForvoGenerator(AudioGenerator):
             except Exception as e:
                 logger.warning(f"Failed to cleanup preview file {file_path}: {e}")
 
-    def _interactive_pronunciation_selection(self, pronunciations: list[Dict], text: str) -> Optional[Dict]:
+    def _interactive_pronunciation_selection(self, pronunciations: List[Dict], text: str) -> Optional[Dict]:
         """Allow interactive selection of pronunciation with audio preview."""
         print(f"\n🎵 {text} - Found {len(pronunciations)} pronunciations:")
 
@@ -321,15 +339,15 @@ class ForvoGenerator(AudioGenerator):
             info = self._format_pronunciation_info(pronunciation)
             print(f"{i:2d}. {info}")
 
-        print(f"\nCommands: <number> to play, s<number> to select, 's' to skip")
-        print(f"Example: '1' to play option 1, 's1' to select option 1, 's' to skip all")
+        print("\nCommands: <number> to play, s<number> to select, 's' to skip")
+        print("Example: '1' to play option 1, 's1' to select option 1, 's' to skip all")
 
         preview_files = []  # Track temporary files for cleanup
 
         try:
             while True:
                 try:
-                    choice = input(f"\nChoice: ").strip().lower()
+                    choice = input("\nChoice: ").strip().lower()
 
                     if choice == "s":
                         logger.info(f"User skipped pronunciation selection for '{text}'")
@@ -347,7 +365,7 @@ class ForvoGenerator(AudioGenerator):
                             else:
                                 print(f"Please enter a number between 1 and {len(pronunciations)}")
                         except ValueError:
-                            print(f"Invalid selection command. Use format: s1, s2, etc.")
+                            print("Invalid selection command. Use format: s1, s2, etc.")
                         continue
 
                     # Handle play commands (1, 2, etc.)
@@ -368,10 +386,10 @@ class ForvoGenerator(AudioGenerator):
                                 if self._play_audio(temp_file):
                                     print(f"✅ Played pronunciation by {username}")
                                 else:
-                                    print(f"❌ Could not play audio (file downloaded but playback failed)")
-                                    print(f"You may need to install an audio player or playsound3")
+                                    print("❌ Could not play audio (file downloaded but playback failed)")
+                                    print("You may need to install an audio player or playsound3")
                             else:
-                                print(f"❌ Could not download audio for preview")
+                                print("❌ Could not download audio for preview")
                         else:
                             print(f"Please enter a number between 1 and {len(pronunciations)}")
                     except ValueError:
@@ -392,7 +410,10 @@ class ForvoGenerator(AudioGenerator):
 
         try:
             # Get pronunciation URL
-            url = f"{self.base_url}/key/{self.api_key}/format/json/action/word-pronunciations/word/{text}/language/{self.language}"
+            url = (
+                f"{self.base_url}/key/{self.api_key}/format/json/"
+                f"action/word-pronunciations/word/{text}/language/{self.language}"
+            )
             logger.info(f"Forvo API request: {url}")
 
             response = requests.get(url, timeout=10)
@@ -423,6 +444,7 @@ class ForvoGenerator(AudioGenerator):
                 return None
 
             # Use cached selection if available, otherwise select
+            selected_pronunciation: Optional[Dict[str, Any]] = None
             if hasattr(self, "_cached_selection") and self._cached_selection:
                 selected_pronunciation = self._cached_selection
                 # Clear the cache after using it
@@ -430,9 +452,10 @@ class ForvoGenerator(AudioGenerator):
                 logger.info(f"Using cached pronunciation selection for '{text}'")
             else:
                 selected_pronunciation = self._select_best_pronunciation(pronunciations, text)
-                if not selected_pronunciation:
-                    logger.info(f"No pronunciation selected for '{text}'")
-                    return None
+
+            if not selected_pronunciation:
+                logger.info(f"No pronunciation selected for '{text}'")
+                return None
 
             # Get user info for logging and filename
             username = selected_pronunciation.get("username", "unknown")
@@ -464,7 +487,10 @@ class ForvoGenerator(AudioGenerator):
             return None
 
     def generate_with_cache(
-        self, text: str, output_file: Optional[str] = None, cache_details: Optional[str] = None
+        self,
+        text: str,
+        output_file: Optional[str] = None,
+        cache_details: Optional[str] = None,
     ) -> Optional[str]:
         """Generate audio with Forvo-specific caching that includes username."""
         # Check for any existing cached audio first
@@ -481,7 +507,10 @@ class ForvoGenerator(AudioGenerator):
         # No cache found, need to download and determine username first
         try:
             # Get pronunciation URL to determine username
-            url = f"{self.base_url}/key/{self.api_key}/format/json/action/word-pronunciations/word/{text}/language/{self.language}"
+            url = (
+                f"{self.base_url}/key/{self.api_key}/format/json/"
+                f"action/word-pronunciations/word/{text}/language/{self.language}"
+            )
             response = requests.get(url, timeout=10)
 
             if response.status_code != 200:
@@ -516,8 +545,11 @@ class AudioGeneratorFactory:
     def create_generator(provider: str, config: Dict[str, Any], cache_dir: Optional[str] = None) -> AudioGenerator:
         """Create an audio generator based on provider and configuration."""
         if provider == "forvo":
+            api_key = config.get("api_key")
+            if not api_key:
+                raise ValueError("Forvo API key is required")
             return ForvoGenerator(
-                api_key=config.get("api_key"),
+                api_key=api_key,
                 cache_dir=cache_dir,
                 use_paid_api=config.get("use_paid_api", True),
                 preferred_users=config.get("preferred_users", []),
@@ -528,7 +560,7 @@ class AudioGeneratorFactory:
             raise ValueError(f"Unknown audio provider: {provider}")
 
     @staticmethod
-    def get_available_providers(config: Dict[str, Dict[str, Any]]) -> list[str]:
+    def get_available_providers(config: Dict[str, Dict[str, Any]]) -> List[str]:
         """Get list of available providers based on configuration."""
         available = []
 
@@ -546,12 +578,17 @@ class AudioGeneratorFactory:
 class MultiProviderAudioGenerator:
     """Audio generator that tries multiple providers in order of preference."""
 
-    def __init__(self, providers: list[str], config: Dict[str, Dict[str, Any]], cache_dir: Optional[str] = None):
+    def __init__(
+        self,
+        providers: List[str],
+        config: Dict[str, Dict[str, Any]],
+        cache_dir: Optional[str] = None,
+    ):
         self.providers = providers
         self.config = config
         self.cache_dir = cache_dir
         self.generators = {}
-        self.skipped_words = []  # Track words with no pronunciation selected
+        self.skipped_words: List[str] = []  # Track words with no pronunciation selected
 
         # Initialize generators
         for provider in providers:
@@ -595,11 +632,11 @@ class MultiProviderAudioGenerator:
         logger.error(f"All audio providers failed for '{text}'")
         return None
 
-    def get_available_providers(self) -> list[str]:
+    def get_available_providers(self) -> List[str]:
         """Get list of available providers."""
         return list(self.generators.keys())
 
-    def get_skipped_words(self) -> list[str]:
+    def get_skipped_words(self) -> List[str]:
         """Get list of words for which no pronunciation was selected."""
         return self.skipped_words.copy()
 

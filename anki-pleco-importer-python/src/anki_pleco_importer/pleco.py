@@ -6,10 +6,9 @@ import re
 
 from .anki import AnkiCard
 from .chinese import convert_numbered_pinyin_to_tones, get_structural_decomposition
+from .anki_parser import AnkiExportParser
 from .constants import (
     PARTS_OF_SPEECH,
-    PART_OF_SPEECH_ABBREVIATIONS,
-    DOMAIN_MARKERS,
     COMPILED_PATTERNS,
     COMPILED_DOMAIN_PATTERNS,
     COMPILED_POS_PATTERNS,
@@ -301,9 +300,9 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
             if matches1:
                 # Found structured examples - clean them up
                 for match in matches1:
-                    match = match.strip()
-                    if match:
-                        examples.append(match)
+                    match_text = match.group(0).strip()
+                    if match_text:
+                        examples.append(match_text)
             else:
                 # Pattern 2: Look for Chinese phrases without full sentence structure
                 # This handles cases like "履行合同 lǚxíng hétong fulfill a contract"
@@ -336,10 +335,46 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     return meaning, examples if examples else None
 
 
-def pleco_to_anki(pleco_entry: PlecoEntry) -> AnkiCard:
-    """Convert a PlecoEntry to an AnkiCard."""
+def find_multi_character_words_containing(character: str, anki_parser: Optional[AnkiExportParser] = None) -> List[str]:
+    """
+    Find multi-character words containing the given character from Anki export.
+
+    Args:
+        character: Single Chinese character to search for
+        anki_parser: AnkiExportParser instance with loaded cards
+
+    Returns:
+        List of formatted examples like "学习 (xuéxí) - to learn, to study"
+    """
+    if not anki_parser or len(character) != 1:
+        return []
+
+    examples = []
+    for card in anki_parser.cards:
+        clean_chars = card.get_clean_characters()
+        # Only include multi-character words that contain our character
+        if len(clean_chars) > 1 and character in clean_chars:
+            # Convert pinyin from numbered format to tone marks
+            tone_pinyin = convert_numbered_pinyin_to_tones(card.pinyin)
+            # Format: word (pinyin) - meaning
+            example = f"{clean_chars} ({tone_pinyin}) - {card.definitions}"
+            examples.append(example)
+
+    # Limit to top 10 examples to avoid overwhelming the card
+    return examples[:10]
+
+
+def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: Optional[AnkiExportParser] = None) -> AnkiCard:
+    """Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples."""
     meaning, examples = parse_pleco_definition(pleco_entry.definition)
     structural_decomposition = get_structural_decomposition(pleco_entry.chinese)
+
+    # For single character words, add multi-character examples from Anki export
+    if len(pleco_entry.chinese) == 1 and anki_export_parser:
+        multi_char_examples = find_multi_character_words_containing(pleco_entry.chinese, anki_export_parser)
+        # Add multi-character examples to existing examples
+        if multi_char_examples:
+            examples = (examples or []) + multi_char_examples
 
     return AnkiCard(
         pinyin=convert_numbered_pinyin_to_tones(pleco_entry.pinyin),

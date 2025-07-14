@@ -4,7 +4,7 @@ import pytest
 import tempfile
 import os
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 from anki_pleco_importer.audio import (
     AudioGenerator,
@@ -150,7 +150,7 @@ class TestAudioGeneratorFactory:
 
     def test_create_forvo_generator(self):
         """Test creating Forvo generator."""
-        config = {"api_key": "test_key"}
+        config = {"api_key": "test_key"}  # pragma: allowlist secret
         generator = AudioGeneratorFactory.create_generator("forvo", config)
         assert isinstance(generator, ForvoGenerator)
         assert generator.api_key == "test_key"
@@ -184,7 +184,10 @@ class TestMultiProviderAudioGenerator:
             multi_gen = MultiProviderAudioGenerator(["mock1", "mock2"], config, temp_dir)
 
             # Replace generators with our mocks
-            multi_gen.generators = {"mock1": failing_generator, "mock2": working_generator}
+            multi_gen.generators = {
+                "mock1": failing_generator,
+                "mock2": working_generator,
+            }
 
             result = multi_gen.generate_audio("测试")
 
@@ -203,7 +206,10 @@ class TestMultiProviderAudioGenerator:
             multi_gen = MultiProviderAudioGenerator(["mock1", "mock2"], config, temp_dir)
 
             # Replace generators with our mocks
-            multi_gen.generators = {"mock1": failing_generator1, "mock2": failing_generator2}
+            multi_gen.generators = {
+                "mock1": failing_generator1,
+                "mock2": failing_generator2,
+            }
 
             result = multi_gen.generate_audio("测试")
             assert result is None
@@ -258,7 +264,10 @@ class TestErrorHandling:
             config = {"failing": {}, "working": {}}
 
             multi_gen = MultiProviderAudioGenerator(["failing", "working"], config, temp_dir)
-            multi_gen.generators = {"failing": failing_generator, "working": working_generator}
+            multi_gen.generators = {
+                "failing": failing_generator,
+                "working": working_generator,
+            }
 
             # Should gracefully handle the exception and try the next provider
             result = multi_gen.generate_audio("测试")

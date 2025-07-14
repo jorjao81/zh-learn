@@ -101,10 +101,36 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
 
 
 def get_structural_decomposition(chinese_text: str) -> str:
-    """Get semantic components for Chinese characters using hanzipy.
+    """Get structural decomposition for Chinese characters using CharacterDecomposer.
 
     Args:
         chinese_text: Chinese text to decompose
+
+    Returns:
+        Formatted string with structural decomposition
+        Format: 字(pinyin - meaning) + 字(pinyin - meaning)
+    """
+    # For multi-character words, fall back to individual character definitions
+    if len(chinese_text) > 1:
+        return _get_individual_character_definitions(chinese_text)
+
+    # For single characters, use proper structural decomposition
+    try:
+        from .character_decomposer import CharacterDecomposer
+
+        decomposer = CharacterDecomposer()
+        result = decomposer.decompose(chinese_text)
+        return result.structure_notes
+    except (ImportError, Exception):
+        # Fall back to individual character definitions if decomposer fails
+        return _get_individual_character_definitions(chinese_text)
+
+
+def _get_individual_character_definitions(chinese_text: str) -> str:
+    """Get individual character definitions as fallback for structural decomposition.
+
+    Args:
+        chinese_text: Chinese text to get definitions for
 
     Returns:
         Formatted string with characters and their meanings joined by +

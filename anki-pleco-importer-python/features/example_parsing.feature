@@ -85,3 +85,94 @@ Feature: Parse examples from Pleco definitions
       | 卷入漩涡 Juǎnrù xuánwō sucked into a whirlpool |
       | 卷入一场纠纷 juǎnrù yī cháng jiūfēn get drawn into a dispute |
       | 他被卷入了这起丑闻。 Tā bèi juǎnrù le zhè qǐ chǒuwén. He got caught up in this scandal. |
+
+  Scenario: Single character gets enhanced with multi-character examples from Anki export
+    Given I have a Pleco entry with chinese "学", pinyin "xue2", and definition "to learn; to study; to imitate"
+    And I have the following multi-character words in the Anki export containing "学":
+      | word | pinyin     | meaning                |
+      | 学习   | xue2xi2    | to learn, to study     |
+      | 学校   | xue2xiao4  | school                 |
+      | 学生   | xue2sheng1 | student                |
+      | 大学   | da4xue2    | university             |
+      | 数学   | shu4xue2   | mathematics            |
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with examples:
+      | example |
+      | 学习 (xuéxí) - to learn, to study |
+      | 学校 (xuéxiào) - school |
+      | 学生 (xuéshēng) - student |
+      | 大学 (dàxué) - university |
+      | 数学 (shùxué) - mathematics |
+
+  Scenario: Single character with existing examples gets additional examples from Anki export
+    Given I have a Pleco entry with chinese "人", pinyin "ren2", and definition "person; people; man 人人 rénrén everyone"
+    And I have the following multi-character words in the Anki export containing "人":
+      | word | pinyin    | meaning |
+      | 人们   | ren2men5  | people  |
+      | 工人   | gong1ren2 | worker  |
+      | 主人   | zhu3ren2  | master, host |
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with examples:
+      | example |
+      | 人人 rénrén everyone |
+      | 人们 (rénmen) - people |
+      | 工人 (gōngrén) - worker |
+      | 主人 (zhǔrén) - master, host |
+
+  Scenario: Single character with no multi-character examples available
+    Given I have a Pleco entry with chinese "珍", pinyin "zhen1", and definition "precious; rare; to treasure"
+    And I have no multi-character words in the Anki export containing "珍"
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with no additional examples
+
+  Scenario: Single character with limited examples from Anki export
+    Given I have a Pleco entry with chinese "水", pinyin "shui3", and definition "water; liquid"
+    And I have the following multi-character words in the Anki export containing "水":
+      | word | pinyin     | meaning |
+      | 水果   | shui3guo3  | fruit   |
+      | 喝水   | he1shui3   | drink water |
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with examples:
+      | example |
+      | 水果 (shuǐguǒ) - fruit |
+      | 喝水 (hēshuǐ) - drink water |
+
+  Scenario: Single character with many examples gets limited to top 10
+    Given I have a Pleco entry with chinese "的", pinyin "de5", and definition "possessive particle"
+    And I have the following multi-character words in the Anki export containing "的":
+      | word | pinyin     | meaning |
+      | 我的   | wo3de5     | my, mine |
+      | 你的   | ni3de5     | your, yours |
+      | 他的   | ta1de5     | his |
+      | 她的   | ta1de5     | her, hers |
+      | 它的   | ta1de5     | its |
+      | 我们的  | wo3men5de5 | our, ours |
+      | 你们的  | ni3men5de5 | your, yours (plural) |
+      | 他们的  | ta1men5de5 | their, theirs |
+      | 真的   | zhen1de5   | really, truly |
+      | 好的   | hao3de5    | good, okay |
+      | 对的   | dui4de5    | correct, right |
+      | 新的   | xin1de5    | new |
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with examples:
+      | example |
+      | 我的 (wǒde) - my, mine |
+      | 你的 (nǐde) - your, yours |
+      | 他的 (tāde) - his |
+      | 她的 (tāde) - her, hers |
+      | 它的 (tāde) - its |
+      | 我们的 (wǒmende) - our, ours |
+      | 你们的 (nǐmende) - your, yours (plural) |
+      | 他们的 (tāmende) - their, theirs |
+      | 真的 (zhēnde) - really, truly |
+      | 好的 (hǎode) - good, okay |
+
+  Scenario: Multi-character word should not get additional examples from Anki export
+    Given I have a Pleco entry with chinese "学习", pinyin "xue2xi2", and definition "to learn; to study"
+    And I have the following multi-character words in the Anki export containing "学":
+      | word | pinyin     | meaning |
+      | 学校   | xue2xiao4  | school |
+      | 学生   | xue2sheng1 | student |
+      | 大学   | da4xue2    | university |
+    When I convert the Pleco entry to an Anki card with Anki export enhancement
+    Then I should get an Anki card with no additional examples from the export

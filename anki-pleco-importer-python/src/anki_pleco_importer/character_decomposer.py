@@ -28,7 +28,7 @@ class ComponentResult:
 class CharacterDecomposer:
     """Extract main components from Chinese characters using Hanzipy."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Import here to handle potential import errors gracefully
         try:
             from hanzipy.decomposer import HanziDecomposer
@@ -136,9 +136,9 @@ class CharacterDecomposer:
             return "unknown"
 
     def _get_component_pinyin(self, component: str, component_type: ComponentType) -> Optional[str]:
-        """Get pinyin for phonetic components, Chinese names for semantic components."""
-        # For phonetic components, always use pinyin
-        if component_type == ComponentType.PHONETIC:
+        """Get pinyin for phonetic/unknown components, Chinese names for semantic components."""
+        # For phonetic and unknown components, always use pinyin
+        if component_type in (ComponentType.PHONETIC, ComponentType.UNKNOWN):
             try:
                 pinyin_result = self.pinyin(component, style=self.pinyin_style)
                 if pinyin_result and pinyin_result[0]:
@@ -313,7 +313,8 @@ class CharacterDecomposer:
         if component == original_character:
             return ComponentType.PICTOGRAPHIC
 
-        # Default to phonetic for other components
+        # For components that are not semantic radicals and not the same as original character,
+        # they are likely phonetic components (providing sound)
         return ComponentType.PHONETIC
 
     def _generate_structure_notes(
@@ -335,16 +336,53 @@ class CharacterDecomposer:
             if type1 == ComponentType.SEMANTIC and type2 == ComponentType.SEMANTIC:
                 pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
                 pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
-                return f"Semantic-semantic compound: {comp1}{pinyin1_note} + {comp2}{pinyin2_note}"
+                return f"{comp1}{pinyin1_note} + {comp2}{pinyin2_note}"
             elif type1 == ComponentType.SEMANTIC and type2 == ComponentType.PHONETIC:
                 pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
                 pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
-                return f"Semantic-phonetic compound: {comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
+                return f"{comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
             elif type1 == ComponentType.PHONETIC and type2 == ComponentType.SEMANTIC:
                 pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
                 pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
-                return f"Phonetic-semantic compound: {comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
+                return f"{comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
             else:
-                return f"Compound character: {comp1} + {comp2}"
+                # For unknown types, show both pinyin and meaning
+                comp1_info = self._get_component_full_info(comp1, pinyin1, component_types[0])
+                comp2_info = self._get_component_full_info(comp2, pinyin2, component_types[1])
+                return f"{comp1_info} + {comp2_info}"
 
         return f"Complex character with {len(components)} components: {' + '.join(components)}"
+
+    def _get_component_full_info(self, component: str, pinyin: Optional[str], component_type: ComponentType) -> str:
+        """Get full component information with both pinyin and meaning for unknown types."""
+        # Get the meaning for this component
+        meaning = self._get_radical_meaning(component)
+
+        # Get pinyin if not provided
+        if not pinyin:
+            try:
+                pinyin_result = self.pinyin(component, style=self.pinyin_style)
+                if pinyin_result and pinyin_result[0]:
+                    pinyin = pinyin_result[0][0]
+            except Exception:
+                pass
+
+        # Format based on type
+        if component_type == ComponentType.UNKNOWN:
+            # For unknown types, show both pinyin and meaning
+            if pinyin and meaning and meaning != "unknown":
+                return f"{component} ({pinyin} - {meaning})"
+            elif pinyin:
+                return f"{component} ({pinyin})"
+            elif meaning and meaning != "unknown":
+                return f"{component} ({meaning})"
+            else:
+                return component
+        else:
+            # For known types, use existing logic
+            if component_type == ComponentType.SEMANTIC:
+                return f"{component} ({pinyin})" if pinyin else component
+            elif component_type == ComponentType.PHONETIC:
+                return f"{component} ({pinyin})" if pinyin else component
+            else:
+                return component

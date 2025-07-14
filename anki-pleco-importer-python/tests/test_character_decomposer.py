@@ -20,9 +20,12 @@ class TestCharacterDecomposer:
         assert result.character == "清"
         assert result.components == ["氵", "青"]
         assert result.radical_meanings == ["water", "green/blue"]
-        assert result.component_types == [ComponentType.SEMANTIC, ComponentType.PHONETIC]
+        assert result.component_types == [
+            ComponentType.SEMANTIC,
+            ComponentType.PHONETIC,
+        ]
         assert result.component_pinyin == ["三点水", "qīng"]
-        assert "Semantic-phonetic compound" in result.structure_notes
+        assert "(meaning)" in result.structure_notes and "(sound)" in result.structure_notes
         assert "青 (qīng)" in result.structure_notes
 
     def test_semantic_semantic_compound(self):
@@ -32,9 +35,12 @@ class TestCharacterDecomposer:
         assert result.character == "好"
         assert result.components == ["女", "子"]
         assert result.radical_meanings == ["woman", "child"]
-        assert result.component_types == [ComponentType.SEMANTIC, ComponentType.SEMANTIC]
+        assert result.component_types == [
+            ComponentType.SEMANTIC,
+            ComponentType.SEMANTIC,
+        ]
         assert result.component_pinyin == ["女字旁", "子字旁"]
-        assert "Semantic-semantic compound" in result.structure_notes
+        assert "女 (女字旁) + 子 (子字旁)" == result.structure_notes
 
     def test_complex_character(self):
         """Test complex character with multiple components."""

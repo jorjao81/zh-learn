@@ -56,18 +56,14 @@ def step_create_pleco_file(context, filename):
 def step_verify_usage_info(context):
     """Verify the output contains usage information."""
     output = context.stdout + context.stderr
-    assert (
-        "usage:" in output.lower() or "Usage:" in output
-    ), "Output should contain usage information"
+    assert "usage:" in output.lower() or "Usage:" in output, "Output should contain usage information"
 
 
 @then("the output should contain available options")
 def step_verify_available_options(context):
     """Verify the output contains available options."""
     output = context.stdout + context.stderr
-    assert (
-        "--help" in output or "options:" in output.lower()
-    ), "Output should contain available options"
+    assert "--help" in output or "options:" in output.lower(), "Output should contain available options"
 
 
 @then("the output should contain the version number")
@@ -108,9 +104,7 @@ def step_verify_missing_file_error(context):
 @then("the exit code should be non-zero")
 def step_verify_non_zero_exit_code(context):
     """Verify the exit code is non-zero."""
-    assert (
-        context.exit_code != 0
-    ), f"Exit code should be non-zero, got {context.exit_code}"
+    assert context.exit_code != 0, f"Exit code should be non-zero, got {context.exit_code}"
 
 
 @given('I have the sample TSV file "import.tsv"')

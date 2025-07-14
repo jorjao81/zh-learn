@@ -1,7 +1,8 @@
 """Constants and configuration for Pleco to Anki conversion."""
 
 import re
-from typing import Dict, List
+
+# Constants definitions
 
 # Parts of speech that should be formatted with bold tags
 PARTS_OF_SPEECH = [
@@ -31,6 +32,10 @@ DOMAIN_MARKERS = {
     r"\bphilosophy\b": "philosophy",
     r"\bLIT\b": "literary",
     r"\bdialect\b": "dialect",
+    r"\bbiology\b": "biology",
+    r"\bstatistics\b": "statistics",
+    r"\bmathematics\b": "mathematics",
+    r"\bliterary\b": "literary",
 }
 
 # Regex patterns for Chinese example extraction
