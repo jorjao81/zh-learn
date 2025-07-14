@@ -23,7 +23,7 @@ def format_html_for_terminal(text: str) -> str:
         content = match.group(1)
         return click.style(content, bold=True)
 
-    # Replace <span color="red">...</span> with click's red color formatting
+    # Replace <span style="color: red;">...</span> with click's red color formatting
     def replace_red_span(match: re.Match[str]) -> str:
         content = match.group(1)
         return click.style(content, fg="red")
@@ -36,7 +36,7 @@ def format_html_for_terminal(text: str) -> str:
 
     # Handle red span tags (case insensitive)
     formatted = re.sub(
-        r'<span\s+color="red">(.*?)</span>',
+        r'<span\s+style="color:\s*red;">(.*?)</span>',
         replace_red_span,
         formatted,
         flags=re.IGNORECASE,
@@ -145,7 +145,9 @@ def format_meaning_box(meaning: str) -> str:
     return "\n".join(result)
 
 
-def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) -> Dict[str, Dict[str, Any]]:
+def load_audio_config(
+    config_file: Optional[str] = None, verbose: bool = False
+) -> Dict[str, Dict[str, Any]]:
     """Load audio configuration from file or environment variables."""
     config = {}
 
@@ -166,7 +168,9 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
             if verbose:
                 click.echo(f"Loaded audio config from: {config_file}")
         except Exception as e:
-            click.echo(f"Warning: Failed to load config file {config_file}: {e}", err=True)
+            click.echo(
+                f"Warning: Failed to load config file {config_file}: {e}", err=True
+            )
 
     # Load from environment variables (override file config)
     env_config = {
@@ -177,7 +181,9 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
     for provider, provider_config in env_config.items():
         if provider not in config:
             config[provider] = {}
-        config[provider].update({k: v for k, v in provider_config.items() if v is not None})
+        config[provider].update(
+            {k: v for k, v in provider_config.items() if v is not None}
+        )
 
     return config
 
@@ -190,7 +196,9 @@ def cli() -> None:
 
 
 @cli.command()
-@click.argument("tsv_file", type=click.Path(exists=True, path_type=Path), required=False)
+@click.argument(
+    "tsv_file", type=click.Path(exists=True, path_type=Path), required=False
+)
 @click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
 @click.option(
     "--audio-providers",
@@ -202,13 +210,17 @@ def cli() -> None:
     type=click.Path(exists=True),
     help="Path to audio configuration JSON file (default: audio-config.json if exists)",
 )
-@click.option("--audio-cache-dir", default="audio_cache", help="Directory to cache audio files")
+@click.option(
+    "--audio-cache-dir", default="audio_cache", help="Directory to cache audio files"
+)
 @click.option(
     "--audio-dest-dir",
     type=click.Path(),
     help="Directory to copy selected audio files to",
 )
-@click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be done without making changes"
+)
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def convert(
     tsv_file: Path,
@@ -253,7 +265,11 @@ def convert(
                         )
                     )
                 else:
-                    click.echo(click.style("Warning: No audio providers available", fg="yellow"))
+                    click.echo(
+                        click.style(
+                            "Warning: No audio providers available", fg="yellow"
+                        )
+                    )
                     # Keep audio_generator to track skipped words even when no providers available
 
             except Exception as e:
@@ -299,9 +315,13 @@ def convert(
                 if audio_generator and not dry_run:
                     try:
                         if verbose:
-                            click.echo(f"    Generating audio for '{anki_card.simplified}'...")
+                            click.echo(
+                                f"    Generating audio for '{anki_card.simplified}'..."
+                            )
 
-                        audio_file = audio_generator.generate_audio(anki_card.simplified)
+                        audio_file = audio_generator.generate_audio(
+                            anki_card.simplified
+                        )
                         if audio_file:
                             anki_card.pronunciation = audio_file
                             if verbose:
@@ -323,21 +343,29 @@ def convert(
                                         )
                                     )
                         elif verbose:
-                            click.echo(f"    No audio generated for '{anki_card.simplified}'")
+                            click.echo(
+                                f"    No audio generated for '{anki_card.simplified}'"
+                            )
 
                     except Exception as e:
                         if verbose:
-                            click.echo(f"    Audio generation failed for '{anki_card.simplified}': {e}")
+                            click.echo(
+                                f"    Audio generation failed for '{anki_card.simplified}': {e}"
+                            )
 
                 anki_cards.append(anki_card)
 
                 # Display card information
                 audio_indicator = " 🔊" if anki_card.pronunciation else ""
-                styled_number = click.style(f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True)
+                styled_number = click.style(
+                    f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True
+                )
                 click.echo(styled_number + anki_card.pinyin + audio_indicator)
 
                 if verbose and anki_card.pronunciation:
-                    click.echo(f"    {click.style('Audio:', fg='blue', bold=True)} {anki_card.pronunciation}")
+                    click.echo(
+                        f"    {click.style('Audio:', fg='blue', bold=True)} {anki_card.pronunciation}"
+                    )
 
                 click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)}")
                 meaning_box = format_meaning_box(anki_card.meaning)
@@ -350,8 +378,12 @@ def convert(
                     click.echo(examples_box)
 
                 if anki_card.structural_decomposition:
-                    click.echo(f"    {click.style('Components:', fg='magenta', bold=True)}")
-                    component_box = format_meaning_box(anki_card.structural_decomposition)
+                    click.echo(
+                        f"    {click.style('Components:', fg='magenta', bold=True)}"
+                    )
+                    component_box = format_meaning_box(
+                        anki_card.structural_decomposition
+                    )
                     click.echo(component_box)
 
                 click.echo()
@@ -367,15 +399,21 @@ def convert(
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
                             "meaning": card.meaning,
-                            "examples": "\n".join(card.examples) if card.examples else None,
+                            "examples": "\n".join(card.examples)
+                            if card.examples
+                            else None,
                             "phonetic_component": card.phonetic_component,
                             "structural_decomposition": card.structural_decomposition,
                             "similar_characters": (
-                                "; ".join(card.similar_characters) if card.similar_characters else None
+                                "; ".join(card.similar_characters)
+                                if card.similar_characters
+                                else None
                             ),
                             "passive": card.passive,
                             "alternate_pronunciations": (
-                                "; ".join(card.alternate_pronunciations) if card.alternate_pronunciations else None
+                                "; ".join(card.alternate_pronunciations)
+                                if card.alternate_pronunciations
+                                else None
                             ),
                             "nohearing": card.nohearing,
                         }
@@ -426,7 +464,9 @@ def convert(
                     )
                 )
                 if audio and audio_generator:
-                    providers_text = ", ".join(audio_generator.get_available_providers())
+                    providers_text = ", ".join(
+                        audio_generator.get_available_providers()
+                    )
                     click.echo(
                         click.style(
                             f"Dry run: Would generate audio for cards using providers: {providers_text}",
@@ -469,10 +509,18 @@ def convert(
         click.echo("\nOptions:")
         click.echo("  --audio                 Generate pronunciation audio files")
         click.echo("  --audio-providers TEXT  Audio provider (default: forvo)")
-        click.echo("  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)")
-        click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
-        click.echo("  --audio-dest-dir PATH   Directory to copy selected audio files to")
-        click.echo("  --dry-run              Show what would be done without making changes")
+        click.echo(
+            "  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)"
+        )
+        click.echo(
+            "  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)"
+        )
+        click.echo(
+            "  --audio-dest-dir PATH   Directory to copy selected audio files to"
+        )
+        click.echo(
+            "  --dry-run              Show what would be done without making changes"
+        )
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")
         click.echo("  FORVO_API_KEY          Forvo API key")
@@ -494,7 +542,9 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
         parser = AnkiExportParser()
         cards = parser.parse_file(anki_file)
 
-        click.echo(click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True))
+        click.echo(
+            click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True)
+        )
         click.echo("=" * 50)
 
         # Basic statistics
@@ -522,8 +572,12 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
                 click.echo(f"  {char}: {count} times")
 
         # Candidate characters analysis
-        click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
-        click.echo("(Characters that appear in many words OR as components, but are not single-character words)")
+        click.echo(
+            f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}"
+        )
+        click.echo(
+            "(Characters that appear in many words OR as components, but are not single-character words)"
+        )
 
         candidates = parser.analyze_candidate_characters()
 
@@ -540,7 +594,9 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
                 if verbose:
                     # Show some words containing this character
-                    words_with_char = [word for word in multi_words if candidate.character in word][:5]
+                    words_with_char = [
+                        word for word in multi_words if candidate.character in word
+                    ][:5]
                     if words_with_char:
                         click.echo(f"      Found in: {', '.join(words_with_char)}")
         else:
