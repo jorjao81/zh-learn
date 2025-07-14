@@ -123,7 +123,9 @@ class AnkiExportParser:
         multi_chars = []
         for card in self.cards:
             clean_chars = card.get_clean_characters()
-            if len(clean_chars) > 1 and all(self._is_chinese_character(c) for c in clean_chars):
+            if len(clean_chars) > 1 and all(
+                self._is_chinese_character(c) for c in clean_chars
+            ):
                 multi_chars.append(clean_chars)
         return multi_chars
 

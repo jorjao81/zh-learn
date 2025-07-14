@@ -47,9 +47,7 @@ CHINESE_EXAMPLE_PATTERNS = {
 }
 
 # Abbreviation pattern for definitions like "abbreviation = [stuff] translation"
-ABBREVIATION_PATTERN = (
-    r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$"
-)
+ABBREVIATION_PATTERN = r"abbreviation\s*=\s*[\uE000-\uF8FF\d]*[一-龯]+[\uE000-\uF8FF\da-z]*[一-龯]+[\uE000-\uF8FF]*\s+(.+)$"
 
 # Pre-compiled regex patterns for performance
 COMPILED_PATTERNS = {
@@ -61,13 +59,18 @@ COMPILED_PATTERNS = {
 
 # Pre-compile domain marker patterns
 COMPILED_DOMAIN_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): display_text for pattern, display_text in DOMAIN_MARKERS.items()
+    re.compile(pattern, re.IGNORECASE): display_text
+    for pattern, display_text in DOMAIN_MARKERS.items()
 }
 
 # Pre-compile parts of speech patterns
-COMPILED_POS_PATTERNS = {pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE) for pos in PARTS_OF_SPEECH}
+COMPILED_POS_PATTERNS = {
+    pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE)
+    for pos in PARTS_OF_SPEECH
+}
 
 # Pre-compile abbreviation patterns
 COMPILED_ABBREV_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): replacement for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
+    re.compile(pattern, re.IGNORECASE): replacement
+    for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
 }
