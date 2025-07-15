@@ -15,6 +15,20 @@ from .audio import MultiProviderAudioGenerator
 from .anki_parser import AnkiExportParser
 
 
+def convert_to_html_format(text: str) -> str:
+    """Convert text with newlines to HTML format using <br> tags."""
+    if not text:
+        return text
+    return text.replace('\n', '<br>')
+
+
+def convert_list_to_html_format(items: List[str]) -> str:
+    """Convert a list of strings to HTML format with <br> separators."""
+    if not items:
+        return ""
+    return "<br>".join(items)
+
+
 def format_html_for_terminal(text: str) -> str:
     """Convert simple HTML tags to click formatting for terminal output."""
 
@@ -398,20 +412,22 @@ def convert(
                             "simplified": card.simplified,
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
-                            "meaning": card.meaning,
-                            "examples": "\n".join(card.examples)
+                            "meaning": convert_to_html_format(card.meaning),
+                            "examples": convert_list_to_html_format(card.examples)
                             if card.examples
                             else None,
                             "phonetic_component": card.phonetic_component,
-                            "structural_decomposition": card.structural_decomposition,
+                            "structural_decomposition": convert_to_html_format(card.structural_decomposition)
+                            if card.structural_decomposition
+                            else None,
                             "similar_characters": (
-                                "; ".join(card.similar_characters)
+                                "<br>".join(card.similar_characters)
                                 if card.similar_characters
                                 else None
                             ),
                             "passive": card.passive,
                             "alternate_pronunciations": (
-                                "; ".join(card.alternate_pronunciations)
+                                "<br>".join(card.alternate_pronunciations)
                                 if card.alternate_pronunciations
                                 else None
                             ),
