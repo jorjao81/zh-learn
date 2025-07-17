@@ -375,14 +375,43 @@ def find_multi_character_words_containing(
     return examples[:10]
 
 
+def _create_anki_dictionary(anki_parser: AnkiExportParser) -> dict:
+    """
+    Create a dictionary from Anki export for structural decomposition.
+
+    Args:
+        anki_parser: AnkiExportParser instance with loaded cards
+
+    Returns:
+        Dictionary mapping Chinese words to their pinyin and definitions
+    """
+    dictionary = {}
+
+    for card in anki_parser.cards:
+        if card.notetype == "Chinese":
+            clean_chars = card.get_clean_characters()
+            if clean_chars and len(clean_chars) <= 4:  # Limit to reasonable word lengths
+                dictionary[clean_chars] = {
+                    "pinyin": card.pinyin,
+                    "definition": card.definitions,
+                }
+
+    return dictionary
+
+
 def pleco_to_anki(
-    pleco_entry: PlecoEntry, anki_export_parser: Optional[AnkiExportParser] = None
+    pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser
 ) -> AnkiCard:
     """
     Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples.
     """
     meaning, examples = parse_pleco_definition(pleco_entry.definition)
-    structural_decomposition = get_structural_decomposition(pleco_entry.chinese)
+
+    anki_dictionary = _create_anki_dictionary(anki_export_parser)
+
+    structural_decomposition = get_structural_decomposition(
+        pleco_entry.chinese, anki_dictionary
+    )
 
     # For single character words, add multi-character examples from Anki export
     if len(pleco_entry.chinese) == 1 and anki_export_parser:

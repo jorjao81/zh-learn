@@ -15,6 +15,7 @@ PARTS_OF_SPEECH = [
     "conjunction",
     "interjection",
     "idiom",
+    "name",
 ]
 
 # Abbreviations for parts of speech
@@ -28,14 +29,24 @@ PART_OF_SPEECH_ABBREVIATIONS = {
 # Domain markers that should be highlighted in red
 DOMAIN_MARKERS = {
     r"\(fig\.\)": "figurative",
-    r"\bphysics\b": "physics",
-    r"\bphilosophy\b": "philosophy",
     r"\bLIT\b": "literary",
     r"\bdialect\b": "dialect",
+    r"\bpejorative\b": "pejorative",
+    
+    r"\bphysics\b": "physics",
+    r"\bphilosophy\b": "philosophy",
     r"\bbiology\b": "biology",
     r"\bstatistics\b": "statistics",
     r"\bmathematics\b": "mathematics",
     r"\bliterary\b": "literary",
+    r"\bmechanics\b": "mechanics",
+    r"\bchemistry": "chemistry",
+    r"\bengineering\b": "engineering",
+    r"\bphysiology\b": "physiology",
+    r"\baerospace\b": "aerospace",
+    r"\bsports\b": "sports",
+    r"\bmilitary\b": "military",
+
 }
 
 # Regex patterns for Chinese example extraction

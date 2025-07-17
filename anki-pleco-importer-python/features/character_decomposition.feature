@@ -105,3 +105,61 @@ Feature: Character decomposition analysis
     Given I have an empty input ""
     When I try to decompose it
     Then I should get an error "Input must be a single Chinese character"
+
+  Scenario: Decompose 3-character word using dictionary lookup
+    Given I have the following Anki export dictionary:
+      | chinese | pinyin   | definition |
+      | 学      | xue2     | to learn   |
+      | 习      | xi2      | to practice|
+      | 学习    | xue2xi2  | to study   |
+      | 生      | sheng1   | to give birth |
+      | 活      | huo2     | to live    |
+      | 生活    | sheng1huo2| life      |
+    When I decompose the 3-character word "学习生"
+    Then I should get the structural decomposition "学习(xuéxí - to study) + 生(shēng - to give birth)"
+
+  Scenario: Decompose 4-character word preferring 2+2 split
+    Given I have the following Anki export dictionary:
+      | chinese | pinyin     | definition |
+      | 学      | xue2       | to learn   |
+      | 习      | xi2        | to practice|
+      | 学习    | xue2xi2    | to study   |
+      | 生      | sheng1     | to give birth |
+      | 活      | huo2       | to live    |
+      | 生活    | sheng1huo2 | life       |
+    When I decompose the 4-character word "学习生活"
+    Then I should get the structural decomposition "学习(xuéxí - to study) + 生活(shēnghuó - life)"
+
+  Scenario: Decompose 4-character word with 3+1 split when no 2+2 available
+    Given I have the following Anki export dictionary:
+      | chinese | pinyin     | definition |
+      | 学      | xue2       | to learn   |
+      | 习      | xi2        | to practice|
+      | 生      | sheng1     | to give birth |
+      | 学习生  | xue2xi2sheng1| study life |
+    When I decompose the 4-character word "学习生活"
+    Then I should get the structural decomposition "学习生(xuéxíshēng - study life) + 活(huó - to live/alive/living/work/workmanship)"
+
+  Scenario: Decompose 5-character word preferring longest matches
+    Given I have the following Anki export dictionary:
+      | chinese | pinyin       | definition |
+      | 学      | xue2         | to learn   |
+      | 习      | xi2          | to practice|
+      | 生      | sheng1       | to give birth |
+      | 活      | huo2         | to live    |
+      | 学习    | xue2xi2      | to study   |
+      | 生活    | sheng1huo2   | life       |
+      | 方      | fang1        | direction  |
+      | 式      | shi4         | style      |
+      | 方式    | fang1shi4    | method     |
+    When I decompose the 5-character word "学习生活方"
+    Then I should get the structural decomposition "学习(xuéxí - to study) + 生活(shēnghuó - life) + 方(fāng - direction)"
+
+  Scenario: Decompose word with no dictionary matches falls back to individual characters
+    Given I have the following Anki export dictionary:
+      | chinese | pinyin | definition |
+      | 不      | bu4    | not        |
+      | 存      | cun2   | to exist   |
+      | 在      | zai4   | to be at   |
+    When I decompose the 3-character word "不存在"
+    Then I should get the structural decomposition "不(bù - not) + 存(cún - to exist) + 在(zài - to be at)"

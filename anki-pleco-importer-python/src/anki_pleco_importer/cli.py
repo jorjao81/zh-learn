@@ -19,7 +19,7 @@ def convert_to_html_format(text: str) -> str:
     """Convert text with newlines to HTML format using <br> tags."""
     if not text:
         return text
-    return text.replace('\n', '<br>')
+    return text.replace("\n", "<br>")
 
 
 def convert_list_to_html_format(items: List[str]) -> str:
@@ -322,8 +322,13 @@ def convert(
             click.echo()
 
             anki_cards = []
+            parser = AnkiExportParser()
+            cards = parser.parse_file("Chinese.txt")
+            print(len(cards))
+
+
             for i, entry in enumerate(collection, 1):
-                anki_card = pleco_to_anki(entry)
+                anki_card = pleco_to_anki(entry, parser)
 
                 # Generate audio if requested and not in dry-run mode
                 if audio_generator and not dry_run:
@@ -417,9 +422,11 @@ def convert(
                             if card.examples
                             else None,
                             "phonetic_component": card.phonetic_component,
-                            "structural_decomposition": convert_to_html_format(card.structural_decomposition)
-                            if card.structural_decomposition
-                            else None,
+                            "structural_decomposition": (
+                                convert_to_html_format(card.structural_decomposition)
+                                if card.structural_decomposition
+                                else None
+                            ),
                             "similar_characters": (
                                 "<br>".join(card.similar_characters)
                                 if card.similar_characters
