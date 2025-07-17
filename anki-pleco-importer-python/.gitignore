@@ -137,3 +137,6 @@ test_output/
 # Audio configuration (contains API keys)
 audio_config.json
 my_audio_config.json
+
+# Audio cache files
+audio_cache/
