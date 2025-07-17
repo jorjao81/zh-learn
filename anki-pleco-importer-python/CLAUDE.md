@@ -3,6 +3,15 @@
 ## Overview
 This is a Python application that converts Pleco flashcard exports to Anki-compatible format for Chinese language learning. The application helps users seamlessly transfer their Pleco vocabulary to Anki for spaced repetition study.
 
+## Instructions
+
+For all features you develop, use the following workflow:
+* Create a new branch for the feature
+* Come up with clear gherkin scenarios that exemplify the feature
+* Then implement the code changes
+* Make sure all tests and commit hooks are passing
+* Create a commit message, a push and a merge request
+
 ## Project Structure
 - `src/anki_pleco_importer/` - Main application code
 - `features/` - BDD test scenarios using Behave
@@ -28,6 +37,7 @@ This is a Python application that converts Pleco flashcard exports to Anki-compa
 ## Testing Strategy
 - Unit tests with pytest for core functionality
 - BDD tests with behave for user scenarios
+- BDD scenarios should always have all test data they need explicitly defined in them
 - Type checking with mypy
 - Code formatting with black
 - Linting with flake8
