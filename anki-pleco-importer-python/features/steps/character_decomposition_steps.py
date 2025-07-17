@@ -4,6 +4,7 @@ Step definitions for character decomposition BDD scenarios.
 
 from behave import given, when, then
 from anki_pleco_importer.character_decomposer import CharacterDecomposer, ComponentType
+from anki_pleco_importer.chinese import get_structural_decomposition
 
 
 @given("the CharacterDecomposer is available")
@@ -99,11 +100,65 @@ def step_then_check_structure_notes(context, expected_notes):
     assert context.result is not None, "Decomposition result should not be None"
     assert (
         context.result.structure_notes == expected_notes
-    ), f"Expected structure notes '{expected_notes}', got '{context.result.structure_notes}'"
+    ), (
+        f"Expected structure notes '{expected_notes}', "
+        f"got '{context.result.structure_notes}'"
+    )
 
 
 @then('I should get an error "{expected_error}"')
 def step_then_check_error(context, expected_error):
     """Check that the expected error was raised."""
     assert context.error is not None, "Expected an error but none was raised"
-    assert context.error == expected_error, f"Expected error '{expected_error}', got '{context.error}'"
+    assert (
+        context.error == expected_error
+    ), f"Expected error '{expected_error}', got '{context.error}'"
+
+
+@given("I have the following Anki export dictionary")
+def step_given_anki_dictionary(context):
+    """Store the Anki export dictionary."""
+    context.anki_dictionary = {}
+    for row in context.table:
+        chinese = row["chinese"]
+        pinyin = row["pinyin"]
+        definition = row["definition"]
+        context.anki_dictionary[chinese] = {"pinyin": pinyin, "definition": definition}
+
+
+@when('I decompose the 3-character word "{word}"')
+def step_when_decompose_3_char_word(context, word):
+    """Decompose a 3-character word using dictionary lookup."""
+    context.word = word
+    context.result_decomposition = get_structural_decomposition(
+        word, context.anki_dictionary
+    )
+
+
+@when('I decompose the 4-character word "{word}"')
+def step_when_decompose_4_char_word(context, word):
+    """Decompose a 4-character word using dictionary lookup."""
+    context.word = word
+    context.result_decomposition = get_structural_decomposition(
+        word, context.anki_dictionary
+    )
+
+
+@when('I decompose the 5-character word "{word}"')
+def step_when_decompose_5_char_word(context, word):
+    """Decompose a 5-character word using dictionary lookup."""
+    context.word = word
+    context.result_decomposition = get_structural_decomposition(
+        word, context.anki_dictionary
+    )
+
+
+@then('I should get the structural decomposition "{expected_decomposition}"')
+def step_then_check_structural_decomposition(context, expected_decomposition):
+    """Check that the structural decomposition matches expected value."""
+    assert (
+        context.result_decomposition == expected_decomposition
+    ), (
+        f"Expected decomposition '{expected_decomposition}', "
+        f"got '{context.result_decomposition}'"
+    )

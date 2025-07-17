@@ -100,18 +100,25 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
     return result
 
 
-def get_structural_decomposition(chinese_text: str) -> str:
+def get_structural_decomposition(
+    chinese_text: str, anki_dictionary: dict
+) -> str:
     """Get structural decomposition for Chinese characters using CharacterDecomposer.
 
     Args:
         chinese_text: Chinese text to decompose
+        anki_dictionary: Optional dictionary from Anki export for word decomposition
 
     Returns:
         Formatted string with structural decomposition
         Format: 字(pinyin - meaning) + 字(pinyin - meaning)
     """
-    # For multi-character words, fall back to individual character definitions
-    if len(chinese_text) > 1:
+    # For multi-character words (3+ characters), use dictionary-based decomposition
+    if len(chinese_text) > 2:
+        return _get_dictionary_based_decomposition(chinese_text, anki_dictionary)
+
+    # For 2-character words, fall back to individual character definitions
+    elif len(chinese_text) == 2:
         return _get_individual_character_definitions(chinese_text)
 
     # For single characters, use proper structural decomposition
@@ -124,6 +131,160 @@ def get_structural_decomposition(chinese_text: str) -> str:
     except (ImportError, Exception):
         # Fall back to individual character definitions if decomposer fails
         return _get_individual_character_definitions(chinese_text)
+
+
+def _get_dictionary_based_decomposition(
+    chinese_text: str, anki_dictionary: dict
+) -> str:
+    """Decompose multi-character words using Anki dictionary lookup.
+
+    Args:
+        chinese_text: Chinese text to decompose (3+ characters)
+        anki_dictionary: Dictionary mapping Chinese words to their pinyin and
+            definitions
+
+    Returns:
+        Formatted string with word decomposition
+        Format: 词(pinyin - meaning) + 词(pinyin - meaning)
+    """
+
+    # For 4-character words, prefer 2+2 split
+    if len(chinese_text) == 4:
+        components = _find_optimal_4_char_decomposition(chinese_text, anki_dictionary)
+        if components:
+            return _format_components(components)
+
+    # For other lengths, use greedy longest-match decomposition
+    components = _find_greedy_decomposition(chinese_text, anki_dictionary)
+    if components:
+        return _format_components(components)
+
+    # Fall back to individual character definitions if no matches found
+    return _get_individual_character_definitions(chinese_text)
+
+
+def _find_optimal_4_char_decomposition(
+    chinese_text: str, anki_dictionary: dict
+) -> list:
+    """Find optimal decomposition for 4-character word preferring 2+2 split."""
+    # Try 2+2 split first
+    left_part = chinese_text[:2]
+    right_part = chinese_text[2:]
+
+    if left_part in anki_dictionary and right_part in anki_dictionary:
+        return [
+            _create_component(left_part, anki_dictionary[left_part]),
+            _create_component(right_part, anki_dictionary[right_part]),
+        ]
+
+    # Fall back to greedy decomposition
+    return _find_greedy_decomposition(chinese_text, anki_dictionary)
+
+
+def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list:
+    """Find decomposition using greedy longest-match algorithm."""
+    components = []
+    i = 0
+
+    while i < len(chinese_text):
+        # Try to find the longest match starting from position i
+        best_match = None
+        best_length = 0
+
+        for length in range(
+            min(len(chinese_text) - i, 4), 0, -1
+        ):  # Try lengths 4, 3, 2, 1
+            candidate = chinese_text[i : i + length]
+            if candidate in anki_dictionary:
+                best_match = candidate
+                best_length = length
+                break
+
+        if best_match:
+            components.append(
+                _create_component(best_match, anki_dictionary[best_match])
+            )
+            i += best_length
+        else:
+            # No match found, use individual character
+            char = chinese_text[i]
+            components.append(_create_individual_character_component(char))
+            i += 1
+
+    return components
+
+
+def _create_component(chinese_word: str, word_info: dict) -> dict:
+    """Create a component from dictionary entry."""
+    pinyin = word_info.get("pinyin", "")
+    definition = word_info.get("definition", "")
+
+    # Convert numbered pinyin to toned pinyin
+    pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
+
+    return {"chinese": chinese_word, "pinyin": pinyin_clean, "definition": definition}
+
+
+def _create_individual_character_component(char: str) -> dict:
+    """Create a component for individual character using HanziDictionary."""
+    try:
+        # Get pinyin (prefer lowercase/common pronunciation)
+        pinyin_list = _hanzi_dictionary.get_pinyin(char)
+        if not pinyin_list:
+            return {"chinese": char, "pinyin": "", "definition": ""}
+
+        # Prefer lowercase pinyin over uppercase (common vs proper name)
+        pinyin = pinyin_list[0]
+        for p in pinyin_list:
+            if p.islower():
+                pinyin = p
+                break
+
+        # Get all definitions
+        definitions = _hanzi_dictionary.definition_lookup(char)
+        if not definitions:
+            return {"chinese": char, "pinyin": "", "definition": ""}
+
+        # Collect all definitions, excluding surname definitions
+        all_definitions = []
+        for def_item in definitions:
+            definition_text = def_item.get("definition", "")
+            if "surname" not in definition_text.lower() and definition_text:
+                all_definitions.append(definition_text)
+
+        # If no non-surname definitions found, use the first one
+        if not all_definitions:
+            all_definitions = [definitions[0].get("definition", "")]
+
+        # Join all definitions with forward slash separator
+        combined_definition = "/".join(all_definitions)
+
+        # Convert numbered pinyin to toned pinyin for display
+        pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
+
+        return {
+            "chinese": char,
+            "pinyin": pinyin_clean,
+            "definition": combined_definition,
+        }
+    except Exception:
+        return {"chinese": char, "pinyin": "", "definition": ""}
+
+
+def _format_components(components: list) -> str:
+    """Format components into the final decomposition string."""
+    formatted_parts = []
+
+    for component in components:
+        chinese = component["chinese"]
+        pinyin = component["pinyin"]
+        definition = component["definition"]
+
+        # Format as: 字(pinyin - meaning)
+        formatted_part = f"{chinese}({pinyin} - {definition})"
+        formatted_parts.append(formatted_part)
+
+    return " + ".join(formatted_parts)
 
 
 def _get_individual_character_definitions(chinese_text: str) -> str:

@@ -170,7 +170,7 @@ class TestAudioGeneratorFactory:
 
     def test_get_available_providers(self):
         """Test getting available providers."""
-        config = {"forvo": {"api_key": "test_key"}}
+        config = {"forvo": {"api_key": "test_key"}}  # pragma: allowlist secret
 
         with patch.object(ForvoGenerator, "is_available", return_value=True):
             available = AudioGeneratorFactory.get_available_providers(config)
