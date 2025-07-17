@@ -46,7 +46,7 @@ class PlecoCollection:
 
 
 def _detect_parts_of_speech_positions(definition: str) -> List[Tuple[int, int, str]]:
-    """Detect positions of parts of speech in definition, excluding those in parentheses."""
+    """Detect positions of parts of speech in definition, excluding parentheses."""
     pos_positions = []
     for pos in PARTS_OF_SPEECH:
         pattern = rf"\b{pos}\b"
@@ -83,7 +83,7 @@ def _detect_parts_of_speech_positions(definition: str) -> List[Tuple[int, int, s
 def _extract_meaning_sections(
     definition: str, pos_positions: List[Tuple[int, int, str]]
 ) -> Tuple[List[str], List[str]]:
-    """Extract meaning sections and examples from definition based on parts of speech positions."""
+    """Extract meaning sections and examples from definition based on POS positions."""
     meanings = []
     examples = []
 
@@ -163,7 +163,7 @@ def _format_meaning_with_html(meanings: List[str]) -> str:
     for pattern, replacement in COMPILED_ABBREV_PATTERNS.items():
         combined_meaning = pattern.sub(replacement, combined_meaning)
 
-    # Handle idiom in parentheses - move "(idiom)" from end to beginning as "<b>idiom</b>"
+    # Handle idiom in parentheses - move "(idiom)" from end to beginning
     if "(idiom)" in combined_meaning.lower():
         combined_meaning = COMPILED_PATTERNS["idiom_parentheses"].sub(
             "", combined_meaning
@@ -202,7 +202,7 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     # Handle abbreviation pattern using pre-compiled pattern
     abbrev_match = COMPILED_PATTERNS["abbreviation"].search(text)
     if abbrev_match:
-        # Extract just the English translation at the end, but preserve any part of speech at the beginning
+        # Extract just the English translation at the end, but preserve any POS
         english_part = abbrev_match.group(1).strip()
 
         # Check if the text starts with a part of speech
@@ -242,12 +242,12 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
         # Look for patterns like "Chinese pinyin English" or "Chinese. pinyin English."
 
         # Try to find multiple examples within the text
-        # Look for patterns where Chinese text is followed by pinyin and English translation
+        # Look for patterns where Chinese text is followed by pinyin and English
 
-        # Strategy: Split the text by looking for Chinese characters that mark the start of a new example
-        # Pattern: Chinese chars followed by space and lowercase letters (pinyin) or uppercase letters (English)
+        # Strategy: Split the text by looking for Chinese characters that mark examples
+        # Pattern: Chinese chars followed by space and lowercase (pinyin) or uppercase
 
-        # First, try to split by looking for Chinese words/phrases that start new examples
+        # First, try to split by looking for Chinese words/phrases that start examples
         # Use a more sophisticated approach to find example boundaries
 
         # Look for positions where Chinese characters appear after English text
@@ -260,12 +260,12 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
             # Multiple Chinese segments found - try to split into individual examples
             # Use a simple approach: look for clear boundaries
 
-            # Try a different strategy: look for examples that end with specific English patterns
-            # Pattern for the first type: Chinese + pinyin + English words ending before next Chinese
-            # Pattern for the second type: Chinese sentence with punctuation + pinyin + English sentence
+            # Try a different strategy: look for examples that end with patterns
+            # Pattern for the first type: Chinese + pinyin + English words ending before
+            # Pattern for the second type: Chinese sentence with punctuation + pinyin
 
             # Strategy: Look for positions where we have a clear break
-            # A break is defined as: English text followed by space and then Chinese characters
+            # A break is defined as: English text followed by space and then Chinese
             break_positions = []
 
             # Look for pattern: English word/punctuation + space + Chinese characters
@@ -298,15 +298,18 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
 
         # If pattern didn't find multiple examples, try the structured approach
         if not examples:
-            # Pattern 1: Chinese sentence/phrase followed by pinyin and English, possibly ending with punctuation
-            # This pattern should capture the full English translation including multiple sentences
-            pattern1 = r"[一-龯][^.。;]*[.。]?\s+[A-Z][a-z]*(?:\s+[a-z]+)*[^.]*?[.!?](?:\s+[A-Z][^.]*?[.!?])*(?:\s|$)"
+            # Pattern 1: Chinese sentence/phrase followed by pinyin and English
+            # This pattern should capture the full English translation
+            pattern1 = (
+                r"[一-龯][^.。;]*[.。]?\s+[A-Z][a-z]*(?:\s+[a-z]+)*[^.]*?[.!?]"
+                r"(?:\s+[A-Z][^.]*?[.!?])*(?:\s|$)"
+            )
             matches1 = re.findall(pattern1, examples_part)
 
             if matches1:
                 # Found structured examples - clean them up
-                for match in matches1:
-                    match_text = match.group(0).strip()
+                for match_str in matches1:
+                    match_text = match_str.strip()
                     if match_text:
                         examples.append(match_text)
             else:
@@ -375,7 +378,9 @@ def find_multi_character_words_containing(
 def pleco_to_anki(
     pleco_entry: PlecoEntry, anki_export_parser: Optional[AnkiExportParser] = None
 ) -> AnkiCard:
-    """Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples."""
+    """
+    Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples.
+    """
     meaning, examples = parse_pleco_definition(pleco_entry.definition)
     structural_decomposition = get_structural_decomposition(pleco_entry.chinese)
 
