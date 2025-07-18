@@ -1,10 +1,6 @@
 """Step definitions for Pleco to Anki conversion BDD tests."""
 
-import csv
-import io
-from pathlib import Path
 from behave import given, when, then
-from anki_pleco_importer.cli import main
 from anki_pleco_importer.pleco import PlecoEntry, pleco_to_anki
 from anki_pleco_importer.anki_parser import AnkiExportParser, AnkiCard
 
@@ -24,9 +20,7 @@ def step_have_pleco_entries(context):
     """Create Pleco entries from table data (handles both single and multiple)."""
     context.pleco_entries = []
     for row in context.table:
-        entry = PlecoEntry(
-            chinese=row["chinese"], pinyin=row["pinyin"], definition=row["definition"]
-        )
+        entry = PlecoEntry(chinese=row["chinese"], pinyin=row["pinyin"], definition=row["definition"])
         context.pleco_entries.append(entry)
 
     # For backward compatibility with single entry scenarios
@@ -34,37 +28,34 @@ def step_have_pleco_entries(context):
         context.pleco_entry = context.pleco_entries[0]
 
 
-@given(
-    'I have a Pleco entry with chinese "{chinese}", pinyin "{pinyin}", and definition "{definition}"'
-)
+@given('I have a Pleco entry with chinese "{chinese}", pinyin "{pinyin}", and definition "{definition}"')
 def step_have_pleco_entry_with_values(context, chinese, pinyin, definition):
     """Create a Pleco entry with specific values."""
-    context.pleco_entry = PlecoEntry(
-        chinese=chinese, pinyin=pinyin, definition=definition
-    )
+    context.pleco_entry = PlecoEntry(chinese=chinese, pinyin=pinyin, definition=definition)
 
 
 @given('I have a Pleco entry with definition "{definition}"')
 def step_have_pleco_entry_with_definition(context, definition):
     """Create a Pleco entry with just a definition (for example parsing tests)."""
-    context.pleco_entry = PlecoEntry(
-        chinese="测试", pinyin="cèshì", definition=definition
-    )  # Test word  # Test pinyin
+    context.pleco_entry = PlecoEntry(chinese="测试", pinyin="cèshì", definition=definition)  # Test word  # Test pinyin
 
 
 @when("I convert them to Anki cards")
 @when("I convert it to an Anki card")
 def step_convert_to_anki(context):
     """Convert Pleco entries to Anki cards (handles both single and multiple)."""
+    # Create a mock AnkiExportParser for tests
+    anki_export_parser = AnkiExportParser()
+
     if hasattr(context, "pleco_entries"):
         # Convert multiple entries
         context.anki_cards = []
         for entry in context.pleco_entries:
-            anki_card = pleco_to_anki(entry)
+            anki_card = pleco_to_anki(entry, anki_export_parser)
             context.anki_cards.append(anki_card)
     elif hasattr(context, "pleco_entry"):
         # Convert single entry
-        context.anki_card = pleco_to_anki(context.pleco_entry)
+        context.anki_card = pleco_to_anki(context.pleco_entry, anki_export_parser)
         # Also create anki_cards list for consistency
         context.anki_cards = [context.anki_card]
     else:
@@ -84,9 +75,7 @@ def step_verify_anki_card(context):
         actual_cards = [context.anki_card]
 
     expected_rows = list(context.table)
-    assert len(actual_cards) == len(
-        expected_rows
-    ), f"Expected {len(expected_rows)} cards, got {len(actual_cards)}"
+    assert len(actual_cards) == len(expected_rows), f"Expected {len(expected_rows)} cards, got {len(actual_cards)}"
 
     for i, (actual_card, row) in enumerate(zip(actual_cards, expected_rows)):
         # Check required fields
@@ -113,21 +102,20 @@ def step_verify_anki_card(context):
             expected_examples = row["examples"]
             if expected_examples:
                 # Convert list to newline-separated string for comparison
-                actual_examples = (
-                    "\n".join(actual_card.examples) if actual_card.examples else None
-                )
+                actual_examples = "\n".join(actual_card.examples) if actual_card.examples else None
                 # Handle escaped newlines in expected examples
                 expected_examples = expected_examples.replace("\\n", "\n")
-                assert (
-                    actual_examples == expected_examples
-                ), f"Card {i}: expected examples '{expected_examples}', got '{actual_examples}'"
+                assert actual_examples == expected_examples, (
+                    f"Card {i}: expected examples '{expected_examples}', " f"got '{actual_examples}'"
+                )
 
         if "structural_decomposition" in row:
             expected_structural_decomposition = row["structural_decomposition"]
             actual_structural_decomposition = actual_card.structural_decomposition
-            assert (
-                actual_structural_decomposition == expected_structural_decomposition
-            ), f"Card {i}: expected structural_decomposition '{expected_structural_decomposition}', got '{actual_structural_decomposition}'"
+            assert actual_structural_decomposition == expected_structural_decomposition, (
+                f"Card {i}: expected structural_decomposition '{expected_structural_decomposition}', "
+                f"got '{actual_structural_decomposition}'"
+            )
 
 
 @then("the Anki card should have the following default values")
@@ -140,17 +128,11 @@ def step_verify_default_values(context):
         actual_value = getattr(context.anki_card, field)
 
         if expected_value == "None":
-            assert (
-                actual_value is None
-            ), f"Expected {field} to be None, got {actual_value}"
+            assert actual_value is None, f"Expected {field} to be None, got {actual_value}"
         elif expected_value == "False":
-            assert (
-                actual_value is False
-            ), f"Expected {field} to be False, got {actual_value}"
+            assert actual_value is False, f"Expected {field} to be False, got {actual_value}"
         else:
-            assert (
-                str(actual_value) == expected_value
-            ), f"Expected {field} to be {expected_value}, got {actual_value}"
+            assert str(actual_value) == expected_value, f"Expected {field} to be {expected_value}, got {actual_value}"
 
 
 @then("I should get the following examples")
@@ -182,19 +164,13 @@ def step_verify_examples(context):
 
     # Check each example
     for i, (expected, actual) in enumerate(zip(expected_examples, actual_examples)):
-        assert actual == expected, (
-            f"Example {i+1} mismatch:\n"
-            f"Expected: '{expected}'\n"
-            f"Actual: '{actual}'"
-        )
+        assert actual == expected, f"Example {i+1} mismatch:\n" f"Expected: '{expected}'\n" f"Actual: '{actual}'"
 
 
 # Step definitions for Anki export enhancement
 
 
-@given(
-    'I have the following multi-character words in the Anki export containing "{character}"'
-)
+@given('I have the following multi-character words in the Anki export containing "{character}"')
 def step_have_anki_export_with_character(context, character):
     """Create mock Anki export data with multi-character words containing the character."""
     # Create an AnkiExportParser with mock data
@@ -266,11 +242,7 @@ def step_verify_anki_card_examples(context):
 
     # Check each example
     for i, (expected, actual) in enumerate(zip(expected_examples, actual_examples)):
-        assert actual == expected, (
-            f"Example {i+1} mismatch:\n"
-            f"Expected: '{expected}'\n"
-            f"Actual: '{actual}'"
-        )
+        assert actual == expected, f"Example {i+1} mismatch:\n" f"Expected: '{expected}'\n" f"Actual: '{actual}'"
 
 
 @then("I should get an Anki card with no additional examples")
@@ -285,9 +257,7 @@ def step_verify_no_additional_examples(context):
     actual_examples = context.anki_card.examples or []
 
     # The card should have no examples (empty list or None)
-    assert (
-        not actual_examples
-    ), f"Expected no additional examples, but got: {actual_examples}"
+    assert not actual_examples, f"Expected no additional examples, but got: {actual_examples}"
 
 
 @then("I should get an Anki card with no additional examples from the export")
@@ -301,6 +271,4 @@ def step_verify_no_export_examples(context):
     actual_examples = context.anki_card.examples or []
 
     # Since we didn't provide examples in the definition, should be empty
-    assert (
-        not actual_examples
-    ), f"Expected no examples for multi-character word, but got: {actual_examples}"
+    assert not actual_examples, f"Expected no examples for multi-character word, but got: {actual_examples}"

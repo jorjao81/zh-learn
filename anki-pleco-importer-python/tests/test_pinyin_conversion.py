@@ -121,9 +121,12 @@ class TestPinyinConversion:
 
     def test_pleco_to_anki_integration(self):
         """Test that pleco_to_anki uses pinyin conversion correctly."""
-        pleco_entry = PlecoEntry(chinese="你好", pinyin="ni3hao3", definition="hello")
+        from anki_pleco_importer.anki_parser import AnkiExportParser
 
-        anki_card = pleco_to_anki(pleco_entry)
+        pleco_entry = PlecoEntry(chinese="你好", pinyin="ni3hao3", definition="hello")
+        anki_export_parser = AnkiExportParser()
+
+        anki_card = pleco_to_anki(pleco_entry, anki_export_parser)
 
         assert anki_card.pinyin == "nǐhǎo"
         assert anki_card.simplified == "你好"
