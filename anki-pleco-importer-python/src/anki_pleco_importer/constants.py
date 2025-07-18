@@ -32,7 +32,6 @@ DOMAIN_MARKERS = {
     r"\bLIT\b": "literary",
     r"\bdialect\b": "dialect",
     r"\bpejorative\b": "pejorative",
-    
     r"\bphysics\b": "physics",
     r"\bphilosophy\b": "philosophy",
     r"\bbiology\b": "biology",
@@ -46,7 +45,6 @@ DOMAIN_MARKERS = {
     r"\baerospace\b": "aerospace",
     r"\bsports\b": "sports",
     r"\bmilitary\b": "military",
-
 }
 
 # Regex patterns for Chinese example extraction
@@ -70,18 +68,13 @@ COMPILED_PATTERNS = {
 
 # Pre-compile domain marker patterns
 COMPILED_DOMAIN_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): display_text
-    for pattern, display_text in DOMAIN_MARKERS.items()
+    re.compile(pattern, re.IGNORECASE): display_text for pattern, display_text in DOMAIN_MARKERS.items()
 }
 
 # Pre-compile parts of speech patterns
-COMPILED_POS_PATTERNS = {
-    pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE)
-    for pos in PARTS_OF_SPEECH
-}
+COMPILED_POS_PATTERNS = {pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNORECASE) for pos in PARTS_OF_SPEECH}
 
 # Pre-compile abbreviation patterns
 COMPILED_ABBREV_PATTERNS = {
-    re.compile(pattern, re.IGNORECASE): replacement
-    for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
+    re.compile(pattern, re.IGNORECASE): replacement for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
 }

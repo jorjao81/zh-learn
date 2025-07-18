@@ -5,3 +5,4 @@ hanzipy>=1.0.0
 pypinyin>=0.44.0
 requests>=2.25.0
 playsound3>=3.0.0
+textual>=0.77.0
