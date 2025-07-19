@@ -34,6 +34,7 @@ DOMAIN_MARKERS = {
     r"\bdialect\b": "dialect",
     r"\bpejorative\b": "pejorative",
     r"\bdated\b": "dated",
+    r"\bcolloquial\b": "colloquial",
     r"\bphysics\b": "physics",
     r"\bphilosophy\b": "philosophy",
     r"\bbiology\b": "biology",

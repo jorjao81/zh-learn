@@ -622,9 +622,25 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
                                 # Sort the selected words for consistent display
                                 missing_to_show.sort()
 
-                            for i in range(0, len(missing_to_show), 10):
-                                row = missing_to_show[i : i + 10]
-                                click.echo(f"  {' '.join(row)}")
+                            # Add pinyin to missing words display
+                            try:
+                                from pypinyin import lazy_pinyin, Style
+
+                                for i in range(0, len(missing_to_show), 8):
+                                    row = missing_to_show[i : i + 8]
+                                    formatted_row = []
+                                    for word in row:
+                                        try:
+                                            pinyin = "".join(lazy_pinyin(word, style=Style.TONE))
+                                            formatted_row.append(f"{word}[{pinyin}]")
+                                        except Exception:
+                                            formatted_row.append(word)
+                                    click.echo(f"  {' '.join(f'{item:14}' for item in formatted_row)}")
+                            except ImportError:
+                                # Fallback to original format if pypinyin not available
+                                for i in range(0, len(missing_to_show), 10):
+                                    row = missing_to_show[i : i + 10]
+                                    click.echo(f"  {' '.join(row)}")
 
                             if missing_count > max_words_to_show:
                                 click.echo(
@@ -764,12 +780,27 @@ def missing_hsk(anki_file: Path, count: int, max_level: int, verbose: bool) -> N
                     # Sort the selected words for consistent display
                     missing_words.sort()
 
-                # Display words in rows of 5 for better readability
-                for i in range(0, len(missing_words), 5):
-                    row = missing_words[i : i + 5]
-                    # Format each word with consistent spacing
-                    formatted_row = [f"{word:6}" for word in row]
-                    click.echo(f"  {' '.join(formatted_row)}")
+                # Display words with pinyin in rows for better readability
+                try:
+                    from pypinyin import lazy_pinyin, Style
+
+                    # Show fewer words per row to accommodate pinyin
+                    for i in range(0, len(missing_words), 4):
+                        row = missing_words[i : i + 4]
+                        formatted_row = []
+                        for word in row:
+                            try:
+                                pinyin = "".join(lazy_pinyin(word, style=Style.TONE))
+                                formatted_row.append(f"{word}[{pinyin}]")
+                            except Exception:
+                                formatted_row.append(word)
+                        click.echo(f"  {' '.join(f'{item:16}' for item in formatted_row)}")
+                except ImportError:
+                    # Fallback to original format if pypinyin not available
+                    for i in range(0, len(missing_words), 5):
+                        row = missing_words[i : i + 5]
+                        formatted_row = [f"{word:6}" for word in row]
+                        click.echo(f"  {' '.join(formatted_row)}")
 
                 if missing_count > words_to_show:
                     click.echo(
@@ -836,7 +867,7 @@ def missing_hsk(anki_file: Path, count: int, max_level: int, verbose: bool) -> N
     help="File containing proper names to treat as known (one per line)",
 )
 @click.option(
-    "--known-words-file", 
+    "--known-words-file",
     type=click.Path(exists=True, path_type=Path),
     help="File containing additional words to treat as known (one per line)",
 )
@@ -872,7 +903,7 @@ def analyze_epub(
         if proper_names_file:
             click.echo(f"Loading proper names from {proper_names_file}...")
             try:
-                with open(proper_names_file, 'r', encoding='utf-8') as f:
+                with open(proper_names_file, "r", encoding="utf-8") as f:
                     proper_names = {line.strip() for line in f if line.strip()}
                 click.echo(f"Loaded {len(proper_names)} proper names")
                 # Add proper names to known words
@@ -885,7 +916,7 @@ def analyze_epub(
         if known_words_file:
             click.echo(f"Loading additional known words from {known_words_file}...")
             try:
-                with open(known_words_file, 'r', encoding='utf-8') as f:
+                with open(known_words_file, "r", encoding="utf-8") as f:
                     additional_known = {line.strip() for line in f if line.strip()}
                 click.echo(f"Loaded {len(additional_known)} additional known words")
                 # Add to known words
@@ -915,7 +946,7 @@ def analyze_epub(
         )
 
         # Generate comprehensive report
-        _generate_epub_analysis_report(analysis, verbose)
+        _generate_epub_analysis_report(analysis, verbose, list(target_coverage))
 
     except Exception as e:
         click.echo(f"Error analyzing EPUB: {e}", err=True)
@@ -926,7 +957,7 @@ def analyze_epub(
         raise click.Abort()
 
 
-def _generate_epub_analysis_report(analysis, verbose: bool) -> None:
+def _generate_epub_analysis_report(analysis, verbose: bool, target_coverages: List[int]) -> None:
     """Generate and display comprehensive EPUB analysis report."""
 
     # Header
@@ -997,95 +1028,116 @@ def _generate_epub_analysis_report(analysis, verbose: bool) -> None:
 
     # Coverage Targets
     click.echo(f"\n{click.style('🎯 Coverage Targets', fg='magenta', bold=True)}")
-    click.echo("-" * 60)
-    click.echo(f"{'Target':>8} {'Current':>10} {'Words Needed':>15} {'Priority Words':>15}")
-    click.echo("-" * 60)
+    click.echo("-" * 30)
+    click.echo(f"{'Target':>8} {'Words Needed':>15}")
+    click.echo("-" * 30)
 
     for target_pct, target in analysis.coverage_targets.items():
-        color = "green" if target.current_coverage >= target_pct else "yellow" if target.words_needed <= 100 else "red"
-        click.echo(
-            f"{target_pct:>7}% {target.current_coverage:>9.1f}% "
-            f"{target.words_needed:>14,} {len(target.priority_words):>14}"
-        )
+        click.echo(f"{target_pct:>7}% {target.words_needed:>14,}")
 
     # High-Frequency Unknown Words
     if analysis.high_frequency_unknown:
         click.echo(f"\n{click.style('🔥 High-Frequency Unknown Words', fg='red', bold=True)}")
         click.echo(f"(Top {len(analysis.high_frequency_unknown)} most frequent unknown words)")
-        click.echo("-" * 70)
+        click.echo("-" * 80)
 
-        # Display in rows of 5 for better readability
-        for i in range(0, len(analysis.high_frequency_unknown), 5):
-            row = analysis.high_frequency_unknown[i : i + 5]
-            formatted_row = [f"{word}({freq})" for word, freq in row]
-            click.echo(f"  {' '.join(f'{item:12}' for item in formatted_row)}")
+        # Table headers
+        click.echo(f"{'Word':>6} {'Pinyin':<15} {'Freq':>6} {'HSK Level':<10}")
+        click.echo("-" * 80)
+
+        # Display words in a clean table format (show top 20)
+        for word, freq, pinyin, hsk_level in analysis.high_frequency_unknown[:20]:
+            hsk_text = f"HSK {hsk_level}" if hsk_level else "non-HSK"
+            if hsk_level and hsk_level <= 4:
+                hsk_color = "green"
+            elif hsk_level:
+                hsk_color = "yellow"
+            else:
+                hsk_color = "red"
+
+            # Format without color first to get proper alignment
+            formatted_line = f"{word:>6} {pinyin:<15} {freq:>6,} {hsk_text:<10}"
+            # Replace the HSK text with colored version
+            colored_hsk = click.style(hsk_text, fg=hsk_color)
+            formatted_line = formatted_line.replace(hsk_text, colored_hsk)
+            click.echo(formatted_line)
+
+        # Show count if truncated
+        if len(analysis.high_frequency_unknown) > 20:
+            remaining = len(analysis.high_frequency_unknown) - 20
+            click.echo(f"\n  ... and {remaining} more words " "(use --verbose for full list)")
 
     # Detailed Priority Learning Lists (verbose mode)
     if verbose and analysis.coverage_targets:
-        click.echo(f"\n{click.style('📖 Priority Learning Lists (Verbose)', fg='cyan', bold=True)}")
+        # Show only the highest target percentage
+        highest_target_pct = max(target_coverages) if target_coverages else 98
 
-        for target_pct in sorted(analysis.coverage_targets.keys()):
-            target = analysis.coverage_targets[target_pct]
+        if highest_target_pct in analysis.coverage_targets:
+            target = analysis.coverage_targets[highest_target_pct]
             if target.priority_words:
-                click.echo(f"\n{click.style(f'For {target_pct}% coverage:', fg='cyan', bold=True)}")
+                click.echo(f"\n{click.style('📖 Priority Learning List (Verbose)', fg='cyan', bold=True)}")
+                click.echo(f"\n{click.style(f'For {highest_target_pct}% coverage:', fg='cyan', bold=True)}")
                 click.echo(f"Learn these {len(target.priority_words)} words:")
 
-                # Limit output to first 100 words for readability
-                display_words = target.priority_words[:100]
+                # Limit output to first 50 words for readability in table format
+                display_words = target.priority_words[:50]
 
-                # Show words in rows of 8 for compact display
-                for i in range(0, len(display_words), 8):
-                    row = display_words[i : i + 8]
-                    formatted_row = [f"{word}({freq})" for word, freq in row]
-                    click.echo(f"  {' '.join(f'{item:10}' for item in formatted_row)}")
+                # Table headers
+                click.echo("-" * 80)
+                click.echo(f"{'Word':>6} {'Pinyin':<15} {'Freq':>6} {'HSK Level':<10}")
+                click.echo("-" * 80)
+
+                # Display words in clean table format
+                for word, freq, pinyin, hsk_level in display_words:
+                    hsk_text = f"HSK {hsk_level}" if hsk_level else "non-HSK"
+                    if hsk_level and hsk_level <= 4:
+                        hsk_color = "green"
+                    elif hsk_level:
+                        hsk_color = "yellow"
+                    else:
+                        hsk_color = "red"
+
+                    # Format without color first to get proper alignment
+                    formatted_line = f"{word:>6} {pinyin:<15} {freq:>6,} {hsk_text:<10}"
+                    # Replace the HSK text with colored version
+                    colored_hsk = click.style(hsk_text, fg=hsk_color)
+                    formatted_line = formatted_line.replace(hsk_text, colored_hsk)
+                    click.echo(formatted_line)
 
                 # Show truncation message if there are more words
-                if len(target.priority_words) > 100:
-                    remaining = len(target.priority_words) - 100
+                if len(target.priority_words) > 50:
+                    remaining = len(target.priority_words) - 50
                     click.echo(f"  ... and {remaining} more words")
 
-    # Learning Recommendations
-    click.echo(f"\n{click.style('💡 Learning Recommendations', fg='yellow', bold=True)}")
-    click.echo("-" * 40)
+    # HSK Learning Targets
+    if analysis.hsk_learning_targets:
+        click.echo(f"\n{click.style('📚 HSK Learning Targets', fg='blue', bold=True)}")
+        click.echo("(Words to learn by HSK level, ordered by frequency in this book)")
 
-    if analysis.coverage_targets.get(80):
-        target_80 = analysis.coverage_targets[80]
-        if target_80.words_needed <= 50:
-            click.echo("✅ This book is within reach! Focus on the high-frequency words above.")
-        elif target_80.words_needed <= 200:
-            click.echo("📚 Moderate difficulty. Consider studying HSK vocabulary first.")
-        else:
-            click.echo("🚨 High difficulty. Build vocabulary with easier texts first.")
+        for target in analysis.hsk_learning_targets:
+            if target.unknown_words:  # Only show levels with unknown words
+                click.echo(f"\n{click.style(f'HSK Level {target.level}:', fg='blue', bold=True)}")
+                click.echo(
+                    f"  Coverage gain: {target.potential_coverage_gain:.1f}% "
+                    f"({target.total_word_count:,} word occurrences)"
+                )
+                click.echo(f"  Words to learn: {len(target.unknown_words)}")
 
-    if analysis.high_frequency_unknown:
-        most_frequent = analysis.high_frequency_unknown[0]
-        click.echo(f"🎯 Start with '{most_frequent[0]}' (appears {most_frequent[1]} times)")
+                # Show top 10 words for each level
+                display_words = target.unknown_words[:10]
+                click.echo("-" * 60)
+                click.echo(f"{'Word':>6} {'Pinyin':<15} {'Freq':>6}")
+                click.echo("-" * 60)
 
-    # Overall assessment
-    avg_hsk_level = _calculate_average_hsk_level(analysis.hsk_distribution)
-    if avg_hsk_level:
-        if avg_hsk_level <= 3:
-            click.echo("📊 Overall difficulty: Beginner (HSK 1-3 level)")
-        elif avg_hsk_level <= 5:
-            click.echo("📊 Overall difficulty: Intermediate (HSK 4-5 level)")
-        else:
-            click.echo("📊 Overall difficulty: Advanced (HSK 6+ level)")
+                for word, freq, pinyin in display_words:
+                    click.echo(f"{word:>6} {pinyin:<15} {freq:>6,}")
+
+                # Show truncation message if there are more words
+                if len(target.unknown_words) > 10:
+                    remaining = len(target.unknown_words) - 10
+                    click.echo(f"\n  ... and {remaining} more HSK {target.level} words")
 
     click.echo()
-
-
-def _calculate_average_hsk_level(hsk_distribution: List) -> Optional[float]:
-    """Calculate weighted average HSK level."""
-    total_weight = 0
-    total_value = 0
-
-    for dist in hsk_distribution:
-        if dist.word_count > 0:
-            level = min(dist.level, 6)  # Cap at level 6 for calculation
-            total_weight += dist.word_count
-            total_value += level * dist.word_count
-
-    return total_value / total_weight if total_weight > 0 else None
 
 
 def main() -> None:

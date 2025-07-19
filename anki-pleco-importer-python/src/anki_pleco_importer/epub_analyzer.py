@@ -22,6 +22,13 @@ try:
 except ImportError:
     JIEBA_AVAILABLE = False
 
+try:
+    from pypinyin import lazy_pinyin, Style
+
+    PYPINYIN_AVAILABLE = True
+except ImportError:
+    PYPINYIN_AVAILABLE = False
+
 from .hsk import HSKWordLists
 
 logger = logging.getLogger(__name__)
@@ -52,7 +59,16 @@ class CoverageTarget(NamedTuple):
     target_percentage: float
     words_needed: int
     current_coverage: float
-    priority_words: List[Tuple[str, int]]  # (word, frequency)
+    priority_words: List[Tuple[str, int, str, Optional[int]]]  # (word, frequency, pinyin, hsk_level)
+
+
+class HSKLearningTarget(NamedTuple):
+    """HSK level learning recommendations."""
+
+    level: int
+    unknown_words: List[Tuple[str, int, str]]  # (word, frequency, pinyin) ordered by frequency
+    potential_coverage_gain: float  # percentage coverage gained if all words learned
+    total_word_count: int  # total occurrences of these words in text
 
 
 class BookAnalysis(NamedTuple):
@@ -64,9 +80,10 @@ class BookAnalysis(NamedTuple):
     hsk_distribution: List[HSKDistribution]
     known_words: Set[str]
     unknown_words: Dict[str, int]  # word -> frequency
-    high_frequency_unknown: List[Tuple[str, int]]
+    high_frequency_unknown: List[Tuple[str, int, str, Optional[int]]]  # (word, frequency, pinyin, hsk_level)
     coverage_targets: Dict[int, CoverageTarget]  # target_percentage -> results
     non_hsk_words: Dict[str, int]  # words not in any HSK level -> frequency
+    hsk_learning_targets: List[HSKLearningTarget]  # HSK-based learning suggestions
 
 
 class ChineseEPUBAnalyzer:
@@ -211,6 +228,42 @@ class ChineseEPUBAnalyzer:
 
         return filtered_words
 
+    def get_word_pinyin(self, word: str) -> str:
+        """
+        Get pinyin for a Chinese word.
+
+        Args:
+            word: Chinese word to get pinyin for
+
+        Returns:
+            Pinyin string with tone marks
+        """
+        if not PYPINYIN_AVAILABLE:
+            return ""
+
+        try:
+            # Use pypinyin to get pinyin with tone marks
+            pinyin_list = lazy_pinyin(word, style=Style.TONE)
+            return "".join(pinyin_list)
+        except Exception:
+            return ""
+
+    def get_word_hsk_level(self, word: str) -> Optional[int]:
+        """
+        Get the HSK level of a Chinese word.
+
+        Args:
+            word: Chinese word to look up
+
+        Returns:
+            HSK level (1-7) if found, None if not in HSK lists
+        """
+        for level in self.hsk_word_lists.get_available_levels():
+            hsk_words = self.hsk_word_lists.get_words_for_level(level)
+            if word in hsk_words:
+                return level
+        return None
+
     def analyze_vocabulary_frequency(self, words: List[str]) -> Dict[str, int]:
         """
         Analyze word frequency in the text.
@@ -324,7 +377,9 @@ class ChineseEPUBAnalyzer:
             for word, freq in sorted_unknown:
                 if cumulative_freq >= target_word_count:
                     break
-                priority_words.append((word, freq))
+                pinyin = self.get_word_pinyin(word)
+                hsk_level = self.get_word_hsk_level(word)
+                priority_words.append((word, freq, pinyin, hsk_level))
                 cumulative_freq += freq
 
             results[target] = CoverageTarget(
@@ -336,7 +391,9 @@ class ChineseEPUBAnalyzer:
 
         return results
 
-    def get_high_frequency_unknown_words(self, unknown_words: Dict[str, int], count: int = 50) -> List[Tuple[str, int]]:
+    def get_high_frequency_unknown_words(
+        self, unknown_words: Dict[str, int], count: int = 50
+    ) -> List[Tuple[str, int, str, Optional[int]]]:
         """
         Get the most frequent unknown words.
 
@@ -345,9 +402,10 @@ class ChineseEPUBAnalyzer:
             count: Number of words to return
 
         Returns:
-            List of (word, frequency) tuples sorted by frequency
+            List of (word, frequency, pinyin, hsk_level) tuples sorted by frequency
         """
-        return sorted(unknown_words.items(), key=lambda x: x[1], reverse=True)[:count]
+        sorted_words = sorted(unknown_words.items(), key=lambda x: x[1], reverse=True)[:count]
+        return [(word, freq, self.get_word_pinyin(word), self.get_word_hsk_level(word)) for word, freq in sorted_words]
 
     def identify_non_hsk_words(self, word_frequencies: Dict[str, int]) -> Dict[str, int]:
         """
@@ -371,6 +429,53 @@ class ChineseEPUBAnalyzer:
                 non_hsk_words[word] = freq
 
         return non_hsk_words
+
+    def calculate_hsk_learning_targets(
+        self, word_frequencies: Dict[str, int], known_words: Set[str]
+    ) -> List[HSKLearningTarget]:
+        """
+        Calculate HSK-based learning recommendations.
+
+        Args:
+            word_frequencies: Word frequency dictionary from book
+            known_words: Set of words already known
+
+        Returns:
+            List of HSK learning targets with unknown words and coverage gains
+        """
+        total_words = sum(word_frequencies.values())
+        learning_targets = []
+
+        for level in self.hsk_word_lists.get_available_levels():
+            hsk_words = self.hsk_word_lists.get_words_for_level(level)
+
+            # Find unknown words at this HSK level, ordered by frequency
+            unknown_at_level = []
+            total_word_count = 0
+
+            for word, freq in word_frequencies.items():
+                if word in hsk_words and word not in known_words:
+                    pinyin = self.get_word_pinyin(word)
+                    unknown_at_level.append((word, freq, pinyin))
+                    total_word_count += freq
+
+            # Sort by frequency (descending)
+            unknown_at_level.sort(key=lambda x: x[1], reverse=True)
+
+            # Calculate potential coverage gain
+            potential_coverage_gain = (total_word_count / total_words * 100) if total_words > 0 else 0
+
+            if unknown_at_level:  # Only include levels with unknown words
+                learning_targets.append(
+                    HSKLearningTarget(
+                        level=level,
+                        unknown_words=unknown_at_level,
+                        potential_coverage_gain=potential_coverage_gain,
+                        total_word_count=total_word_count,
+                    )
+                )
+
+        return learning_targets
 
     def analyze_epub(
         self,
@@ -437,6 +542,9 @@ class ChineseEPUBAnalyzer:
         # Identify non-HSK words
         non_hsk_words = self.identify_non_hsk_words(word_frequencies)
 
+        # Calculate HSK learning targets
+        hsk_learning_targets = self.calculate_hsk_learning_targets(word_frequencies, known_words)
+
         logger.info(
             f"Analysis complete: {unique_words} unique words, "
             f"{len(known_words)} known, {len(unknown_words)} unknown, "
@@ -453,4 +561,5 @@ class ChineseEPUBAnalyzer:
             high_frequency_unknown=high_frequency_unknown,
             coverage_targets=coverage_targets,
             non_hsk_words=non_hsk_words,
+            hsk_learning_targets=hsk_learning_targets,
         )
