@@ -816,8 +816,8 @@ def missing_hsk(anki_file: Path, count: int, max_level: int, verbose: bool) -> N
     "--target-coverage",
     multiple=True,
     type=int,
-    default=[80, 90, 95],
-    help="Target coverage percentages to calculate (default: 80, 90, 95)",
+    default=[80, 90, 95, 98],
+    help="Target coverage percentages to calculate (default: 80, 90, 95, 98)",
 )
 @click.option(
     "--top-unknown",
@@ -928,8 +928,12 @@ def _generate_epub_analysis_report(analysis, verbose: bool) -> None:
     # Words not in HSK
     unclassified = analysis.stats.total_words - total_classified
     unclassified_pct = (unclassified / analysis.stats.total_words * 100) if analysis.stats.total_words > 0 else 0
+    non_hsk_unique = len(analysis.non_hsk_words)
+    non_hsk_unique_pct = (non_hsk_unique / analysis.stats.unique_words * 100) if analysis.stats.unique_words > 0 else 0
     click.echo("-" * 60)
-    click.echo(f"{'Non-HSK':8} {unclassified:>8,} {'':>8} {unclassified_pct:>9.1f}% {'':>10}")
+    click.echo(
+        f"{'Non-HSK':8} {unclassified:>8,} {non_hsk_unique:>8} {unclassified_pct:>9.1f}% {non_hsk_unique_pct:>9.1f}%"
+    )
 
     # Known vs Unknown Words
     click.echo(f"\n{click.style('🎯 Vocabulary Knowledge (Anki Collection)', fg='yellow', bold=True)}")
@@ -988,11 +992,19 @@ def _generate_epub_analysis_report(analysis, verbose: bool) -> None:
                 click.echo(f"\n{click.style(f'For {target_pct}% coverage:', fg='cyan', bold=True)}")
                 click.echo(f"Learn these {len(target.priority_words)} words:")
 
+                # Limit output to first 100 words for readability
+                display_words = target.priority_words[:100]
+
                 # Show words in rows of 8 for compact display
-                for i in range(0, len(target.priority_words), 8):
-                    row = target.priority_words[i : i + 8]
+                for i in range(0, len(display_words), 8):
+                    row = display_words[i : i + 8]
                     formatted_row = [f"{word}({freq})" for word, freq in row]
                     click.echo(f"  {' '.join(f'{item:10}' for item in formatted_row)}")
+
+                # Show truncation message if there are more words
+                if len(target.priority_words) > 100:
+                    remaining = len(target.priority_words) - 100
+                    click.echo(f"  ... and {remaining} more words")
 
     # Learning Recommendations
     click.echo(f"\n{click.style('💡 Learning Recommendations', fg='yellow', bold=True)}")

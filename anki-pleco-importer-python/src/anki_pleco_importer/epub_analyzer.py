@@ -66,6 +66,7 @@ class BookAnalysis(NamedTuple):
     unknown_words: Dict[str, int]  # word -> frequency
     high_frequency_unknown: List[Tuple[str, int]]
     coverage_targets: Dict[int, CoverageTarget]  # target_percentage -> results
+    non_hsk_words: Dict[str, int]  # words not in any HSK level -> frequency
 
 
 class ChineseEPUBAnalyzer:
@@ -261,7 +262,7 @@ class ChineseEPUBAnalyzer:
         return known_words, unknown_words
 
     def calculate_coverage_targets(
-        self, word_frequencies: Dict[str, int], known_words: Set[str], targets: List[int] = [80, 90, 95]
+        self, word_frequencies: Dict[str, int], known_words: Set[str], targets: List[int] = [80, 90, 95, 98]
     ) -> Dict[int, CoverageTarget]:
         """
         Calculate words needed to achieve target coverage percentages.
@@ -319,12 +320,35 @@ class ChineseEPUBAnalyzer:
         """
         return sorted(unknown_words.items(), key=lambda x: x[1], reverse=True)[:count]
 
+    def identify_non_hsk_words(self, word_frequencies: Dict[str, int]) -> Dict[str, int]:
+        """
+        Identify words that are not in any HSK level.
+
+        Args:
+            word_frequencies: Word frequency dictionary
+
+        Returns:
+            Dictionary of non-HSK words with their frequencies
+        """
+        # Get all HSK words from all levels
+        all_hsk_words = set()
+        for level in self.hsk_word_lists.get_available_levels():
+            all_hsk_words.update(self.hsk_word_lists.get_words_for_level(level))
+
+        # Find words not in any HSK level
+        non_hsk_words = {}
+        for word, freq in word_frequencies.items():
+            if word not in all_hsk_words:
+                non_hsk_words[word] = freq
+
+        return non_hsk_words
+
     def analyze_epub(
         self,
         epub_path: Path,
         anki_words: Set[str],
         min_frequency: int = 1,
-        target_coverages: List[int] = [80, 90, 95],
+        target_coverages: List[int] = [80, 90, 95, 98],
         top_unknown_count: int = 50,
     ) -> BookAnalysis:
         """
@@ -381,9 +405,13 @@ class ChineseEPUBAnalyzer:
         # Calculate coverage targets
         coverage_targets = self.calculate_coverage_targets(word_frequencies, known_words, target_coverages)
 
+        # Identify non-HSK words
+        non_hsk_words = self.identify_non_hsk_words(word_frequencies)
+
         logger.info(
             f"Analysis complete: {unique_words} unique words, "
-            f"{len(known_words)} known, {len(unknown_words)} unknown"
+            f"{len(known_words)} known, {len(unknown_words)} unknown, "
+            f"{len(non_hsk_words)} non-HSK"
         )
 
         return BookAnalysis(
@@ -395,4 +423,5 @@ class ChineseEPUBAnalyzer:
             unknown_words=unknown_words,
             high_frequency_unknown=high_frequency_unknown,
             coverage_targets=coverage_targets,
+            non_hsk_words=non_hsk_words,
         )
