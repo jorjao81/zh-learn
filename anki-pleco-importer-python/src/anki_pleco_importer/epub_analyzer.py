@@ -72,12 +72,13 @@ class BookAnalysis(NamedTuple):
 class ChineseEPUBAnalyzer:
     """Analyzer for Chinese vocabulary in EPUB files."""
 
-    def __init__(self, hsk_word_lists: Optional[HSKWordLists] = None):
+    def __init__(self, hsk_word_lists: Optional[HSKWordLists] = None, custom_dict_path: Optional[Path] = None):
         """
         Initialize the EPUB analyzer.
 
         Args:
             hsk_word_lists: HSK word lists for level analysis
+            custom_dict_path: Optional path to custom dictionary for domain-specific terms
         """
         if not EBOOKLIB_AVAILABLE:
             raise ImportError("ebooklib is required for EPUB analysis. " "Install it with: pip install ebooklib")
@@ -88,14 +89,29 @@ class ChineseEPUBAnalyzer:
         self.hsk_word_lists = hsk_word_lists or HSKWordLists()
         self.chinese_pattern = re.compile(r"[\u4e00-\u9fff]+")
 
-        # Configure jieba for highest quality settings
+        # Configure jieba for absolute highest quality settings
         jieba.setLogLevel(logging.WARNING)
-        
-        # Initialize jieba with full mode for better accuracy
+
+        # Enable Paddle mode for best accuracy if available
+        try:
+            import paddle  # noqa: F401
+
+            jieba.enable_paddle()
+            logger.info("Enabled jieba Paddle mode for highest accuracy")
+        except ImportError:
+            logger.info("Paddle not available, using jieba HMM mode")
+
+        # Initialize jieba tokenizer
         jieba.dt.check_initialized()
-        
-        # Note: Paddle mode would provide better accuracy but requires additional dependencies
-        # Users can install paddlepaddle-tiny for improved segmentation if desired
+
+        # Load custom dictionary if provided for domain-specific terms
+        if custom_dict_path and custom_dict_path.exists():
+            logger.info(f"Loading custom dictionary: {custom_dict_path}")
+            jieba.load_userdict(str(custom_dict_path))
+            logger.info("Custom dictionary loaded successfully")
+
+        # Force jieba to finish initialization for best performance
+        jieba.initialize()
 
     def extract_text_from_epub(self, epub_path: Path) -> Tuple[str, str]:
         """
@@ -177,12 +193,17 @@ class ChineseEPUBAnalyzer:
         if not chinese_text:
             return []
 
-        # Segment using jieba with highest quality settings
+        # Segment using jieba with absolute highest quality settings
+        # cut_all=False: Use precise mode (not full mode)
+        # HMM=True: Enable HMM for new word recognition
         words = jieba.cut(chinese_text, cut_all=False, HMM=True)
+
+        # Convert generator to list for processing
+        words = list(words)
 
         # Filter words: Chinese characters only, minimum length
         filtered_words = []
-        
+
         for word in words:
             word = word.strip()
             if len(word) >= min_length and self.chinese_pattern.match(word) and len(word) > 0:
