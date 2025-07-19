@@ -13,6 +13,7 @@ from .parser import PlecoTSVParser
 from .pleco import pleco_to_anki
 from .audio import MultiProviderAudioGenerator
 from .anki_parser import AnkiExportParser
+from .google_drive import download_latest_flash_file, GoogleDriveError, GoogleDriveClient
 
 
 def convert_to_html_format(text: str) -> str:
@@ -159,9 +160,7 @@ def format_meaning_box(meaning: str) -> str:
     return "\n".join(result)
 
 
-def load_audio_config(
-    config_file: Optional[str] = None, verbose: bool = False
-) -> Dict[str, Dict[str, Any]]:
+def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) -> Dict[str, Dict[str, Any]]:
     """Load audio configuration from file or environment variables."""
     config = {}
 
@@ -182,9 +181,7 @@ def load_audio_config(
             if verbose:
                 click.echo(f"Loaded audio config from: {config_file}")
         except Exception as e:
-            click.echo(
-                f"Warning: Failed to load config file {config_file}: {e}", err=True
-            )
+            click.echo(f"Warning: Failed to load config file {config_file}: {e}", err=True)
 
     # Load from environment variables (override file config)
     env_config = {
@@ -195,9 +192,7 @@ def load_audio_config(
     for provider, provider_config in env_config.items():
         if provider not in config:
             config[provider] = {}
-        config[provider].update(
-            {k: v for k, v in provider_config.items() if v is not None}
-        )
+        config[provider].update({k: v for k, v in provider_config.items() if v is not None})
 
     return config
 
@@ -210,9 +205,7 @@ def cli() -> None:
 
 
 @cli.command()
-@click.argument(
-    "tsv_file", type=click.Path(exists=True, path_type=Path), required=False
-)
+@click.argument("tsv_file", type=click.Path(exists=True, path_type=Path), required=False)
 @click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
 @click.option(
     "--audio-providers",
@@ -224,17 +217,13 @@ def cli() -> None:
     type=click.Path(exists=True),
     help="Path to audio configuration JSON file (default: audio-config.json if exists)",
 )
-@click.option(
-    "--audio-cache-dir", default="audio_cache", help="Directory to cache audio files"
-)
+@click.option("--audio-cache-dir", default="audio_cache", help="Directory to cache audio files")
 @click.option(
     "--audio-dest-dir",
     type=click.Path(),
     help="Directory to copy selected audio files to",
 )
-@click.option(
-    "--dry-run", is_flag=True, help="Show what would be done without making changes"
-)
+@click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def convert(
     tsv_file: Path,
@@ -279,11 +268,7 @@ def convert(
                         )
                     )
                 else:
-                    click.echo(
-                        click.style(
-                            "Warning: No audio providers available", fg="yellow"
-                        )
-                    )
+                    click.echo(click.style("Warning: No audio providers available", fg="yellow"))
                     # Keep audio_generator to track skipped words even when no providers available
 
             except Exception as e:
@@ -326,7 +311,6 @@ def convert(
             cards = parser.parse_file("Chinese.txt")
             print(len(cards))
 
-
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry, parser)
 
@@ -334,13 +318,9 @@ def convert(
                 if audio_generator and not dry_run:
                     try:
                         if verbose:
-                            click.echo(
-                                f"    Generating audio for '{anki_card.simplified}'..."
-                            )
+                            click.echo(f"    Generating audio for '{anki_card.simplified}'...")
 
-                        audio_file = audio_generator.generate_audio(
-                            anki_card.simplified
-                        )
+                        audio_file = audio_generator.generate_audio(anki_card.simplified)
                         if audio_file:
                             anki_card.pronunciation = audio_file
                             if verbose:
@@ -362,29 +342,21 @@ def convert(
                                         )
                                     )
                         elif verbose:
-                            click.echo(
-                                f"    No audio generated for '{anki_card.simplified}'"
-                            )
+                            click.echo(f"    No audio generated for '{anki_card.simplified}'")
 
                     except Exception as e:
                         if verbose:
-                            click.echo(
-                                f"    Audio generation failed for '{anki_card.simplified}': {e}"
-                            )
+                            click.echo(f"    Audio generation failed for '{anki_card.simplified}': {e}")
 
                 anki_cards.append(anki_card)
 
                 # Display card information
                 audio_indicator = " 🔊" if anki_card.pronunciation else ""
-                styled_number = click.style(
-                    f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True
-                )
+                styled_number = click.style(f"{i:2d}. {anki_card.simplified} ", fg="cyan", bold=True)
                 click.echo(styled_number + anki_card.pinyin + audio_indicator)
 
                 if verbose and anki_card.pronunciation:
-                    click.echo(
-                        f"    {click.style('Audio:', fg='blue', bold=True)} {anki_card.pronunciation}"
-                    )
+                    click.echo(f"    {click.style('Audio:', fg='blue', bold=True)} {anki_card.pronunciation}")
 
                 click.echo(f"    {click.style('Meaning:', fg='yellow', bold=True)}")
                 meaning_box = format_meaning_box(anki_card.meaning)
@@ -397,12 +369,8 @@ def convert(
                     click.echo(examples_box)
 
                 if anki_card.structural_decomposition:
-                    click.echo(
-                        f"    {click.style('Components:', fg='magenta', bold=True)}"
-                    )
-                    component_box = format_meaning_box(
-                        anki_card.structural_decomposition
-                    )
+                    click.echo(f"    {click.style('Components:', fg='magenta', bold=True)}")
+                    component_box = format_meaning_box(anki_card.structural_decomposition)
                     click.echo(component_box)
 
                 click.echo()
@@ -418,9 +386,7 @@ def convert(
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
                             "meaning": convert_to_html_format(card.meaning),
-                            "examples": convert_list_to_html_format(card.examples)
-                            if card.examples
-                            else None,
+                            "examples": convert_list_to_html_format(card.examples) if card.examples else None,
                             "phonetic_component": card.phonetic_component,
                             "structural_decomposition": (
                                 convert_to_html_format(card.structural_decomposition)
@@ -428,15 +394,11 @@ def convert(
                                 else None
                             ),
                             "similar_characters": (
-                                "<br>".join(card.similar_characters)
-                                if card.similar_characters
-                                else None
+                                "<br>".join(card.similar_characters) if card.similar_characters else None
                             ),
                             "passive": card.passive,
                             "alternate_pronunciations": (
-                                "<br>".join(card.alternate_pronunciations)
-                                if card.alternate_pronunciations
-                                else None
+                                "<br>".join(card.alternate_pronunciations) if card.alternate_pronunciations else None
                             ),
                             "nohearing": card.nohearing,
                         }
@@ -487,9 +449,7 @@ def convert(
                     )
                 )
                 if audio and audio_generator:
-                    providers_text = ", ".join(
-                        audio_generator.get_available_providers()
-                    )
+                    providers_text = ", ".join(audio_generator.get_available_providers())
                     click.echo(
                         click.style(
                             f"Dry run: Would generate audio for cards using providers: {providers_text}",
@@ -532,18 +492,10 @@ def convert(
         click.echo("\nOptions:")
         click.echo("  --audio                 Generate pronunciation audio files")
         click.echo("  --audio-providers TEXT  Audio provider (default: forvo)")
-        click.echo(
-            "  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)"
-        )
-        click.echo(
-            "  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)"
-        )
-        click.echo(
-            "  --audio-dest-dir PATH   Directory to copy selected audio files to"
-        )
-        click.echo(
-            "  --dry-run              Show what would be done without making changes"
-        )
+        click.echo("  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)")
+        click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
+        click.echo("  --audio-dest-dir PATH   Directory to copy selected audio files to")
+        click.echo("  --dry-run              Show what would be done without making changes")
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")
         click.echo("  FORVO_API_KEY          Forvo API key")
@@ -565,9 +517,7 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
         parser = AnkiExportParser()
         cards = parser.parse_file(anki_file)
 
-        click.echo(
-            click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True)
-        )
+        click.echo(click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True))
         click.echo("=" * 50)
 
         # Basic statistics
@@ -595,12 +545,8 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
                 click.echo(f"  {char}: {count} times")
 
         # Candidate characters analysis
-        click.echo(
-            f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}"
-        )
-        click.echo(
-            "(Characters that appear in many words OR as components, but are not single-character words)"
-        )
+        click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
+        click.echo("(Characters that appear in many words OR as components, but are not single-character words)")
 
         candidates = parser.analyze_candidate_characters()
 
@@ -617,9 +563,7 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
                 if verbose:
                     # Show some words containing this character
-                    words_with_char = [
-                        word for word in multi_words if candidate.character in word
-                    ][:5]
+                    words_with_char = [word for word in multi_words if candidate.character in word][:5]
                     if words_with_char:
                         click.echo(f"      Found in: {', '.join(words_with_char)}")
         else:
@@ -629,6 +573,152 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
     except Exception as e:
         click.echo(f"Error analyzing file: {e}", err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+@cli.command()
+@click.option(
+    "--output-dir",
+    "-o",
+    default=".",
+    type=click.Path(path_type=Path),
+    help="Directory to download the file to (default: current directory)",
+)
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+def download_from_drive(output_dir: Path, verbose: bool) -> None:
+    """Download the latest file starting with 'flash-' from Google Drive."""
+
+    try:
+        # Ensure output directory exists
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        if verbose:
+            click.echo("Searching for latest 'flash-' file in Google Drive...")
+
+        downloaded_file = download_latest_flash_file(str(output_dir), verbose=verbose)
+
+        click.echo(
+            click.style(
+                f"Downloaded: {Path(downloaded_file).name} to {output_dir}/",
+                fg="green",
+                bold=True,
+            )
+        )
+
+        if verbose:
+            click.echo(f"Full path: {downloaded_file}")
+
+    except GoogleDriveError as e:
+        click.echo(click.style(str(e), fg="red"), err=True)
+        raise click.Abort()
+    except Exception as e:
+        click.echo(click.style(f"Unexpected error: {e}", fg="red"), err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+@cli.command()
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+def auth_status(verbose: bool) -> None:
+    """Show Google Drive authentication status."""
+    try:
+        client = GoogleDriveClient()
+        auth_info = client.get_auth_info()
+
+        click.echo(click.style("🔐 Google Drive Authentication Status", fg="cyan", bold=True))
+        click.echo("=" * 40)
+
+        # Authentication status
+        if auth_info["authenticated"]:
+            click.echo(click.style("✅ Status: Authenticated", fg="green"))
+        else:
+            click.echo(click.style("❌ Status: Not authenticated", fg="red"))
+
+        # Files status
+        if auth_info["credentials_file_exists"]:
+            click.echo(click.style(f"✅ Credentials file: {auth_info['credentials_path']}", fg="green"))
+        else:
+            click.echo(click.style(f"❌ Credentials file: {auth_info['credentials_path']} (missing)", fg="red"))
+
+        if auth_info["token_file_exists"]:
+            token_time = auth_info.get("token_modified", "unknown")
+            click.echo(click.style(f"✅ Token file: {auth_info['token_path']} (modified: {token_time})", fg="green"))
+        else:
+            click.echo(click.style(f"❌ Token file: {auth_info['token_path']} (missing)", fg="yellow"))
+
+        # Setup instructions if not ready
+        if not auth_info["credentials_file_exists"]:
+            click.echo("\n" + click.style("Setup Required:", fg="yellow", bold=True))
+            click.echo("1. Go to https://console.cloud.google.com/")
+            click.echo("2. Create a new project or select an existing one")
+            click.echo("3. Enable the Google Drive API")
+            click.echo("4. Create OAuth 2.0 credentials (Desktop application)")
+            click.echo("5. Download the credentials file as 'credentials.json'")
+            click.echo("6. Place it in the current directory")
+            click.echo("7. Run: anki-pleco-importer auth-login")
+
+    except Exception as e:
+        click.echo(click.style(f"Error checking authentication status: {e}", fg="red"), err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+@cli.command()
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.option("--no-browser", is_flag=True, help="Don't automatically open browser for authentication")
+def auth_login(verbose: bool, no_browser: bool) -> None:
+    """Authenticate with Google Drive using OAuth2 browser flow."""
+    try:
+        client = GoogleDriveClient(auto_open_browser=not no_browser)
+
+        click.echo(click.style("🔐 Starting Google Drive Authentication", fg="cyan", bold=True))
+
+        if no_browser:
+            click.echo(
+                click.style("ℹ️  Browser auto-open is disabled. You'll need to manually visit the URL.", fg="blue")
+            )
+
+        client.authenticate(verbose=verbose)
+
+        click.echo(click.style("✅ Authentication successful!", fg="green", bold=True))
+        click.echo("You can now use Google Drive features.")
+
+    except GoogleDriveError as e:
+        click.echo(click.style(str(e), fg="red"), err=True)
+        raise click.Abort()
+    except Exception as e:
+        click.echo(click.style(f"Unexpected error during authentication: {e}", fg="red"), err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+@cli.command()
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.confirmation_option(prompt="Are you sure you want to clear authentication?")
+def auth_logout(verbose: bool) -> None:
+    """Clear Google Drive authentication tokens."""
+    try:
+        client = GoogleDriveClient()
+        client.clear_authentication()
+
+        click.echo(click.style("✅ Authentication cleared successfully", fg="green"))
+        click.echo("Run 'anki-pleco-importer auth-login' to authenticate again.")
+
+    except Exception as e:
+        click.echo(click.style(f"Error clearing authentication: {e}", fg="red"), err=True)
         if verbose:
             import traceback
 

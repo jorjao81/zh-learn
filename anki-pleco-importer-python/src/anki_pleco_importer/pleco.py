@@ -110,9 +110,7 @@ def _extract_meaning_sections(
             if len(numbered_sections) > 1:
                 # Process each numbered section separately
                 for numbered_section in numbered_sections:
-                    meaning, extracted_examples = extract_examples_from_text(
-                        numbered_section
-                    )
+                    meaning, extracted_examples = extract_examples_from_text(numbered_section)
                     meanings.append(meaning)
                     if extracted_examples:
                         examples.extend(extracted_examples)
@@ -165,9 +163,7 @@ def _format_meaning_with_html(meanings: List[str]) -> str:
 
     # Handle idiom in parentheses - move "(idiom)" from end to beginning
     if "(idiom)" in combined_meaning.lower():
-        combined_meaning = COMPILED_PATTERNS["idiom_parentheses"].sub(
-            "", combined_meaning
-        )
+        combined_meaning = COMPILED_PATTERNS["idiom_parentheses"].sub("", combined_meaning)
         combined_meaning = "<b>idiom</b> " + combined_meaning.strip()
 
     # Handle subject/domain markers using pre-compiled patterns
@@ -270,9 +266,7 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
 
             # Look for pattern: English word/punctuation + space + Chinese characters
             for match in re.finditer(r"[a-zA-Z.!?]\s+[一-龯]", examples_part):
-                break_positions.append(
-                    match.end() - 1
-                )  # Position of the Chinese character
+                break_positions.append(match.end() - 1)  # Position of the Chinese character
 
             # Now split based on these break positions
             if break_positions:
@@ -300,10 +294,7 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
         if not examples:
             # Pattern 1: Chinese sentence/phrase followed by pinyin and English
             # This pattern should capture the full English translation
-            pattern1 = (
-                r"[一-龯][^.。;]*[.。]?\s+[A-Z][a-z]*(?:\s+[a-z]+)*[^.]*?[.!?]"
-                r"(?:\s+[A-Z][^.]*?[.!?])*(?:\s|$)"
-            )
+            pattern1 = r"[一-龯][^.。;]*[.。]?\s+[A-Z][a-z]*(?:\s+[a-z]+)*[^.]*?[.!?]" r"(?:\s+[A-Z][^.]*?[.!?])*(?:\s|$)"
             matches1 = re.findall(pattern1, examples_part)
 
             if matches1:
@@ -344,9 +335,7 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     return meaning, examples if examples else None
 
 
-def find_multi_character_words_containing(
-    character: str, anki_parser: Optional[AnkiExportParser] = None
-) -> List[str]:
+def find_multi_character_words_containing(character: str, anki_parser: Optional[AnkiExportParser] = None) -> List[str]:
     """
     Find multi-character words containing the given character from Anki export.
 
@@ -399,9 +388,7 @@ def _create_anki_dictionary(anki_parser: AnkiExportParser) -> dict:
     return dictionary
 
 
-def pleco_to_anki(
-    pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser
-) -> AnkiCard:
+def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser) -> AnkiCard:
     """
     Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples.
     """
@@ -409,15 +396,11 @@ def pleco_to_anki(
 
     anki_dictionary = _create_anki_dictionary(anki_export_parser)
 
-    structural_decomposition = get_structural_decomposition(
-        pleco_entry.chinese, anki_dictionary
-    )
+    structural_decomposition = get_structural_decomposition(pleco_entry.chinese, anki_dictionary)
 
     # For single character words, add multi-character examples from Anki export
     if len(pleco_entry.chinese) == 1 and anki_export_parser:
-        multi_char_examples = find_multi_character_words_containing(
-            pleco_entry.chinese, anki_export_parser
-        )
+        multi_char_examples = find_multi_character_words_containing(pleco_entry.chinese, anki_export_parser)
         # Add multi-character examples to existing examples
         if multi_char_examples:
             examples = (examples or []) + multi_char_examples

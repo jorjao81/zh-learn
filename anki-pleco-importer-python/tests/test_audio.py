@@ -56,9 +56,7 @@ class TestAudioGenerator:
             assert filename.name.endswith(".mp3")
 
             # Test with details
-            filename_with_details = generator._get_cache_filename(
-                "测试", "mock", "user123"
-            )
+            filename_with_details = generator._get_cache_filename("测试", "mock", "user123")
             assert filename_with_details.name.startswith("测试_mock_user123_")
             assert filename_with_details.name.endswith(".mp3")
 
@@ -108,16 +106,12 @@ class TestForvoGenerator:
     def test_successful_audio_download(self, mock_get):
         """Test successful audio download from Forvo."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            generator = ForvoGenerator(
-                "test_api_key", temp_dir, interactive_selection=False
-            )
+            generator = ForvoGenerator("test_api_key", temp_dir, interactive_selection=False)
             output_file = os.path.join(temp_dir, "test.mp3")
 
             # Mock API response
             mock_response = Mock()
-            mock_response.json.return_value = {
-                "items": [{"pathmp3": "http://example.com/audio.mp3", "num_votes": 5}]
-            }
+            mock_response.json.return_value = {"items": [{"pathmp3": "http://example.com/audio.mp3", "num_votes": 5}]}
             mock_response.raise_for_status.return_value = None
 
             # Mock audio download
@@ -138,9 +132,7 @@ class TestForvoGenerator:
     def test_no_pronunciation_found(self, mock_get):
         """Test behavior when no pronunciation is found."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            generator = ForvoGenerator(
-                "test_api_key", temp_dir, interactive_selection=False
-            )
+            generator = ForvoGenerator("test_api_key", temp_dir, interactive_selection=False)
             output_file = os.path.join(temp_dir, "test.mp3")
 
             # Mock API response with no items
@@ -189,9 +181,7 @@ class TestMultiProviderAudioGenerator:
 
             config = {"mock1": {}, "mock2": {}}
 
-            multi_gen = MultiProviderAudioGenerator(
-                ["mock1", "mock2"], config, temp_dir
-            )
+            multi_gen = MultiProviderAudioGenerator(["mock1", "mock2"], config, temp_dir)
 
             # Replace generators with our mocks
             multi_gen.generators = {
@@ -213,9 +203,7 @@ class TestMultiProviderAudioGenerator:
 
             config = {"mock1": {}, "mock2": {}}
 
-            multi_gen = MultiProviderAudioGenerator(
-                ["mock1", "mock2"], config, temp_dir
-            )
+            multi_gen = MultiProviderAudioGenerator(["mock1", "mock2"], config, temp_dir)
 
             # Replace generators with our mocks
             multi_gen.generators = {
@@ -275,9 +263,7 @@ class TestErrorHandling:
 
             config = {"failing": {}, "working": {}}
 
-            multi_gen = MultiProviderAudioGenerator(
-                ["failing", "working"], config, temp_dir
-            )
+            multi_gen = MultiProviderAudioGenerator(["failing", "working"], config, temp_dir)
             multi_gen.generators = {
                 "failing": failing_generator,
                 "working": working_generator,

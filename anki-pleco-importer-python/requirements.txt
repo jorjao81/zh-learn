@@ -5,3 +5,6 @@ hanzipy>=1.0.0
 pypinyin>=0.44.0
 requests>=2.25.0
 playsound3>=3.0.0
+google-api-python-client>=2.0.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=0.5.0
