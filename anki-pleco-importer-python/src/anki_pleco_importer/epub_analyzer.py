@@ -67,7 +67,6 @@ class BookAnalysis(NamedTuple):
     high_frequency_unknown: List[Tuple[str, int]]
     coverage_targets: Dict[int, CoverageTarget]  # target_percentage -> results
     non_hsk_words: Dict[str, int]  # words not in any HSK level -> frequency
-    filtered_words_count: int  # number of words filtered out
 
 
 class ChineseEPUBAnalyzer:
@@ -161,41 +160,35 @@ class ChineseEPUBAnalyzer:
 
         return text.strip()
 
-    def segment_chinese_text(self, text: str, min_length: int = 1, ignore_words: Optional[Set[str]] = None) -> Tuple[List[str], int]:
+    def segment_chinese_text(self, text: str, min_length: int = 1) -> List[str]:
         """
         Segment Chinese text into words using jieba.
 
         Args:
             text: Input Chinese text
             min_length: Minimum word length to include
-            ignore_words: Set of words to ignore in the output
 
         Returns:
-            Tuple of (segmented Chinese words, number of filtered words)
+            List of segmented Chinese words
         """
         # Extract Chinese characters only
         chinese_text = "".join(self.chinese_pattern.findall(text))
 
         if not chinese_text:
-            return [], 0
+            return []
 
         # Segment using jieba with highest quality settings
         words = jieba.cut(chinese_text, cut_all=False, HMM=True)
 
-        # Filter words: Chinese characters only, minimum length, not in ignore list
+        # Filter words: Chinese characters only, minimum length
         filtered_words = []
-        ignore_words = ignore_words or set()
-        filtered_count = 0
         
         for word in words:
             word = word.strip()
             if len(word) >= min_length and self.chinese_pattern.match(word) and len(word) > 0:
-                if word not in ignore_words:
-                    filtered_words.append(word)
-                else:
-                    filtered_count += 1
+                filtered_words.append(word)
 
-        return filtered_words, filtered_count
+        return filtered_words
 
     def analyze_vocabulary_frequency(self, words: List[str]) -> Dict[str, int]:
         """
@@ -365,7 +358,6 @@ class ChineseEPUBAnalyzer:
         min_frequency: int = 1,
         target_coverages: List[int] = [80, 90, 95, 98],
         top_unknown_count: int = 50,
-        ignore_words: Optional[Set[str]] = None,
     ) -> BookAnalysis:
         """
         Perform comprehensive analysis of an EPUB file.
@@ -376,7 +368,6 @@ class ChineseEPUBAnalyzer:
             min_frequency: Minimum frequency threshold for analysis
             target_coverages: List of target coverage percentages
             top_unknown_count: Number of top unknown words to include
-            ignore_words: Set of words to ignore in analysis
 
         Returns:
             Complete book analysis results
@@ -387,10 +378,8 @@ class ChineseEPUBAnalyzer:
         title, full_text = self.extract_text_from_epub(epub_path)
 
         # Segment Chinese text
-        words, filtered_count = self.segment_chinese_text(full_text, ignore_words=ignore_words)
+        words = self.segment_chinese_text(full_text)
         logger.info(f"Segmented {len(words)} words from text")
-        if filtered_count > 0:
-            logger.info(f"Filtered out {filtered_count} ignored words")
 
         # Calculate word frequencies
         word_frequencies = self.analyze_vocabulary_frequency(words)
@@ -443,5 +432,4 @@ class ChineseEPUBAnalyzer:
             high_frequency_unknown=high_frequency_unknown,
             coverage_targets=coverage_targets,
             non_hsk_words=non_hsk_words,
-            filtered_words_count=filtered_count,
         )
