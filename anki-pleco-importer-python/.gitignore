@@ -140,3 +140,6 @@ my_audio_config.json
 
 # Audio cache files
 audio_cache/
+
+# Test EPUB files
+text/
