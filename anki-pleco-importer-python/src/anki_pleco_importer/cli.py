@@ -830,6 +830,16 @@ def missing_hsk(anki_file: Path, count: int, max_level: int, verbose: bool) -> N
     help="Minimum word frequency threshold for analysis (default: 3)",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Show detailed analysis")
+@click.option(
+    "--proper-names-file",
+    type=click.Path(exists=True, path_type=Path),
+    help="File containing proper names to treat as known (one per line)",
+)
+@click.option(
+    "--ignore-words-file", 
+    type=click.Path(exists=True, path_type=Path),
+    help="File containing words to ignore in analysis (one per line)",
+)
 def analyze_epub(
     epub_file: Path,
     anki_file: Path,
@@ -837,6 +847,8 @@ def analyze_epub(
     top_unknown: int,
     min_frequency: int,
     verbose: bool,
+    proper_names_file: Optional[Path],
+    ignore_words_file: Optional[Path],
 ) -> None:
     """Analyze Chinese vocabulary in an EPUB file against your Anki collection."""
 
@@ -854,6 +866,30 @@ def analyze_epub(
                 anki_words.add(clean_chars)
 
         click.echo(f"Loaded {len(anki_words)} words from Anki collection")
+
+        # Load proper names file if provided
+        proper_names = set()
+        if proper_names_file:
+            click.echo(f"Loading proper names from {proper_names_file}...")
+            try:
+                with open(proper_names_file, 'r', encoding='utf-8') as f:
+                    proper_names = {line.strip() for line in f if line.strip()}
+                click.echo(f"Loaded {len(proper_names)} proper names")
+                # Add proper names to known words
+                anki_words.update(proper_names)
+            except Exception as e:
+                click.echo(f"Warning: Failed to load proper names file: {e}")
+
+        # Load ignore words file if provided
+        ignore_words = set()
+        if ignore_words_file:
+            click.echo(f"Loading ignore words from {ignore_words_file}...")
+            try:
+                with open(ignore_words_file, 'r', encoding='utf-8') as f:
+                    ignore_words = {line.strip() for line in f if line.strip()}
+                click.echo(f"Loaded {len(ignore_words)} words to ignore")
+            except Exception as e:
+                click.echo(f"Warning: Failed to load ignore words file: {e}")
 
         # Initialize EPUB analyzer
         click.echo("Initializing EPUB analyzer...")
@@ -874,6 +910,7 @@ def analyze_epub(
             min_frequency=min_frequency,
             target_coverages=list(target_coverage),
             top_unknown_count=top_unknown,
+            ignore_words=ignore_words,
         )
 
         # Generate comprehensive report
@@ -909,6 +946,10 @@ def _generate_epub_analysis_report(analysis, verbose: bool) -> None:
     if analysis.stats.total_words > 0:
         diversity = analysis.stats.unique_words / analysis.stats.total_words
         click.echo(f"Vocabulary diversity: {diversity:.3f}")
+    
+    # Show filtering information if words were filtered
+    if analysis.filtered_words_count > 0:
+        click.echo(f"Filtered words: {analysis.filtered_words_count:,}")
 
     # HSK Level Distribution
     click.echo(f"\n{click.style('📊 HSK Level Distribution', fg='green', bold=True)}")
