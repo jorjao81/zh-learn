@@ -6,6 +6,7 @@ import pandas as pd
 import os
 import json
 import shutil
+import random
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
@@ -13,6 +14,7 @@ from .parser import PlecoTSVParser
 from .pleco import pleco_to_anki
 from .audio import MultiProviderAudioGenerator
 from .anki_parser import AnkiExportParser
+from .hsk import HSKWordLists
 
 
 def convert_to_html_format(text: str) -> str:
@@ -182,9 +184,7 @@ def load_audio_config(
             if verbose:
                 click.echo(f"Loaded audio config from: {config_file}")
         except Exception as e:
-            click.echo(
-                f"Warning: Failed to load config file {config_file}: {e}", err=True
-            )
+            click.echo(f"Warning: Failed to load config file {config_file}: {e}", err=True)
 
     # Load from environment variables (override file config)
     env_config = {
@@ -195,9 +195,7 @@ def load_audio_config(
     for provider, provider_config in env_config.items():
         if provider not in config:
             config[provider] = {}
-        config[provider].update(
-            {k: v for k, v in provider_config.items() if v is not None}
-        )
+        config[provider].update({k: v for k, v in provider_config.items() if v is not None})
 
     return config
 
@@ -210,9 +208,7 @@ def cli() -> None:
 
 
 @cli.command()
-@click.argument(
-    "tsv_file", type=click.Path(exists=True, path_type=Path), required=False
-)
+@click.argument("tsv_file", type=click.Path(exists=True, path_type=Path), required=False)
 @click.option("--audio", is_flag=True, help="Generate pronunciation audio files")
 @click.option(
     "--audio-providers",
@@ -224,17 +220,13 @@ def cli() -> None:
     type=click.Path(exists=True),
     help="Path to audio configuration JSON file (default: audio-config.json if exists)",
 )
-@click.option(
-    "--audio-cache-dir", default="audio_cache", help="Directory to cache audio files"
-)
+@click.option("--audio-cache-dir", default="audio_cache", help="Directory to cache audio files")
 @click.option(
     "--audio-dest-dir",
     type=click.Path(),
     help="Directory to copy selected audio files to",
 )
-@click.option(
-    "--dry-run", is_flag=True, help="Show what would be done without making changes"
-)
+@click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def convert(
     tsv_file: Path,
@@ -279,11 +271,7 @@ def convert(
                         )
                     )
                 else:
-                    click.echo(
-                        click.style(
-                            "Warning: No audio providers available", fg="yellow"
-                        )
-                    )
+                    click.echo(click.style("Warning: No audio providers available", fg="yellow"))
                     # Keep audio_generator to track skipped words even when no providers available
 
             except Exception as e:
@@ -326,7 +314,6 @@ def convert(
             cards = parser.parse_file("Chinese.txt")
             print(len(cards))
 
-
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry, parser)
 
@@ -334,13 +321,9 @@ def convert(
                 if audio_generator and not dry_run:
                     try:
                         if verbose:
-                            click.echo(
-                                f"    Generating audio for '{anki_card.simplified}'..."
-                            )
+                            click.echo(f"    Generating audio for '{anki_card.simplified}'...")
 
-                        audio_file = audio_generator.generate_audio(
-                            anki_card.simplified
-                        )
+                        audio_file = audio_generator.generate_audio(anki_card.simplified)
                         if audio_file:
                             anki_card.pronunciation = audio_file
                             if verbose:
@@ -362,9 +345,7 @@ def convert(
                                         )
                                     )
                         elif verbose:
-                            click.echo(
-                                f"    No audio generated for '{anki_card.simplified}'"
-                            )
+                            click.echo(f"    No audio generated for '{anki_card.simplified}'")
 
                     except Exception as e:
                         if verbose:
@@ -397,12 +378,8 @@ def convert(
                     click.echo(examples_box)
 
                 if anki_card.structural_decomposition:
-                    click.echo(
-                        f"    {click.style('Components:', fg='magenta', bold=True)}"
-                    )
-                    component_box = format_meaning_box(
-                        anki_card.structural_decomposition
-                    )
+                    click.echo(f"    {click.style('Components:', fg='magenta', bold=True)}")
+                    component_box = format_meaning_box(anki_card.structural_decomposition)
                     click.echo(component_box)
 
                 click.echo()
@@ -418,9 +395,11 @@ def convert(
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
                             "meaning": convert_to_html_format(card.meaning),
-                            "examples": convert_list_to_html_format(card.examples)
-                            if card.examples
-                            else None,
+                            "examples": (
+                                convert_list_to_html_format(card.examples)
+                                if card.examples
+                                else None
+                            ),
                             "phonetic_component": card.phonetic_component,
                             "structural_decomposition": (
                                 convert_to_html_format(card.structural_decomposition)
@@ -487,9 +466,7 @@ def convert(
                     )
                 )
                 if audio and audio_generator:
-                    providers_text = ", ".join(
-                        audio_generator.get_available_providers()
-                    )
+                    providers_text = ", ".join(audio_generator.get_available_providers())
                     click.echo(
                         click.style(
                             f"Dry run: Would generate audio for cards using providers: {providers_text}",
@@ -535,15 +512,9 @@ def convert(
         click.echo(
             "  --audio-config PATH     Audio configuration JSON file (default: audio-config.json)"
         )
-        click.echo(
-            "  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)"
-        )
-        click.echo(
-            "  --audio-dest-dir PATH   Directory to copy selected audio files to"
-        )
-        click.echo(
-            "  --dry-run              Show what would be done without making changes"
-        )
+        click.echo("  --audio-cache-dir PATH  Audio cache directory (default: audio_cache)")
+        click.echo("  --audio-dest-dir PATH   Directory to copy selected audio files to")
+        click.echo("  --dry-run              Show what would be done without making changes")
         click.echo("  --verbose, -v          Enable verbose output")
         click.echo("\nEnvironment variables:")
         click.echo("  FORVO_API_KEY          Forvo API key")
@@ -565,9 +536,7 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
         parser = AnkiExportParser()
         cards = parser.parse_file(anki_file)
 
-        click.echo(
-            click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True)
-        )
+        click.echo(click.style(f"Anki Export Summary for {anki_file}", fg="green", bold=True))
         click.echo("=" * 50)
 
         # Basic statistics
@@ -594,10 +563,98 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
             for char, count in sorted_chars[:10]:
                 click.echo(f"  {char}: {count} times")
 
+        # HSK word coverage analysis
+        click.echo(f"\n{click.style('HSK Word Coverage Analysis:', fg='blue', bold=True)}")
+        try:
+            hsk_word_lists = HSKWordLists(Path("."))
+
+            # Get all words from Anki cards
+            anki_words = set()
+            for card in cards:
+                clean_chars = card.get_clean_characters()
+                if clean_chars:
+                    anki_words.add(clean_chars)
+
+            # Analyze coverage for each HSK level
+            hsk_analyses = hsk_word_lists.analyze_all_levels(anki_words)
+
+            if hsk_analyses:
+                click.echo(f"Total words in Anki collection: {len(anki_words)}")
+                click.echo("\nHSK Level Coverage:")
+                click.echo("-" * 50)
+
+                for analysis in hsk_analyses:
+                    level_name = f"HSK {analysis.level}" if analysis.level <= 6 else "HSK 7-9"
+                    percentage_color = (
+                        "green"
+                        if analysis.coverage_percentage >= 80
+                        else "yellow" if analysis.coverage_percentage >= 50 else "red"
+                    )
+
+                    click.echo(
+                        f"{level_name:8}: "
+                        f"{click.style(f'{analysis.coverage_percentage:5.1f}%', fg=percentage_color)} "
+                        f"({len(analysis.present_words):4}/{analysis.total_words:4} words)"
+                    )
+
+                # Show cumulative coverage
+                click.echo("\nCumulative Coverage:")
+                click.echo("-" * 30)
+                for level in [3, 6]:  # Show cumulative for HSK 1-3 and HSK 1-6
+                    if level <= max(analysis.level for analysis in hsk_analyses):
+                        cumulative = hsk_word_lists.get_cumulative_coverage(anki_words, level)
+                        percentage_color = (
+                            "green"
+                            if cumulative.coverage_percentage >= 80
+                            else "yellow" if cumulative.coverage_percentage >= 50 else "red"
+                        )
+
+                        click.echo(
+                            f"HSK 1-{level}: "
+                            f"{click.style(f'{cumulative.coverage_percentage:5.1f}%', fg=percentage_color)} "
+                            f"({len(cumulative.present_words):4}/{cumulative.total_words:4} words)"
+                        )
+
+                # Show missing words for lower levels if verbose
+                if verbose:
+                    click.echo(f"\n{click.style('Missing Words by Level:', fg='red', bold=True)}")
+                    for analysis in hsk_analyses[:5]:  # Show HSK 1-5 to see random selection in action
+                        if analysis.missing_words:
+                            level_name = (
+                                f"HSK {analysis.level}" if analysis.level <= 6 else "HSK 7-9"
+                            )
+                            click.echo(
+                                f"\n{level_name} missing words ({len(analysis.missing_words)}):"
+                            )
+
+                            # Show up to 20 missing words, randomly selected if more than 20
+                            max_words_to_show = 20
+                            missing_count = len(analysis.missing_words)
+                            
+                            if missing_count <= max_words_to_show:
+                                missing_to_show = analysis.missing_words
+                            else:
+                                # Randomly select words when there are more than the limit
+                                missing_to_show = random.sample(analysis.missing_words, max_words_to_show)
+                                # Sort the selected words for consistent display
+                                missing_to_show.sort()
+                            
+                            for i in range(0, len(missing_to_show), 10):
+                                row = missing_to_show[i : i + 10]
+                                click.echo(f"  {' '.join(row)}")
+
+                            if missing_count > max_words_to_show:
+                                click.echo(f"  ... and {missing_count - max_words_to_show} more (randomly selected above)")
+            else:
+                click.echo(
+                    "No HSK word lists found. Place HSK1.txt through HSK6.txt and HSK7-9.txt in the current directory."
+                )
+
+        except Exception as e:
+            click.echo(f"Warning: Could not analyze HSK coverage: {e}")
+
         # Candidate characters analysis
-        click.echo(
-            f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}"
-        )
+        click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
         click.echo(
             "(Characters that appear in many words OR as components, but are not single-character words)"
         )
@@ -617,9 +674,9 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
                 if verbose:
                     # Show some words containing this character
-                    words_with_char = [
-                        word for word in multi_words if candidate.character in word
-                    ][:5]
+                    words_with_char = [word for word in multi_words if candidate.character in word][
+                        :5
+                    ]
                     if words_with_char:
                         click.echo(f"      Found in: {', '.join(words_with_char)}")
         else:
@@ -629,6 +686,147 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
     except Exception as e:
         click.echo(f"Error analyzing file: {e}", err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+@cli.command()
+@click.argument("anki_file", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--count",
+    "-c",
+    default=20,
+    help="Number of missing words to show per level (default: 20)",
+)
+@click.option(
+    "--max-level",
+    default=6,
+    help="Maximum HSK level to check (default: 6, use 7 for HSK 7-9)",
+)
+@click.option("--verbose", "-v", is_flag=True, help="Show additional statistics")
+def missing_hsk(anki_file: Path, count: int, max_level: int, verbose: bool) -> None:
+    """Show missing HSK words by level, starting from the lowest level."""
+
+    try:
+        # Load Anki cards
+        parser = AnkiExportParser()
+        cards = parser.parse_file(anki_file)
+
+        # Get all words from Anki cards
+        anki_words = set()
+        for card in cards:
+            clean_chars = card.get_clean_characters()
+            if clean_chars:
+                anki_words.add(clean_chars)
+
+        # Load HSK word lists
+        hsk_word_lists = HSKWordLists(Path("."))
+        available_levels = hsk_word_lists.get_available_levels()
+
+        if not available_levels:
+            click.echo(
+                "No HSK word lists found. Place HSK1.txt through HSK6.txt and HSK7-9.txt in the current directory."
+            )
+            return
+
+        click.echo(click.style(f"Missing HSK Words from {anki_file}", fg="red", bold=True))
+        click.echo("=" * 60)
+
+        if verbose:
+            click.echo(f"Anki collection contains {len(anki_words)} unique words")
+            click.echo(f"Showing up to {count} missing words per level (levels 1-{max_level})")
+            click.echo()
+
+        total_missing = 0
+        total_words = 0
+
+        # Check each level from lowest to highest
+        for level in sorted(available_levels):
+            if level > max_level:
+                continue
+
+            analysis = hsk_word_lists.analyze_coverage(anki_words, level)
+            total_missing += len(analysis.missing_words)
+            total_words += analysis.total_words
+
+            level_name = f"HSK {level}" if level <= 6 else "HSK 7-9"
+
+            # Color code based on coverage
+            coverage_color = (
+                "green"
+                if analysis.coverage_percentage >= 90
+                else "yellow" if analysis.coverage_percentage >= 70 else "red"
+            )
+
+            click.echo(
+                f"{click.style(level_name, fg='blue', bold=True)}: "
+                f"{click.style(f'{analysis.coverage_percentage:.1f}%', fg=coverage_color)} coverage "
+                f"({len(analysis.present_words)}/{analysis.total_words} words)"
+            )
+
+            if analysis.missing_words:
+                missing_count = len(analysis.missing_words)
+                words_to_show = min(count, missing_count)
+
+                if missing_count <= count:
+                    click.echo(f"Missing {missing_count} words:")
+                    missing_words = analysis.missing_words
+                else:
+                    click.echo(f"Missing {missing_count} words (showing random {words_to_show}):")
+                    # Randomly select words when there are more than the limit
+                    missing_words = random.sample(analysis.missing_words, words_to_show)
+                    # Sort the selected words for consistent display
+                    missing_words.sort()
+
+                # Display words in rows of 5 for better readability
+                for i in range(0, len(missing_words), 5):
+                    row = missing_words[i : i + 5]
+                    # Format each word with consistent spacing
+                    formatted_row = [f"{word:6}" for word in row]
+                    click.echo(f"  {' '.join(formatted_row)}")
+
+                if missing_count > words_to_show:
+                    click.echo(
+                        click.style(
+                            f"  ... and {missing_count - words_to_show} more (not shown)", fg="bright_black"
+                        )
+                    )
+            else:
+                click.echo(click.style("✓ Complete! No missing words", fg="green"))
+
+            click.echo()
+
+        # Show summary statistics
+        click.echo(click.style("Summary", fg="cyan", bold=True))
+        click.echo("-" * 20)
+        overall_coverage = (
+            ((total_words - total_missing) / total_words * 100) if total_words > 0 else 0
+        )
+        summary_color = (
+            "green" if overall_coverage >= 80 else "yellow" if overall_coverage >= 60 else "red"
+        )
+
+        click.echo(
+            f"Overall coverage (HSK 1-{max_level}): "
+            f"{click.style(f'{overall_coverage:.1f}%', fg=summary_color)} "
+            f"({total_words - total_missing}/{total_words} words)"
+        )
+        click.echo(
+            f"Total missing words: {click.style(str(total_missing), fg='red' if total_missing > 0 else 'green')}"
+        )
+
+        if total_missing > 0:
+            click.echo()
+            click.echo(click.style("💡 Tip:", fg="yellow", bold=True))
+            click.echo(
+                "Focus on completing lower HSK levels first for maximum learning efficiency!"
+            )
+
+    except Exception as e:
+        click.echo(f"Error analyzing HSK coverage: {e}", err=True)
         if verbose:
             import traceback
 
