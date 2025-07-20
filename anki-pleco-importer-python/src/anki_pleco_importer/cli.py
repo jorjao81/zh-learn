@@ -13,9 +13,9 @@ from typing import List, Dict, Any, Optional, Tuple
 from .parser import PlecoTSVParser
 from .pleco import pleco_to_anki
 from .audio import MultiProviderAudioGenerator
-from .anki_parser import AnkiExportParser
 from .hsk import HSKWordLists
 from .epub_analyzer import ChineseEPUBAnalyzer
+from .anki_parser import AnkiExportParser, AnkiCard
 
 
 def convert_to_html_format(text: str) -> str:
@@ -1138,6 +1138,378 @@ def _generate_epub_analysis_report(analysis, verbose: bool, target_coverages: Li
                     click.echo(f"\n  ... and {remaining} more HSK {target.level} words")
 
     click.echo()
+
+
+@cli.command()
+@click.argument("anki_file", type=click.Path(exists=True, path_type=Path))
+@click.option("--max-suggestions", default=10, help="Maximum number of improvement suggestions to show (default: 10)")
+@click.option("--min-word-length", default=3, help="Minimum word length to analyze (default: 3 characters)")
+@click.option("--verbose", "-v", is_flag=True, help="Show detailed analysis including both decompositions")
+@click.option("--show-all", is_flag=True, help="Show all analyzed words, even those without improvements")
+@click.option("--export-csv", type=click.Path(path_type=Path), help="Export improved cards to CSV file")
+def improve_cards(
+    anki_file: Path,
+    max_suggestions: int,
+    min_word_length: int,
+    verbose: bool,
+    show_all: bool,
+    export_csv: Optional[Path],
+) -> None:
+    """Analyze existing Anki cards and suggest improvements to semantic decompositions.
+
+    This command looks for cards with words of 3+ characters and compares the existing
+    semantic decomposition with a new dictionary-based decomposition. If the new
+    decomposition has fewer components, it suggests an improvement.
+    """
+    click.echo(f"🔍 Analyzing Anki cards from: {anki_file}")
+
+    try:
+        # Parse Anki export file
+        parser = AnkiExportParser()
+        cards = parser.parse_file(anki_file)
+        click.echo(f"Found {len(cards)} cards to analyze")
+
+        # Build dictionary for decomposition
+        anki_dictionary = {}
+        for card in cards:
+            clean_chars = card.get_clean_characters()
+            if clean_chars and len(clean_chars) >= 1:
+                anki_dictionary[clean_chars] = {"pinyin": card.pinyin, "definition": card.definitions}
+
+        # Find improvement suggestions
+        suggestions = _analyze_card_improvements(cards, anki_dictionary, min_word_length, show_all)
+
+        # Sort by component count difference (biggest improvements first) then randomize within groups
+        import random
+
+        suggestions.sort(key=lambda x: x["component_reduction"], reverse=True)
+
+        # Randomize suggestions to show variety instead of always the same top ones
+        random.shuffle(suggestions)
+
+        # Display results
+        if not suggestions:
+            click.echo("✅ No improvement suggestions found!")
+            click.echo("All cards appear to have optimal decompositions.")
+        else:
+            # Limit to max suggestions
+            suggestions_to_show = suggestions[:max_suggestions]
+
+            click.echo(f"\n🎯 Found {click.style(str(len(suggestions)), fg='cyan', bold=True)} improvement suggestions")
+            if len(suggestions) > max_suggestions:
+                click.echo(f"(Showing {max_suggestions} random suggestions)")
+
+            for i, suggestion in enumerate(suggestions_to_show, 1):
+                _display_improvement_suggestion(suggestion, i, verbose)
+                if i < len(suggestions_to_show):  # Don't show separator after last item
+                    click.echo(click.style("─" * 80, fg="blue", dim=True))
+
+            if len(suggestions) > max_suggestions:
+                remaining = len(suggestions) - max_suggestions
+                click.echo(f"\n💡 {remaining} more suggestions available (use --max-suggestions to see more)")
+
+            # Export to CSV if requested
+            if export_csv:
+                exported_count = _export_improved_cards_to_csv(cards, suggestions, export_csv, anki_file)
+                click.echo(f"\n📄 Exported {exported_count} improved cards to: {export_csv}")
+
+    except Exception as e:
+        click.echo(f"Error analyzing cards: {e}", err=True)
+        if verbose:
+            import traceback
+
+            traceback.print_exc()
+        raise click.Abort()
+
+
+def _analyze_card_improvements(
+    cards: List[AnkiCard], anki_dictionary: dict, min_word_length: int, show_all: bool
+) -> List[dict]:
+    """Analyze cards for potential decomposition improvements."""
+    from .chinese import get_structural_decomposition
+
+    suggestions = []
+
+    for card in cards:
+        clean_chars = card.get_clean_characters()
+
+        # Skip cards that don't meet criteria
+        if not clean_chars or len(clean_chars) < min_word_length:
+            continue
+
+        # Get current decomposition component count
+        # If no components field, treat as character-by-character (worst case)
+        if not card.components or card.components.strip() == "":
+            current_components = len(clean_chars)  # Character-by-character count
+            current_decomposition_display = f"(no decomposition - {len(clean_chars)} characters)"
+        else:
+            current_components = _count_decomposition_components(card.components)
+            current_decomposition_display = card.components
+            if current_components == 0:
+                continue
+
+        # Generate new decomposition using dictionary-based approach
+        try:
+            # Create a modified dictionary that excludes the target word itself to force decomposition
+            modified_dictionary = {k: v for k, v in anki_dictionary.items() if k != clean_chars}
+            new_decomposition = get_structural_decomposition(clean_chars, modified_dictionary)
+            new_components = _count_decomposition_components(new_decomposition)
+
+            # For comparison, also get character-by-character decomposition
+            from .chinese import _get_individual_character_definitions
+
+            char_by_char = _get_individual_character_definitions(clean_chars)
+            char_by_char_components = _count_decomposition_components(char_by_char)
+
+            # Use the better decomposition (dictionary-based vs character-by-character)
+            # If dictionary-based has fewer components and is better than character-by-character, use it
+            if new_components > 0 and new_components < char_by_char_components:
+                best_decomposition = new_decomposition
+                best_component_count = new_components
+            else:
+                best_decomposition = char_by_char
+                best_component_count = char_by_char_components
+
+            # Create analysis record
+            analysis = {
+                "word": clean_chars,
+                "pinyin": card.pinyin,
+                "definition": card.definitions,
+                "current_decomposition": current_decomposition_display,
+                "current_component_count": current_components,
+                "suggested_decomposition": best_decomposition,
+                "suggested_component_count": best_component_count,
+                "component_reduction": current_components - best_component_count,
+            }
+
+            # Check if new decomposition has fewer components (better semantic grouping)
+            if best_component_count > 0 and best_component_count < current_components:
+                suggestions.append(analysis)
+            elif show_all and best_component_count > 0:
+                # Include all analyzed words if show_all is enabled
+                analysis["component_reduction"] = 0  # Mark as no improvement
+                suggestions.append(analysis)
+
+        except Exception as e:
+            # Skip cards that cause errors in decomposition
+            if show_all:
+                click.echo(f"Error processing {clean_chars}: {e}", err=True)
+            continue
+
+    return suggestions
+
+
+def _count_decomposition_components(decomposition: str) -> int:
+    """Count the number of components in a decomposition string."""
+    if not decomposition or decomposition.strip() == "":
+        return 0
+
+    # Count by splitting on '+' and filtering out empty parts
+    parts = [part.strip() for part in decomposition.split("+") if part.strip()]
+    return len(parts)
+
+
+def _display_improvement_suggestion(suggestion: dict, index: int, verbose: bool) -> None:
+    """Display a single improvement suggestion with formatting."""
+    word = suggestion["word"]
+    pinyin = suggestion["pinyin"]
+    definition = suggestion["definition"]
+    current_count = suggestion["current_component_count"]
+    suggested_count = suggestion["suggested_component_count"]
+    reduction = suggestion["component_reduction"]
+
+    # Header with word info
+    click.echo(
+        f"\n{click.style(f'{index}.', fg='blue', bold=True)} "
+        f"{click.style(word, fg='cyan', bold=True)} "
+        f"[{click.style(pinyin, fg='yellow')}]"
+    )
+
+    # Clean up definition by removing HTML tags and limiting length
+    clean_definition = _clean_definition(definition)
+    if len(clean_definition) > 80:
+        clean_definition = clean_definition[:77] + "..."
+    click.echo(f"   {click.style(clean_definition, fg='white', dim=True)}")
+
+    # Component count improvement with better visual indicators
+    if reduction > 0:
+        reduction_color = "green" if reduction >= 3 else "yellow" if reduction == 2 else "cyan"
+        reduction_icon = "🔥" if reduction >= 5 else "✨" if reduction >= 3 else "💡"
+        click.echo(
+            f"   {reduction_icon} {click.style(f'{current_count} → {suggested_count}', fg='white')} "
+            f"({click.style(f'-{reduction}', fg=reduction_color, bold=True)} components)"
+        )
+    else:
+        click.echo(f"   ➡️  {click.style(f'{current_count} → {suggested_count}', fg='white')} (no improvement)")
+
+    # Show decompositions with better formatting
+    click.echo()
+    if verbose and suggestion["current_decomposition"] != f"(no decomposition - {current_count} characters)":
+        current_format = _format_decomposition(suggestion["current_decomposition"])
+        click.echo(f"   {click.style('Current:', fg='red', bold=True)}   {current_format}")
+    suggested_format = _format_decomposition(suggestion["suggested_decomposition"])
+    click.echo(f"   {click.style('Suggested:', fg='green', bold=True)} {suggested_format}")
+
+
+def _clean_definition(definition: str) -> str:
+    """Convert HTML formatting to Click styling and clean up text."""
+    return _convert_html_to_click_styling(definition)
+
+
+def _convert_html_to_click_styling(text: str) -> str:
+    """Convert HTML tags to Click styling."""
+    import re
+
+    if not text:
+        return ""
+
+    # Handle HTML entities
+    text = text.replace("&nbsp;", " ").replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+
+    # Convert common HTML tags to Click styling
+    # Bold
+    text = re.sub(r"<b>(.*?)</b>", lambda m: click.style(m.group(1), bold=True), text, flags=re.DOTALL)
+    text = re.sub(r"<strong>(.*?)</strong>", lambda m: click.style(m.group(1), bold=True), text, flags=re.DOTALL)
+
+    # Color styling - handle various color formats
+    text = re.sub(
+        r'<span style="color:\s*rgb\((\d+),\s*(\d+),\s*(\d+)\);">(.*?)</span>',
+        lambda m: click.style(m.group(4), fg="cyan" if int(m.group(1)) < 100 else "white"),
+        text,
+        flags=re.DOTALL,
+    )
+    text = re.sub(
+        r'<span style="[^"]*color[^"]*">(.*?)</span>',
+        lambda m: click.style(m.group(1), fg="cyan"),
+        text,
+        flags=re.DOTALL,
+    )
+
+    # Div tags - treat as breaks or emphasis
+    text = re.sub(r"<div[^>]*>(.*?)</div>", r" \1 ", text, flags=re.DOTALL)
+
+    # Line breaks
+    text = re.sub(r"<br\s*/?>", " ", text)
+
+    # Remove any remaining HTML tags
+    text = re.sub(r"<[^>]+>", "", text)
+
+    # Clean up whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    # Remove extra quotes and HTML escaping
+    text = text.replace('""', '"').replace('""""', '"').replace("&quot;", '"')
+
+    # Remove leading/trailing quotes if they wrap the whole string
+    text = text.strip()
+    if text.startswith('"') and text.endswith('"') and text.count('"') == 2:
+        text = text[1:-1]
+
+    return text.strip()
+
+
+def _format_decomposition(decomposition: str) -> str:
+    """Format decomposition for better readability."""
+    if not decomposition:
+        return ""
+
+    # If it's a "no decomposition" message, style it differently
+    if decomposition.startswith("(no decomposition"):
+        return click.style(decomposition, fg="red", dim=True)
+
+    # Split by + and format each component
+    parts = [part.strip() for part in decomposition.split("+") if part.strip()]
+    formatted_parts = []
+
+    for part in parts:
+        # Convert HTML to styling for the part
+        styled_part = _convert_html_to_click_styling(part)
+
+        # Extract Chinese character(s) from the component
+        if "(" in styled_part:
+            chinese = styled_part.split("(")[0].strip()
+            rest = "(" + styled_part.split("(", 1)[1]
+            # Limit the definition part to keep it readable
+            if len(rest) > 50:
+                rest = rest[:47] + "...)"
+            formatted_parts.append(
+                f"{click.style(chinese, fg='cyan', bold=True)}{click.style(rest, fg='white', dim=True)}"
+            )
+        else:
+            formatted_parts.append(click.style(styled_part, fg="cyan", bold=True))
+
+    return f" {click.style('+', fg='yellow')} ".join(formatted_parts)
+
+
+def _export_improved_cards_to_csv(
+    cards: List[AnkiCard], suggestions: List[dict], export_path: Path, original_file: Path
+) -> int:
+    """Export cards with improved decompositions to a CSV file."""
+    # Create a mapping of words to their improved decompositions
+    improvements_map = {}
+    for suggestion in suggestions:
+        if suggestion["component_reduction"] > 0:  # Only include actual improvements
+            improvements_map[suggestion["word"]] = suggestion["suggested_decomposition"]
+
+    if not improvements_map:
+        return 0
+
+    # Read the original file to preserve the exact format
+    with open(original_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    # Find header lines and determine separator
+    separator = "\t"  # default
+    header_lines = []
+    data_start_index = 0
+
+    for i, line in enumerate(lines):
+        if line.startswith("#"):
+            header_lines.append(line)
+            if line.startswith("#separator:"):
+                sep_name = line.split(":")[1].strip()
+                if sep_name == "comma":
+                    separator = ","
+            data_start_index = i + 1
+        else:
+            break
+
+    # Write the improved cards
+    exported_count = 0
+    with open(export_path, "w", encoding="utf-8") as f:
+        # Write header lines
+        for header in header_lines:
+            f.write(header)
+
+        # Process each data line
+        for line in lines[data_start_index:]:
+            line = line.strip()
+            if not line:
+                continue
+
+            parts = line.split(separator)
+            if len(parts) >= 6:  # Must have at least components field
+                # Extract the characters field (index 2) and components field (index 5)
+                characters_field = parts[2] if len(parts) > 2 else ""
+
+                # Get clean characters for matching
+                import re
+
+                clean_chars = re.sub(r"<[^>]+>", "", characters_field).strip()
+
+                # Check if this card has an improvement
+                if clean_chars in improvements_map:
+                    # Replace the components field (index 5) with the improved decomposition
+                    parts[5] = improvements_map[clean_chars]
+                    exported_count += 1
+
+                # Write the line (improved or unchanged)
+                f.write(separator.join(parts) + "\n")
+            else:
+                # Write unchanged line if it doesn't have enough fields
+                f.write(line + "\n")
+
+    return exported_count
 
 
 def main() -> None:
