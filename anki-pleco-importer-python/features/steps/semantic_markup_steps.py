@@ -48,28 +48,76 @@ def step_convert_to_semantic_markup(context):
 def step_verify_semantic_html(context):
     """Verify the semantic HTML output matches expected."""
     for i, row in enumerate(context.table):
-        expected_simplified = row["simplified"]
-        expected_pinyin = row["pinyin"]
-        expected_meaning = row["meaning"]
+        # Handle different test scenarios with different column structures
 
-        actual = context.semantic_results[i]
+        # Character decomposition tests
+        if "character" in row and "expected_decomposition" in row:
+            expected_character = row["character"]
+            expected_decomposition = row["expected_decomposition"]
 
-        assert (
-            actual["simplified"] == expected_simplified
-        ), f"Simplified mismatch: got {actual['simplified']}, expected {expected_simplified}"
-        assert (
-            actual["pinyin"] == expected_pinyin
-        ), f"Pinyin mismatch: got {actual['pinyin']}, expected {expected_pinyin}"
-        assert (
-            actual["meaning"] == expected_meaning
-        ), f"Meaning mismatch: got {actual['meaning']}, expected {expected_meaning}"
+            actual = context.decomposition_results[i]
 
-        # Check examples if present in expected results
-        if "examples" in row:
-            expected_examples = row["examples"]
+            assert (
+                actual["character"] == expected_character
+            ), f"Character mismatch: got {actual['character']}, expected {expected_character}"
+            assert (
+                actual["decomposition"] == expected_decomposition
+            ), f"Decomposition mismatch: got {actual['decomposition']}, expected {expected_decomposition}"
+
+        # Word decomposition tests
+        elif "word" in row and "expected_decomposition" in row:
+            expected_word = row["word"]
+            expected_decomposition = row["expected_decomposition"]
+
+            actual = context.word_decomposition_results[i]
+
+            assert actual["word"] == expected_word, f"Word mismatch: got {actual['word']}, expected {expected_word}"
+            assert (
+                actual["decomposition"] == expected_decomposition
+            ), f"Decomposition mismatch: got {actual['decomposition']}, expected {expected_decomposition}"
+
+        # Examples tests
+        elif "expected_examples" in row:
+            expected_simplified = row["simplified"]
+            expected_pinyin = row["expected_pinyin"]
+            expected_examples = row["expected_examples"]
+
+            actual = context.semantic_results[i]
+
+            assert (
+                actual["simplified"] == expected_simplified
+            ), f"Simplified mismatch: got {actual['simplified']}, expected {expected_simplified}"
+            assert (
+                actual["pinyin"] == expected_pinyin
+            ), f"Pinyin mismatch: got {actual['pinyin']}, expected {expected_pinyin}"
             assert (
                 actual["examples"] == expected_examples
             ), f"Examples mismatch: got {actual['examples']}, expected {expected_examples}"
+
+        # Standard meaning tests
+        else:
+            expected_simplified = row["simplified"]
+            expected_pinyin = row["pinyin"]
+            expected_meaning = row["meaning"]
+
+            actual = context.semantic_results[i]
+
+            assert (
+                actual["simplified"] == expected_simplified
+            ), f"Simplified mismatch: got {actual['simplified']}, expected {expected_simplified}"
+            assert (
+                actual["pinyin"] == expected_pinyin
+            ), f"Pinyin mismatch: got {actual['pinyin']}, expected {expected_pinyin}"
+            assert (
+                actual["meaning"] == expected_meaning
+            ), f"Meaning mismatch: got {actual['meaning']}, expected {expected_meaning}"
+
+            # Check examples if present in expected results
+            if "examples" in row:
+                expected_examples = row["examples"]
+                assert (
+                    actual["examples"] == expected_examples
+                ), f"Examples mismatch: got {actual['examples']}, expected {expected_examples}"
 
 
 @given("I have the following character decomposition")

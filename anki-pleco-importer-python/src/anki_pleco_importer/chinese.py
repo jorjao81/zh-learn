@@ -131,6 +131,36 @@ def get_structural_decomposition(chinese_text: str, anki_dictionary: dict) -> st
         return _get_individual_character_definitions(chinese_text)
 
 
+def get_structural_decomposition_semantic(chinese_text: str, anki_dictionary: dict) -> str:
+    """Get structural decomposition for Chinese characters using semantic markup.
+
+    Args:
+        chinese_text: Chinese text to decompose
+        anki_dictionary: Optional dictionary from Anki export for word decomposition
+
+    Returns:
+        Formatted string with structural decomposition using semantic HTML markup
+    """
+    # For multi-character words (3+ characters), use dictionary-based decomposition
+    if len(chinese_text) > 2:
+        return _get_dictionary_based_decomposition_semantic(chinese_text, anki_dictionary)
+
+    # For 2-character words, fall back to individual character definitions with semantic markup
+    elif len(chinese_text) == 2:
+        return _get_individual_character_definitions_semantic(chinese_text)
+
+    # For single characters, use proper structural decomposition with semantic markup
+    try:
+        from .character_decomposer import CharacterDecomposer
+
+        decomposer = CharacterDecomposer()
+        result = decomposer.decompose(chinese_text)
+        return decomposer.format_decomposition_semantic(result)
+    except (ImportError, Exception):
+        # Fall back to individual character definitions if decomposer fails
+        return _get_individual_character_definitions_semantic(chinese_text)
+
+
 def _get_dictionary_based_decomposition(chinese_text: str, anki_dictionary: dict) -> str:
     """Decompose multi-character words using Anki dictionary lookup.
 
@@ -157,6 +187,33 @@ def _get_dictionary_based_decomposition(chinese_text: str, anki_dictionary: dict
 
     # Fall back to individual character definitions if no matches found
     return _get_individual_character_definitions(chinese_text)
+
+
+def _get_dictionary_based_decomposition_semantic(chinese_text: str, anki_dictionary: dict) -> str:
+    """Decompose multi-character words using Anki dictionary lookup with semantic markup.
+
+    Args:
+        chinese_text: Chinese text to decompose (3+ characters)
+        anki_dictionary: Dictionary mapping Chinese words to their pinyin and
+            definitions
+
+    Returns:
+        Formatted string with word decomposition using semantic HTML markup
+    """
+
+    # For 4-character words, prefer 2+2 split
+    if len(chinese_text) == 4:
+        components = _find_optimal_4_char_decomposition(chinese_text, anki_dictionary)
+        if components:
+            return format_components_semantic(components)
+
+    # For other lengths, use greedy longest-match decomposition
+    components = _find_greedy_decomposition(chinese_text, anki_dictionary)
+    if components:
+        return format_components_semantic(components)
+
+    # Fall back to individual character definitions if no matches found
+    return _get_individual_character_definitions_semantic(chinese_text)
 
 
 def _find_optimal_4_char_decomposition(chinese_text: str, anki_dictionary: dict) -> list:
@@ -378,3 +435,67 @@ def _get_individual_character_definitions(chinese_text: str) -> str:
 
     # Join with + sign
     return " + ".join(components)
+
+
+def _get_individual_character_definitions_semantic(chinese_text: str) -> str:
+    """Get individual character definitions with semantic markup as fallback for structural decomposition.
+
+    Args:
+        chinese_text: Chinese text to get definitions for
+
+    Returns:
+        Formatted string with characters and their meanings using semantic HTML markup
+    """
+    components = []
+
+    # Split text into individual characters
+    for char in chinese_text:
+        # Skip non-Chinese characters
+        if not "\u4e00" <= char <= "\u9fff":
+            continue
+
+        try:
+            # Get pinyin (prefer lowercase/common pronunciation)
+            pinyin_list = _hanzi_dictionary.get_pinyin(char)
+            if not pinyin_list:
+                continue
+
+            # Prefer lowercase pinyin over uppercase (common vs proper name)
+            pinyin = pinyin_list[0]
+            for p in pinyin_list:
+                if p.islower():
+                    pinyin = p
+                    break
+
+            # Get all definitions
+            definitions = _hanzi_dictionary.definition_lookup(char)
+            if not definitions:
+                continue
+
+            # Collect all definitions, excluding surname definitions
+            all_definitions = []
+            for def_item in definitions:
+                definition_text = def_item.get("definition", "")
+                if "surname" not in definition_text.lower() and definition_text:
+                    all_definitions.append(definition_text)
+
+            # If no non-surname definitions found, use the first one
+            if not all_definitions:
+                all_definitions = [definitions[0].get("definition", "")]
+
+            # Join all definitions with forward slash separator
+            combined_definition = "/".join(all_definitions)
+
+            # Convert numbered pinyin to toned pinyin for display
+            pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
+
+            # Format with semantic markup: 字 (pinyin) - definition
+            component_dict = {"chinese": char, "pinyin": pinyin_clean, "definition": combined_definition}
+            components.append(component_dict)
+
+        except Exception:
+            # If any error occurs, skip this character
+            continue
+
+    # Use semantic formatting
+    return format_components_semantic(components)

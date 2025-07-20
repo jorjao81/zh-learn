@@ -82,7 +82,7 @@ Feature: Semantic HTML markup for Anki cards
       | <character> | <components> | <radical_meanings> | <component_types> | <component_pinyin> | <structure_notes> |
     When I convert the decomposition to semantic markup
     Then I should get the following semantic HTML:
-      | character | decomposition |
+      | character | expected_decomposition |
       | <character> | <expected_decomposition> |
 
     Examples: Character decomposition
@@ -96,7 +96,7 @@ Feature: Semantic HTML markup for Anki cards
       | <word> | <components> | <component_pinyin> | <component_definitions> |
     When I convert the word decomposition to semantic markup
     Then I should get the following semantic HTML:
-      | word | decomposition |
+      | word | expected_decomposition |
       | <word> | <expected_decomposition> |
 
     Examples: Word decomposition

@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple, Iterator
 import re
 
 from .anki import AnkiCard
-from .chinese import convert_numbered_pinyin_to_tones, get_structural_decomposition
+from .chinese import convert_numbered_pinyin_to_tones, get_structural_decomposition_semantic
 from .anki_parser import AnkiExportParser
 from .constants import (
     PARTS_OF_SPEECH,
@@ -111,36 +111,57 @@ def _extract_meaning_sections(
             if extracted_examples:
                 examples.extend(extracted_examples)
     else:
-        # Process each meaning section
-        for i, (start, _, pos) in enumerate(pos_positions):
-            # Find the end of this meaning section
-            if i + 1 < len(pos_positions):
-                section_end = pos_positions[i + 1][0]
-            else:
-                section_end = len(definition)
+        # Check if definition should be split by numbered meanings first
+        numbered_sections = _split_by_numbered_meanings(definition)
 
-            section_text = definition[start:section_end].strip()
+        if len(numbered_sections) > 1:
+            # If there are numbered sections, use those instead of POS positions
+            for numbered_section in numbered_sections:
+                clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
+                meaning, extracted_examples = extract_examples_from_text(clean_section)
+                meanings.append(meaning)
+                if extracted_examples:
+                    examples.extend(extracted_examples)
+        elif len(pos_positions) > 1 and _should_split_by_pos(definition, pos_positions):
+            # Only split by POS if there are clear separators indicating multiple meanings
+            for i, (start, _, pos) in enumerate(pos_positions):
+                # Find the end of this meaning section
+                if i + 1 < len(pos_positions):
+                    section_end = pos_positions[i + 1][0]
+                else:
+                    section_end = len(definition)
 
-            # Check if this section contains numbered meanings (1, 2, 3, etc.)
-            numbered_sections = _split_by_numbered_meanings(section_text)
-
-            if len(numbered_sections) > 1:
-                # Process each numbered section separately
-                for numbered_section in numbered_sections:
-                    # Remove the leading number from the meaning since it will be in a list
-                    clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
-                    meaning, extracted_examples = extract_examples_from_text(clean_section)
-                    meanings.append(meaning)
-                    if extracted_examples:
-                        examples.extend(extracted_examples)
-            else:
-                # Extract meaning and examples from this section
+                section_text = definition[start:section_end].strip()
                 meaning, extracted_examples = extract_examples_from_text(section_text)
                 meanings.append(meaning)
                 if extracted_examples:
                     examples.extend(extracted_examples)
+        else:
+            # Treat as single meaning with inline POS markers
+            meaning, extracted_examples = extract_examples_from_text(definition)
+            meanings.append(meaning)
+            if extracted_examples:
+                examples.extend(extracted_examples)
 
     return meanings, examples
+
+
+def _should_split_by_pos(definition: str, pos_positions: List[Tuple[int, int, str]]) -> bool:
+    """Determine if definition should be split by POS positions based on strong structural indicators."""
+    # Only split if there are very clear structural separators, not just semicolons
+    # Semicolons are commonly used within single meanings to separate translations
+
+    # Check for numbered patterns between POS markers
+    for i in range(len(pos_positions) - 1):
+        current_end = pos_positions[i][1]
+        next_start = pos_positions[i + 1][0]
+        between_text = definition[current_end:next_start].strip()
+
+        # Only split if there are numbers indicating separate definitions or very clear separators
+        if re.search(r"\d+\s+\w+", between_text) or " | " in between_text:
+            return True
+
+    return False
 
 
 def _split_by_numbered_meanings(text: str) -> List[str]:
@@ -538,7 +559,7 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
     """
     Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples.
     """
-    meaning, examples, similar_characters = parse_pleco_definition(pleco_entry.definition)
+    meaning, examples, similar_characters = parse_pleco_definition_semantic(pleco_entry.definition)
 
     anki_dictionary = _create_anki_dictionary(anki_export_parser)
 
@@ -557,7 +578,7 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
                 # Just the character if not found in dictionary
                 enhanced_similar_characters.append(char)
 
-    structural_decomposition = get_structural_decomposition(pleco_entry.chinese, anki_dictionary)
+    structural_decomposition = get_structural_decomposition_semantic(pleco_entry.chinese, anki_dictionary)
 
     # For single character words, add multi-character examples from Anki export
     if len(pleco_entry.chinese) == 1 and anki_export_parser:
