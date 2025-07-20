@@ -36,13 +36,6 @@ SEMANTIC_PART_OF_SPEECH_ABBREVIATIONS = {
 
 # Domain markers that should be highlighted in red
 DOMAIN_MARKERS = {
-    r"\(fig\.\)": "figurative",
-    r"\bLIT\b": "literary",
-    r"\bliterary\b": "literary",
-    r"\bdialect\b": "dialect",
-    r"\bpejorative\b": "pejorative",
-    r"\bdated\b": "dated",
-    r"\bcolloquial\b": "colloquial",
     r"\bphysics\b": "physics",
     r"\bphilosophy\b": "philosophy",
     r"\bbiology\b": "biology",
@@ -62,10 +55,15 @@ DOMAIN_MARKERS = {
 
 # Usage markers that should be marked with usage + specific class
 USAGE_MARKERS = {
+    r"\(fig\.\)": "figurative",
+    r"\(derog\.\)": "derogatory",   
+    r"\bLIT\b": "literary",
     r"\bliterary\b": "literary",
+    r"\bdialect\b": "dialect",
+    r"\bpejorative\b": "pejorative",
     r"\bdated\b": "dated",
     r"\bcolloquial\b": "colloquial",
-    r"\bpejorative\b": "pejorative",
+
 }
 
 # Regex patterns for Chinese example extraction

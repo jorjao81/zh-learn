@@ -167,8 +167,10 @@ def _should_split_by_pos(definition: str, pos_positions: List[Tuple[int, int, st
 def _split_by_numbered_meanings(text: str) -> List[str]:
     """Split text by numbered meanings (1, 2, 3, etc.)."""
     # Pattern to match numbered meanings like "1 ", "2 ", "3 ", etc.
+    # Include numbers at the start of string or preceded by whitespace
     # Make sure we don't match numbers inside Chinese text or other contexts
-    pattern = r"\s+(\d+)\s+(?=[a-zA-Z])"
+    # Allow both letters and digits to follow (for cases like "3D")
+    pattern = r"(?:^|\s)(\d+)\s+(?=[a-zA-Z0-9])"
 
     # Find all numbered positions
     matches = list(re.finditer(pattern, text))
@@ -220,21 +222,70 @@ def _format_meaning_with_html(meanings: List[str]) -> str:
 
 def _format_meaning_with_semantic_markup(meanings: List[str]) -> str:
     """Format meanings with semantic HTML classes and lists instead of inline styling."""
-    # If there are multiple meanings, format as an ordered list
-    if len(meanings) > 1:
+    if not meanings:
+        return ""
+
+    # Check if first meaning is just a part-of-speech tag
+    pos_patterns = [
+        "noun",
+        "verb",
+        "adjective",
+        "adverb",
+        "pronoun",
+        "preposition",
+        "conjunction",
+        "interjection",
+        "idiom",
+    ]
+
+    result_parts = []
+
+    # Process meanings, handling part-of-speech tags separately
+    i = 0
+    while i < len(meanings):
+        current_meaning = meanings[i].strip()
+
+        # Check if this is a standalone part-of-speech tag
+        if current_meaning.lower() in pos_patterns:
+            # Add the POS tag outside any list
+            result_parts.append(f'<span class="part-of-speech">{current_meaning.lower()}</span>')
+            i += 1
+
+            # Collect subsequent meanings that belong to this POS
+            pos_meanings = []
+            while i < len(meanings) and meanings[i].strip().lower() not in pos_patterns:
+                pos_meanings.append(meanings[i])
+                i += 1
+
+            # Format the meanings for this POS as a list if multiple, or single if one
+            if len(pos_meanings) > 1:
+                formatted_pos_meanings = []
+                for meaning in pos_meanings:
+                    formatted_meaning = _apply_semantic_markup_to_text(meaning)
+                    formatted_pos_meanings.append(formatted_meaning)
+                list_items = "</li><li>".join(formatted_pos_meanings)
+                result_parts.append(f"<ol><li>{list_items}</li></ol>")
+            elif len(pos_meanings) == 1:
+                formatted_meaning = _apply_semantic_markup_to_text(pos_meanings[0])
+                result_parts.append(formatted_meaning)
+        else:
+            # Not a standalone POS tag, treat as regular meaning
+            formatted_meaning = _apply_semantic_markup_to_text(current_meaning)
+            result_parts.append(formatted_meaning)
+            i += 1
+
+    # Check if we have multiple meanings but no POS tags were found
+    # If result_parts equals the number of meanings, it means no POS processing occurred
+    if len(result_parts) == len(meanings) and len(meanings) > 1:
+        # No POS tags were detected but we have multiple meanings, format as ordered list
         formatted_meanings = []
         for meaning in meanings:
-            # Apply semantic markup to each meaning
             formatted_meaning = _apply_semantic_markup_to_text(meaning)
             formatted_meanings.append(formatted_meaning)
         list_items = "</li><li>".join(formatted_meanings)
         return f"<ol><li>{list_items}</li></ol>"
 
-    # Single meaning - apply semantic markup directly
-    if meanings:
-        return _apply_semantic_markup_to_text(meanings[0])
-
-    return ""
+    return " ".join(result_parts)
 
 
 def _apply_semantic_markup_to_text(text: str) -> str:
@@ -338,52 +389,72 @@ def format_examples_with_semantic_markup(examples: Optional[List[str]]) -> Optio
 
 def _format_single_example_semantic(example: str) -> str:
     """Format a single example with semantic markup for hanzi, pinyin, and translation."""
-    # Pattern to match: "Chinese (pinyin) - translation" or "Chinese pinyin translation"
-    
+    # Pattern to match various formats:
+    # 1. "Chinese (pinyin) - translation"
+    # 2. "Chinese pinyin translation" (single words/phrases)
+    # 3. "Chinese sentence. Pinyin sentence. English sentence."
+
     # First try pattern with parentheses and dash: "Chinese (pinyin) - translation"
     pattern1 = r"([一-龯]+)\s*\(([^)]+)\)\s*-\s*(.+)"
     match = re.search(pattern1, example)
-    
+
     if match:
         hanzi = match.group(1).strip()
         pinyin = match.group(2).strip()
         translation = match.group(3).strip()
-        
+
         return (
             f'<span class="hanzi">{hanzi}</span> '
             f'(<span class="pinyin">{pinyin}</span>) - '
             f'<span class="translation">{translation}</span>'
         )
-    
-    # Second try pattern without parentheses: "Chinese pinyin translation"  
+
+    # Second try pattern for sentences: "Chinese sentence. Pinyin sentence. English sentence."
+    # Look for pattern with Chinese characters followed by punctuation, then pinyin, then English
+    # Handle Chinese punctuation (。！？,) and English punctuation (.!?,)
+    sentence_pattern = r"^([一-龯][^。！？]*[。！？,])\s+([A-ZĀ-ǜa-z][^.!?]*[.!?？])\s+(.+)$"
+    match = re.search(sentence_pattern, example)
+
+    if match:
+        hanzi = match.group(1).strip()
+        pinyin = match.group(2).strip()
+        translation = match.group(3).strip()
+
+        return (
+            f'<span class="hanzi">{hanzi}</span> '
+            f'<span class="pinyin">{pinyin}</span> '
+            f'<span class="translation">{translation}</span>'
+        )
+
+    # Third try pattern without parentheses: "Chinese pinyin translation" (single words/phrases)
     # Split by spaces and find where Chinese ends and English begins
     parts = example.split()
     if len(parts) >= 3:
         # First part should be Chinese characters
         hanzi_candidate = parts[0]
-        if re.match(r'^[一-龯]+$', hanzi_candidate):
+        if re.match(r"^[一-龯]+$", hanzi_candidate):
             # Find where English starts (first word that looks like English, not pinyin)
             english_start_idx = None
             for i, part in enumerate(parts[1:], 1):
                 # Check if this looks like English (contains English letters but no tone marks)
-                if re.search(r'[a-zA-Z]', part) and not re.search(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', part):
+                if re.search(r"[a-zA-Z]", part) and not re.search(r"[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]", part):
                     english_start_idx = i
                     break
-            
+
             if english_start_idx:
                 hanzi = hanzi_candidate
                 pinyin_parts = parts[1:english_start_idx]
                 translation_parts = parts[english_start_idx:]
-                
-                pinyin = ' '.join(pinyin_parts)
-                translation = ' '.join(translation_parts)
-                
+
+                pinyin = " ".join(pinyin_parts)
+                translation = " ".join(translation_parts)
+
                 return (
                     f'<span class="hanzi">{hanzi}</span> '
                     f'<span class="pinyin">{pinyin}</span> '
                     f'<span class="translation">{translation}</span>'
                 )
-    
+
     # If no pattern matches, return as-is
     return example
 

@@ -20,3 +20,8 @@ information easier.
 * For the word decomposition, also use list to mark each part of the composition.
 
 Plan in detail before implementing
+
+
+## Refactor: add a real domain model, and separate the domain from it's representation in HTML
+
+Currently, the code base is mixing representation of HTML with the domain information. Think hard, look at the code and at how I represent it in Anki and try to find a domain model of python class or classes representing a chinese vocabulary item for spaced repetition learning. E.g, a word has hanzi chars, pinyin, a structural decomposition, examples, definitions. Examples are usually made of hanzi, pinyin and translation, whereas definitions are more complex; they can have part-of-speech, domain, usage, etc.

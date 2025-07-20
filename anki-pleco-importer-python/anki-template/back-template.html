@@ -1,21 +1,18 @@
-{{#Chinese}}
+{{#Simplified}}
 <div class="card-container">
   <!-- Front side repeated for context -->
-  <div class="chinese-main">
-    {{Chinese}}
+  <div class="chinese-header">
+    <div class="chinese-main">
+      {{Simplified}}
+    </div>
+    <div class="chinese-side">
+      {{#Pinyin}}
+      <div class="pinyin-main">
+        {{Pinyin}} {{Pronunciation}}
+      </div>
+      {{/Pinyin}}
+\    </div>
   </div>
-
-  {{#Pinyin}}
-  <div class="pinyin-main">
-    {{Pinyin}}
-  </div>
-  {{/Pinyin}}
-
-  {{#Audio}}
-  <div class="audio-section">
-    {{Audio}}
-  </div>
-  {{/Audio}}
 
   <hr class="divider">
 
@@ -24,7 +21,7 @@
   <div class="definition-section">
     <div class="section-title">Definition</div>
     <div class="definition-content">
-      {{{Definition}}}
+      {{Definition}}
     </div>
   </div>
   {{/Definition}}
@@ -33,7 +30,7 @@
   <div class="components-section">
     <div class="section-title">Structural Analysis</div>
     <div class="components-content">
-      {{{Components}}}
+      {{Components}}
     </div>
   </div>
   {{/Components}}
@@ -42,7 +39,7 @@
   <div class="examples-section">
     <div class="section-title">Examples</div>
     <div class="examples-content">
-      {{{Examples}}}
+      {{Examples}}
     </div>
   </div>
   {{/Examples}}
@@ -56,4 +53,4 @@
   </div>
   {{/SimilarChars}}
 </div>
-{{/Chinese}}
+{{/Simplified}}

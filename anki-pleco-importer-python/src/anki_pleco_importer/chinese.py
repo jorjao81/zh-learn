@@ -348,9 +348,9 @@ def format_components_semantic(components: list) -> str:
 
         result = f'<span class="hanzi">{chinese}</span>'
         if pinyin:
-            result += f' (<span class="pinyin">{pinyin}</span>)'
+            result += f' <span class="pinyin">{pinyin}</span>'
         if definition:
-            result += f' - <span class="definition">{definition}</span>'
+            result += f' <span class="definition">{definition}</span>'
         return result
 
     # Multiple components - create semantic HTML list
@@ -362,9 +362,9 @@ def format_components_semantic(components: list) -> str:
 
         component_html = f'<span class="hanzi">{chinese}</span>'
         if pinyin:
-            component_html += f' (<span class="pinyin">{pinyin}</span>)'
+            component_html += f' <span class="pinyin">{pinyin}</span>'
         if definition:
-            component_html += f' - <span class="definition">{definition}</span>'
+            component_html += f' <span class="definition">{definition}</span>'
 
         component_items.append(component_html)
 
