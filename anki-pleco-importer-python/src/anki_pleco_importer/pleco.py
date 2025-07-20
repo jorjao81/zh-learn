@@ -338,24 +338,53 @@ def format_examples_with_semantic_markup(examples: Optional[List[str]]) -> Optio
 
 def _format_single_example_semantic(example: str) -> str:
     """Format a single example with semantic markup for hanzi, pinyin, and translation."""
-    # Pattern to match: "Chinese (pinyin) - translation"
-
-    # More flexible pattern to match Chinese characters followed by pinyin in parentheses
-    pattern = r"([一-龯]+)\s*\(([^)]+)\)\s*-\s*(.+)"
-    match = re.search(pattern, example)
-
+    # Pattern to match: "Chinese (pinyin) - translation" or "Chinese pinyin translation"
+    
+    # First try pattern with parentheses and dash: "Chinese (pinyin) - translation"
+    pattern1 = r"([一-龯]+)\s*\(([^)]+)\)\s*-\s*(.+)"
+    match = re.search(pattern1, example)
+    
     if match:
         hanzi = match.group(1).strip()
         pinyin = match.group(2).strip()
         translation = match.group(3).strip()
-
+        
         return (
             f'<span class="hanzi">{hanzi}</span> '
             f'(<span class="pinyin">{pinyin}</span>) - '
             f'<span class="translation">{translation}</span>'
         )
-
-    # If pattern doesn't match, return as-is
+    
+    # Second try pattern without parentheses: "Chinese pinyin translation"  
+    # Split by spaces and find where Chinese ends and English begins
+    parts = example.split()
+    if len(parts) >= 3:
+        # First part should be Chinese characters
+        hanzi_candidate = parts[0]
+        if re.match(r'^[一-龯]+$', hanzi_candidate):
+            # Find where English starts (first word that looks like English, not pinyin)
+            english_start_idx = None
+            for i, part in enumerate(parts[1:], 1):
+                # Check if this looks like English (contains English letters but no tone marks)
+                if re.search(r'[a-zA-Z]', part) and not re.search(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', part):
+                    english_start_idx = i
+                    break
+            
+            if english_start_idx:
+                hanzi = hanzi_candidate
+                pinyin_parts = parts[1:english_start_idx]
+                translation_parts = parts[english_start_idx:]
+                
+                pinyin = ' '.join(pinyin_parts)
+                translation = ' '.join(translation_parts)
+                
+                return (
+                    f'<span class="hanzi">{hanzi}</span> '
+                    f'<span class="pinyin">{pinyin}</span> '
+                    f'<span class="translation">{translation}</span>'
+                )
+    
+    # If no pattern matches, return as-is
     return example
 
 
