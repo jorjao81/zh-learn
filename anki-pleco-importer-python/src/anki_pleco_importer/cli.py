@@ -1146,7 +1146,11 @@ def _generate_epub_analysis_report(analysis, verbose: bool, target_coverages: Li
 @click.option("--min-word-length", default=3, help="Minimum word length to analyze (default: 3 characters)")
 @click.option("--verbose", "-v", is_flag=True, help="Show detailed analysis including both decompositions")
 @click.option("--show-all", is_flag=True, help="Show all analyzed words, even those without improvements")
-@click.option("--export-csv", type=click.Path(path_type=Path), help="Export improved cards to CSV file")
+@click.option(
+    "--export-csv",
+    type=click.Path(path_type=Path),
+    help="Export improved cards to CSV file (default: improved_cards.txt)",
+)
 def improve_cards(
     anki_file: Path,
     max_suggestions: int,
@@ -1208,10 +1212,15 @@ def improve_cards(
                 remaining = len(suggestions) - max_suggestions
                 click.echo(f"\n💡 {remaining} more suggestions available (use --max-suggestions to see more)")
 
-            # Export to CSV if requested
-            if export_csv:
-                exported_count = _export_improved_cards_to_csv(cards, suggestions, export_csv, anki_file)
+            # Always export CSV of improved cards
+            if not export_csv:
+                export_csv = Path("improved_cards.txt")
+
+            exported_count = _export_improved_cards_to_csv(cards, suggestions, export_csv, anki_file)
+            if exported_count > 0:
                 click.echo(f"\n📄 Exported {exported_count} improved cards to: {export_csv}")
+            else:
+                click.echo("\n📄 No cards needed improvement - no CSV exported")
 
     except Exception as e:
         click.echo(f"Error analyzing cards: {e}", err=True)
