@@ -1497,8 +1497,8 @@ def _export_improved_cards_to_csv(
                 continue
 
             parts = line.split(separator)
-            if len(parts) >= 6:  # Must have at least components field
-                # Extract the characters field (index 2) and components field (index 5)
+            if len(parts) >= 8:  # Must have at least field 7 for components
+                # Extract the characters field (index 2) and components field (index 7)
                 characters_field = parts[2] if len(parts) > 2 else ""
 
                 # Get clean characters for matching
@@ -1508,8 +1508,8 @@ def _export_improved_cards_to_csv(
 
                 # Only export if this card is in our improvements list
                 if clean_chars in improvements_map:
-                    # Replace the components field (index 5) with the improved decomposition
-                    parts[5] = improvements_map[clean_chars]
+                    # Replace the components field (index 7) with the improved decomposition
+                    parts[7] = improvements_map[clean_chars]
                     exported_count += 1
                     # Write only this improved card
                     f.write(separator.join(parts) + "\n")

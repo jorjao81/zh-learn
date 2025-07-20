@@ -64,20 +64,13 @@ class AnkiExportParser:
                 # Parse card data
                 parts = line.split(self.separator)
                 if len(parts) >= 5:  # Minimum required fields
-                    # Try to find components in multiple possible field positions
-                    components = ""
-                    if len(parts) > 5 and parts[5].strip():
-                        components = parts[5]
-                    elif len(parts) > 7 and parts[7].strip() and "+" in parts[7]:
-                        components = parts[7]
-
                     card = AnkiCard(
                         notetype=parts[0] if len(parts) > 0 else "",
                         pinyin=parts[1] if len(parts) > 1 else "",
                         characters=parts[2] if len(parts) > 2 else "",
                         audio=parts[3] if len(parts) > 3 else "",
                         definitions=parts[4] if len(parts) > 4 else "",
-                        components=components,
+                        components=parts[7] if len(parts) > 7 else "",
                         radicals=parts[6] if len(parts) > 6 else "",
                         tags=parts[16] if len(parts) > 16 else "",
                     )
