@@ -100,9 +100,7 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
     return result
 
 
-def get_structural_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> str:
+def get_structural_decomposition(chinese_text: str, anki_dictionary: dict) -> str:
     """Get structural decomposition for Chinese characters using CharacterDecomposer.
 
     Args:
@@ -133,9 +131,7 @@ def get_structural_decomposition(
         return _get_individual_character_definitions(chinese_text)
 
 
-def _get_dictionary_based_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> str:
+def _get_dictionary_based_decomposition(chinese_text: str, anki_dictionary: dict) -> str:
     """Decompose multi-character words using Anki dictionary lookup.
 
     Args:
@@ -163,9 +159,7 @@ def _get_dictionary_based_decomposition(
     return _get_individual_character_definitions(chinese_text)
 
 
-def _find_optimal_4_char_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> list:
+def _find_optimal_4_char_decomposition(chinese_text: str, anki_dictionary: dict) -> list:
     """Find optimal decomposition for 4-character word preferring 2+2 split."""
     # Try 2+2 split first
     left_part = chinese_text[:2]
@@ -191,9 +185,7 @@ def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list
         best_match = None
         best_length = 0
 
-        for length in range(
-            min(len(chinese_text) - i, 4), 0, -1
-        ):  # Try lengths 4, 3, 2, 1
+        for length in range(min(len(chinese_text) - i, 4), 0, -1):  # Try lengths 4, 3, 2, 1
             candidate = chinese_text[i : i + length]
             if candidate in anki_dictionary:
                 best_match = candidate
@@ -201,9 +193,7 @@ def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list
                 break
 
         if best_match:
-            components.append(
-                _create_component(best_match, anki_dictionary[best_match])
-            )
+            components.append(_create_component(best_match, anki_dictionary[best_match]))
             i += best_length
         else:
             # No match found, use individual character
@@ -285,6 +275,44 @@ def _format_components(components: list) -> str:
         formatted_parts.append(formatted_part)
 
     return " + ".join(formatted_parts)
+
+
+def format_components_semantic(components: list) -> str:
+    """Format word components with semantic HTML markup."""
+    if not components:
+        return ""
+
+    if len(components) == 1:
+        # Single component - just format with semantic classes
+        component = components[0]
+        chinese = component["chinese"]
+        pinyin = component["pinyin"]
+        definition = component["definition"]
+
+        result = f'<span class="hanzi">{chinese}</span>'
+        if pinyin:
+            result += f' (<span class="pinyin">{pinyin}</span>)'
+        if definition:
+            result += f' - <span class="definition">{definition}</span>'
+        return result
+
+    # Multiple components - create semantic HTML list
+    component_items = []
+    for component in components:
+        chinese = component["chinese"]
+        pinyin = component["pinyin"]
+        definition = component["definition"]
+
+        component_html = f'<span class="hanzi">{chinese}</span>'
+        if pinyin:
+            component_html += f' (<span class="pinyin">{pinyin}</span>)'
+        if definition:
+            component_html += f' - <span class="definition">{definition}</span>'
+
+        component_items.append(component_html)
+
+    list_items = "</li><li>".join(component_items)
+    return f"<ul><li>{list_items}</li></ul>"
 
 
 def _get_individual_character_definitions(chinese_text: str) -> str:

@@ -39,13 +39,9 @@ class CharacterDecomposer:
             self.pinyin_style = Style.TONE
         except ImportError as e:
             if "hanzipy" in str(e):
-                raise ImportError(
-                    "Hanzipy library is required. Install with: pip install hanzipy"
-                )
+                raise ImportError("Hanzipy library is required. Install with: pip install hanzipy")
             elif "pypinyin" in str(e):
-                raise ImportError(
-                    "pypinyin library is required. Install with: pip install pypinyin"
-                )
+                raise ImportError("pypinyin library is required. Install with: pip install pypinyin")
             else:
                 raise e
 
@@ -69,20 +65,15 @@ class CharacterDecomposer:
         meanings = [self._get_radical_meaning(comp) for comp in components]
 
         # Classify component types
-        component_types = [
-            self._classify_component(comp, character) for comp in components
-        ]
+        component_types = [self._classify_component(comp, character) for comp in components]
 
         # Get pinyin for phonetic components
         component_pinyin = [
-            self._get_component_pinyin(comp, comp_type)
-            for comp, comp_type in zip(components, component_types)
+            self._get_component_pinyin(comp, comp_type) for comp, comp_type in zip(components, component_types)
         ]
 
         # Generate structure notes
-        structure_notes = self._generate_structure_notes(
-            character, components, component_types, component_pinyin
-        )
+        structure_notes = self._generate_structure_notes(character, components, component_types, component_pinyin)
 
         return ComponentResult(
             character=character,
@@ -92,6 +83,34 @@ class CharacterDecomposer:
             component_pinyin=component_pinyin,
             structure_notes=structure_notes,
         )
+
+    def format_decomposition_semantic(self, component_result: ComponentResult) -> str:
+        """Format character decomposition with semantic HTML markup."""
+        if len(component_result.components) == 1:
+            # Simple character - no decomposition
+            return f"Simple character: {component_result.character}"
+
+        # Create semantic HTML list for components
+        component_items = []
+        for i, component in enumerate(component_result.components):
+            component_type = component_result.component_types[i]
+            component_pinyin = component_result.component_pinyin[i]
+            component_meaning = component_result.radical_meanings[i]
+
+            # Build the semantic markup for this component
+            type_class = component_type.value  # "semantic", "phonetic", or "unknown"
+            component_html = f'<span class="{type_class}">{component}</span>'
+
+            if component_pinyin:
+                component_html += f' (<span class="pinyin">{component_pinyin}</span>)'
+
+            if component_meaning and component_meaning != "unknown":
+                component_html += f' - <span class="definition">{component_meaning}</span>'
+
+            component_items.append(component_html)
+
+        list_items = "</li><li>".join(component_items)
+        return f"<ul><li>{list_items}</li></ul>"
 
     def _get_components(self, character: str) -> List[str]:
         """Extract components using Hanzipy decomposer."""
@@ -144,9 +163,7 @@ class CharacterDecomposer:
         except Exception:
             return "unknown"
 
-    def _get_component_pinyin(
-        self, component: str, component_type: ComponentType
-    ) -> Optional[str]:
+    def _get_component_pinyin(self, component: str, component_type: ComponentType) -> Optional[str]:
         """Get pinyin for phonetic/unknown components, Chinese names for semantic components."""
         # For phonetic and unknown components, always use pinyin
         if component_type in (ComponentType.PHONETIC, ComponentType.UNKNOWN):
@@ -281,9 +298,7 @@ class CharacterDecomposer:
             pass
         return None
 
-    def _classify_component(
-        self, component: str, original_character: str
-    ) -> ComponentType:
+    def _classify_component(self, component: str, original_character: str) -> ComponentType:
         """
         Classify component as semantic, phonetic, or pictographic.
         This is a simplified heuristic-based classification.
@@ -353,30 +368,20 @@ class CharacterDecomposer:
             elif type1 == ComponentType.SEMANTIC and type2 == ComponentType.PHONETIC:
                 pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
                 pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
-                return (
-                    f"{comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
-                )
+                return f"{comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
             elif type1 == ComponentType.PHONETIC and type2 == ComponentType.SEMANTIC:
                 pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
                 pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
-                return (
-                    f"{comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
-                )
+                return f"{comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
             else:
                 # For unknown types, show both pinyin and meaning
-                comp1_info = self._get_component_full_info(
-                    comp1, pinyin1, component_types[0]
-                )
-                comp2_info = self._get_component_full_info(
-                    comp2, pinyin2, component_types[1]
-                )
+                comp1_info = self._get_component_full_info(comp1, pinyin1, component_types[0])
+                comp2_info = self._get_component_full_info(comp2, pinyin2, component_types[1])
                 return f"{comp1_info} + {comp2_info}"
 
         return f"Complex character with {len(components)} components: {' + '.join(components)}"
 
-    def _get_component_full_info(
-        self, component: str, pinyin: Optional[str], component_type: ComponentType
-    ) -> str:
+    def _get_component_full_info(self, component: str, pinyin: Optional[str], component_type: ComponentType) -> str:
         """Get full component information with both pinyin and meaning for unknown types."""
         # Get the meaning for this component
         meaning = self._get_radical_meaning(component)

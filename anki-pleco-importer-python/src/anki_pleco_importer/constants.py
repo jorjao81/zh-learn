@@ -26,6 +26,14 @@ PART_OF_SPEECH_ABBREVIATIONS = {
     r"\bAdv\.\s*": "<b>adverb</b> ",
 }
 
+# Semantic markup versions for parts of speech
+SEMANTIC_PART_OF_SPEECH_ABBREVIATIONS = {
+    r"\bV\.\s*": '<span class="part-of-speech">verb</span> ',
+    r"\bN\.\s*": '<span class="part-of-speech">noun</span> ',
+    r"\bAdj\.\s*": '<span class="part-of-speech">adjective</span> ',
+    r"\bAdv\.\s*": '<span class="part-of-speech">adverb</span> ',
+}
+
 # Domain markers that should be highlighted in red
 DOMAIN_MARKERS = {
     r"\(fig\.\)": "figurative",
@@ -50,6 +58,14 @@ DOMAIN_MARKERS = {
     r"\bsports\b": "sports",
     r"\bmilitary\b": "military",
     r"\btransportation\b": "transportation",
+}
+
+# Usage markers that should be marked with usage + specific class
+USAGE_MARKERS = {
+    r"\bliterary\b": "literary",
+    r"\bdated\b": "dated",
+    r"\bcolloquial\b": "colloquial",
+    r"\bpejorative\b": "pejorative",
 }
 
 # Regex patterns for Chinese example extraction
@@ -90,4 +106,21 @@ COMPILED_POS_PATTERNS = {pos: re.compile(rf"(?<!<b>)\b{pos}\b(?!</b>)", re.IGNOR
 # Pre-compile abbreviation patterns
 COMPILED_ABBREV_PATTERNS = {
     re.compile(pattern, re.IGNORECASE): replacement for pattern, replacement in PART_OF_SPEECH_ABBREVIATIONS.items()
+}
+
+# Pre-compile semantic markup patterns
+COMPILED_SEMANTIC_POS_PATTERNS = {
+    pos: re.compile(rf"(?<!<span)\b{pos}\b(?!</span>)", re.IGNORECASE) for pos in PARTS_OF_SPEECH
+}
+COMPILED_SEMANTIC_ABBREV_PATTERNS = {
+    re.compile(pattern, re.IGNORECASE): replacement
+    for pattern, replacement in SEMANTIC_PART_OF_SPEECH_ABBREVIATIONS.items()
+}
+COMPILED_SEMANTIC_DOMAIN_PATTERNS = {
+    re.compile(pattern, re.IGNORECASE): f'<span class="domain">{display_text}</span>'
+    for pattern, display_text in DOMAIN_MARKERS.items()
+}
+COMPILED_SEMANTIC_USAGE_PATTERNS = {
+    re.compile(pattern, re.IGNORECASE): f'<span class="usage {marker_name}">{marker_name}</span>'
+    for pattern, marker_name in USAGE_MARKERS.items()
 }

@@ -13,6 +13,10 @@ from .constants import (
     COMPILED_DOMAIN_PATTERNS,
     COMPILED_POS_PATTERNS,
     COMPILED_ABBREV_PATTERNS,
+    COMPILED_SEMANTIC_POS_PATTERNS,
+    COMPILED_SEMANTIC_ABBREV_PATTERNS,
+    COMPILED_SEMANTIC_DOMAIN_PATTERNS,
+    COMPILED_SEMANTIC_USAGE_PATTERNS,
 )
 
 
@@ -88,11 +92,24 @@ def _extract_meaning_sections(
     examples = []
 
     if not pos_positions:
-        # No parts of speech found, treat as single meaning
-        meaning, extracted_examples = extract_examples_from_text(definition)
-        meanings.append(meaning)
-        if extracted_examples:
-            examples.extend(extracted_examples)
+        # No parts of speech found, but check for numbered meanings
+        numbered_sections = _split_by_numbered_meanings(definition)
+
+        if len(numbered_sections) > 1:
+            # Process each numbered section separately
+            for numbered_section in numbered_sections:
+                # Remove the leading number from the meaning since it will be in a list
+                clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
+                meaning, extracted_examples = extract_examples_from_text(clean_section)
+                meanings.append(meaning)
+                if extracted_examples:
+                    examples.extend(extracted_examples)
+        else:
+            # Treat as single meaning
+            meaning, extracted_examples = extract_examples_from_text(definition)
+            meanings.append(meaning)
+            if extracted_examples:
+                examples.extend(extracted_examples)
     else:
         # Process each meaning section
         for i, (start, _, pos) in enumerate(pos_positions):
@@ -110,7 +127,9 @@ def _extract_meaning_sections(
             if len(numbered_sections) > 1:
                 # Process each numbered section separately
                 for numbered_section in numbered_sections:
-                    meaning, extracted_examples = extract_examples_from_text(numbered_section)
+                    # Remove the leading number from the meaning since it will be in a list
+                    clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
+                    meaning, extracted_examples = extract_examples_from_text(clean_section)
                     meanings.append(meaning)
                     if extracted_examples:
                         examples.extend(extracted_examples)
@@ -178,6 +197,57 @@ def _format_meaning_with_html(meanings: List[str]) -> str:
     return combined_meaning
 
 
+def _format_meaning_with_semantic_markup(meanings: List[str]) -> str:
+    """Format meanings with semantic HTML classes and lists instead of inline styling."""
+    # If there are multiple meanings, format as an ordered list
+    if len(meanings) > 1:
+        formatted_meanings = []
+        for meaning in meanings:
+            # Apply semantic markup to each meaning
+            formatted_meaning = _apply_semantic_markup_to_text(meaning)
+            formatted_meanings.append(formatted_meaning)
+        list_items = "</li><li>".join(formatted_meanings)
+        return f"<ol><li>{list_items}</li></ol>"
+
+    # Single meaning - apply semantic markup directly
+    if meanings:
+        return _apply_semantic_markup_to_text(meanings[0])
+
+    return ""
+
+
+def _apply_semantic_markup_to_text(text: str) -> str:
+    """Apply semantic markup patterns to a single text string."""
+    # Handle abbreviations first using semantic patterns
+    for pattern, replacement in COMPILED_SEMANTIC_ABBREV_PATTERNS.items():
+        text = pattern.sub(replacement, text)
+
+    # Handle idiom in parentheses - move "(idiom)" from end to beginning
+    if "(idiom)" in text.lower():
+        text = COMPILED_PATTERNS["idiom_parentheses"].sub("", text)
+        text = '<span class="part-of-speech">idiom</span> ' + text.strip()
+
+    # Handle usage markers first (before domain markers to avoid conflicts)
+    for pattern, replacement in COMPILED_SEMANTIC_USAGE_PATTERNS.items():
+        text = pattern.sub(replacement, text)
+
+    # Handle domain markers using semantic patterns (excluding usage markers already handled)
+    for pattern, replacement in COMPILED_SEMANTIC_DOMAIN_PATTERNS.items():
+        # Skip if this is a usage marker that was already handled
+        pattern_text = pattern.pattern.replace(r"\b", "").replace("\\b", "")
+        usage_patterns = [
+            p.pattern.replace(r"\b", "").replace("\\b", "") for p in COMPILED_SEMANTIC_USAGE_PATTERNS.keys()
+        ]
+        if pattern_text not in usage_patterns:
+            text = pattern.sub(replacement, text)
+
+    # Handle full parts of speech using semantic patterns
+    for pos, pattern in COMPILED_SEMANTIC_POS_PATTERNS.items():
+        text = pattern.sub(f'<span class="part-of-speech">{pos}</span>', text)
+
+    return text
+
+
 def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]], Optional[List[str]]]:
     """Parse Pleco definition to extract meanings, examples, and similar characters."""
     # Extract opposite patterns first and clean them from definition
@@ -200,6 +270,72 @@ def parse_pleco_definition(definition: str) -> Tuple[str, Optional[List[str]], O
     formatted_meaning = _format_meaning_with_html(meanings)
 
     return (formatted_meaning, examples if examples else None, similar_characters if similar_characters else None)
+
+
+def parse_pleco_definition_semantic(definition: str) -> Tuple[str, Optional[List[str]], Optional[List[str]]]:
+    """Parse Pleco definition with semantic markup instead of inline styling."""
+    # Extract opposite patterns first and clean them from definition
+    similar_characters = []
+
+    # Find all opposite patterns
+    opposite_matches = COMPILED_PATTERNS["opposite"].findall(definition)
+    if opposite_matches:
+        similar_characters.extend(opposite_matches)
+        # Remove the opposite patterns from the definition
+        definition = COMPILED_PATTERNS["opposite"].sub("", definition).strip()
+
+    # Detect parts of speech positions
+    pos_positions = _detect_parts_of_speech_positions(definition)
+
+    # Extract meaning sections and examples
+    meanings, examples = _extract_meaning_sections(definition, pos_positions)
+
+    # Format meanings with semantic markup
+    formatted_meaning = _format_meaning_with_semantic_markup(meanings)
+
+    return (formatted_meaning, examples if examples else None, similar_characters if similar_characters else None)
+
+
+def format_examples_with_semantic_markup(examples: Optional[List[str]]) -> Optional[str]:
+    """Format examples as HTML list with semantic classes for hanzi, pinyin, and translation."""
+    if not examples or len(examples) == 0:
+        return None
+
+    # Single example - just apply semantic markup
+    if len(examples) == 1:
+        return _format_single_example_semantic(examples[0])
+
+    # Multiple examples - create unordered list
+    formatted_examples = []
+    for example in examples:
+        formatted_example = _format_single_example_semantic(example)
+        formatted_examples.append(formatted_example)
+
+    list_items = '</li><li class="example">'.join(formatted_examples)
+    return f'<ul><li class="example">{list_items}</li></ul>'
+
+
+def _format_single_example_semantic(example: str) -> str:
+    """Format a single example with semantic markup for hanzi, pinyin, and translation."""
+    # Pattern to match: "Chinese (pinyin) - translation"
+
+    # More flexible pattern to match Chinese characters followed by pinyin in parentheses
+    pattern = r"([一-龯]+)\s*\(([^)]+)\)\s*-\s*(.+)"
+    match = re.search(pattern, example)
+
+    if match:
+        hanzi = match.group(1).strip()
+        pinyin = match.group(2).strip()
+        translation = match.group(3).strip()
+
+        return (
+            f'<span class="hanzi">{hanzi}</span> '
+            f'(<span class="pinyin">{pinyin}</span>) - '
+            f'<span class="translation">{translation}</span>'
+        )
+
+    # If pattern doesn't match, return as-is
+    return example
 
 
 def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
