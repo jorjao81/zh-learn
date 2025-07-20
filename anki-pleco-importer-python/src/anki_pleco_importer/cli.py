@@ -1212,11 +1212,11 @@ def improve_cards(
                 remaining = len(suggestions) - max_suggestions
                 click.echo(f"\n💡 {remaining} more suggestions available (use --max-suggestions to see more)")
 
-            # Always export CSV of improved cards
+            # Always export CSV of improved cards (only the ones shown in CLI)
             if not export_csv:
                 export_csv = Path("improved_cards.txt")
 
-            exported_count = _export_improved_cards_to_csv(cards, suggestions, export_csv, anki_file)
+            exported_count = _export_improved_cards_to_csv(cards, suggestions_to_show, export_csv, anki_file)
             if exported_count > 0:
                 click.echo(f"\n📄 Exported {exported_count} improved cards to: {export_csv}")
             else:
@@ -1453,7 +1453,7 @@ def _format_decomposition(decomposition: str) -> str:
 def _export_improved_cards_to_csv(
     cards: List[AnkiCard], suggestions: List[dict], export_path: Path, original_file: Path
 ) -> int:
-    """Export cards with improved decompositions to a CSV file."""
+    """Export only the specific cards with improved decompositions to a CSV file."""
     # Create a mapping of words to their improved decompositions
     improvements_map = {}
     for suggestion in suggestions:
@@ -1463,7 +1463,7 @@ def _export_improved_cards_to_csv(
     if not improvements_map:
         return 0
 
-    # Read the original file to preserve the exact format
+    # Read the original file to get headers and find matching cards
     with open(original_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
@@ -1483,14 +1483,14 @@ def _export_improved_cards_to_csv(
         else:
             break
 
-    # Write the improved cards
+    # Find and export only the cards that are in our suggestions list
     exported_count = 0
     with open(export_path, "w", encoding="utf-8") as f:
         # Write header lines
         for header in header_lines:
             f.write(header)
 
-        # Process each data line
+        # Process each data line and only export the ones we want
         for line in lines[data_start_index:]:
             line = line.strip()
             if not line:
@@ -1506,17 +1506,13 @@ def _export_improved_cards_to_csv(
 
                 clean_chars = re.sub(r"<[^>]+>", "", characters_field).strip()
 
-                # Check if this card has an improvement
+                # Only export if this card is in our improvements list
                 if clean_chars in improvements_map:
                     # Replace the components field (index 5) with the improved decomposition
                     parts[5] = improvements_map[clean_chars]
                     exported_count += 1
-
-                # Write the line (improved or unchanged)
-                f.write(separator.join(parts) + "\n")
-            else:
-                # Write unchanged line if it doesn't have enough fields
-                f.write(line + "\n")
+                    # Write only this improved card
+                    f.write(separator.join(parts) + "\n")
 
     return exported_count
 
