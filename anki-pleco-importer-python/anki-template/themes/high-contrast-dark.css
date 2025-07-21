@@ -1,0 +1,336 @@
+/* High Contrast Dark Theme */
+/* Dark background with bright text for better readability */
+
+/* Card Container */
+.card {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+  background: #1a1a1a;
+  color: #f0f0f0;
+  line-height: 1.6;
+  min-height: 200px;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.card-container {
+  text-align: center;
+}
+
+/* Chinese Header - Horizontal Layout */
+.chinese-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+/* Chinese Characters - High contrast bold */
+.chinese-main {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 3.8em;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Chinese Side Content */
+.chinese-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Pinyin - Bright accent color */
+.pinyin-main {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.2em;
+  color: #00d4ff;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+/* Audio */
+.audio-section {
+  margin: 0;
+}
+
+/* Prompt on front */
+.prompt {
+  font-size: 0.9em;
+  color: #cccccc;
+  margin-top: 40px;
+  opacity: 1;
+  font-weight: 400;
+}
+
+/* Divider between front and back */
+.divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #00d4ff, transparent);
+  margin: 25px 0;
+}
+
+/* Section Styling */
+.section-title {
+  font-size: 0.85em;
+  font-weight: 700;
+  color: #00d4ff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 15px 0 8px 0;
+  text-align: left;
+}
+
+.definition-section,
+.examples-section,
+.components-section,
+.similar-section {
+  margin: 15px 0;
+  text-align: left;
+}
+
+/* Definition Content */
+.definition-content {
+  font-size: 1.1em;
+  color: #f0f0f0;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* Part of Speech Tags */
+.part-of-speech {
+  display: inline-block;
+  background: #00d4ff;
+  color: #000000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: 700;
+  margin: 2px 4px 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Domain Tags */
+.domain {
+  display: inline-block;
+  background: #ff6b35;
+  color: #000000;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7em;
+  font-weight: 600;
+  margin: 2px 3px 2px 0;
+  text-transform: lowercase;
+}
+
+/* Usage Tags */
+.usage {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65em;
+  font-weight: 500;
+  margin: 2px 3px 2px 0;
+  border: 1px solid #666666;
+  color: #cccccc;
+  background: #333333;
+}
+
+/* Definition Lists */
+ol {
+  margin: 15px 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: definition-counter;
+}
+
+ol li {
+  counter-increment: definition-counter;
+  margin: 8px 0;
+  padding: 12px 15px 12px 40px;
+  background: #2a2a2a;
+  border-left: 4px solid #00d4ff;
+  border-radius: 4px;
+  position: relative;
+  font-size: 0.95em;
+}
+
+ol li::before {
+  content: counter(definition-counter);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #00d4ff;
+  color: #000000;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+
+/* Example Lists */
+ul {
+  margin: 15px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+ul li.example {
+  margin: 10px 0;
+  padding: 12px 15px;
+  background: #2a2a2a;
+  border-radius: 4px;
+  border-left: 4px solid #ff6b35;
+  font-size: 0.9em;
+}
+
+/* Example Content Styling */
+.hanzi {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pinyin {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.translation {
+  color: #cccccc;
+  font-weight: 400;
+}
+
+/* Structural Analysis */
+.components-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid #404040;
+}
+
+.components-content ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.components-content ul li {
+  background: #404040;
+  color: #f0f0f0;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 60px;
+  max-width: 120px;
+  margin: 0;
+  border: 2px solid #00d4ff;
+  font-size: 0.85em;
+  line-height: 1.3;
+  position: relative;
+}
+
+.components-content ul li:not(:last-child)::after {
+  content: "▶";
+  position: absolute;
+  color: #00d4ff;
+  font-weight: bold;
+  font-size: 1em;
+  background: none;
+  border: none;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Component content styling */
+.components-content .hanzi {
+  font-size: 1.1em;
+  font-weight: 700;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  margin-right: 4px;
+  color: #ffffff;
+}
+
+.components-content .pinyin {
+  font-size: 0.75em;
+  opacity: 0.9;
+  font-weight: 600;
+  color: #00d4ff;
+}
+
+.components-content .definition {
+  display: block;
+  font-size: 0.7em;
+  opacity: 0.8;
+  line-height: 1.2;
+  font-weight: 400;
+  margin-top: 2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  color: #cccccc;
+}
+
+/* Component types */
+.components-content .semantic {
+  border-color: #4caf50;
+}
+
+.components-content .phonetic {
+  border-color: #ff6b35;
+}
+
+.components-content .unknown {
+  border-color: #757575;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .card {
+    padding: 12px;
+    margin: 5px;
+  }
+
+  .chinese-header {
+    flex-direction: column;
+    gap: 12px;
+    margin: 15px 0;
+  }
+
+  .chinese-main {
+    font-size: 3.2em;
+  }
+
+  .pinyin-main {
+    font-size: 1.1em;
+  }
+}
