@@ -242,7 +242,12 @@ def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list
         best_match = None
         best_length = 0
 
-        for length in range(min(len(chinese_text) - i, 4), 0, -1):  # Try lengths 4, 3, 2, 1
+        # Special rule: For multi-character words, don't allow matching the entire word as single component
+        max_length = len(chinese_text) - i
+        if len(chinese_text) > 1 and i == 0:  # If this is start of multi-char word
+            max_length = min(max_length, len(chinese_text) - 1)  # Don't match the entire word
+
+        for length in range(min(max_length, 4), 0, -1):  # Try lengths 4, 3, 2, 1
             candidate = chinese_text[i : i + length]
             if candidate in anki_dictionary:
                 best_match = candidate
@@ -306,13 +311,16 @@ def _create_individual_character_component(char: str) -> dict:
         # Join all definitions with forward slash separator
         combined_definition = "/".join(all_definitions)
 
+        # Clean unwanted patterns from the definition
+        cleaned_definition = clean_character_definition(combined_definition)
+
         # Convert numbered pinyin to toned pinyin for display
         pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
         return {
             "chinese": char,
             "pinyin": pinyin_clean,
-            "definition": combined_definition,
+            "definition": cleaned_definition,
         }
     except Exception:
         return {"chinese": char, "pinyin": "", "definition": ""}
@@ -320,6 +328,19 @@ def _create_individual_character_component(char: str) -> dict:
 
 def _format_components(components: list) -> str:
     """Format components into the final decomposition string."""
+    if not components:
+        return ""
+
+    # Check for single multi-character component which violates our rule
+    if len(components) == 1 and len(components[0]["chinese"]) > 1:
+        # Force decomposition into individual characters
+        chinese_word = components[0]["chinese"]
+        char_components = []
+        for char in chinese_word:
+            char_component = _create_individual_character_component(char)
+            char_components.append(char_component)
+        return _format_components(char_components)
+
     formatted_parts = []
 
     for component in components:
@@ -340,9 +361,20 @@ def format_components_semantic(components: list) -> str:
         return ""
 
     if len(components) == 1:
-        # Single component - just format with semantic classes
+        # Single component - check if it's a multi-character word that shouldn't be single
         component = components[0]
         chinese = component["chinese"]
+
+        # For multi-character components, this violates our rule - decompose by character
+        if len(chinese) > 1:
+            # Force decomposition into individual characters
+            char_components = []
+            for char in chinese:
+                char_component = _create_individual_character_component(char)
+                char_components.append(char_component)
+            return format_components_semantic(char_components)
+
+        # Single character component is OK
         pinyin = component["pinyin"]
         definition = component["definition"]
 
@@ -422,11 +454,14 @@ def _get_individual_character_definitions(chinese_text: str) -> str:
             # Join all definitions with forward slash separator
             combined_definition = "/".join(all_definitions)
 
+            # Clean unwanted patterns from the definition
+            cleaned_definition = clean_character_definition(combined_definition)
+
             # Convert numbered pinyin to toned pinyin for display
             pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
             # Format as: 字(pinyin - meaning)
-            component = f"{char}({pinyin_clean} - {combined_definition})"
+            component = f"{char}({pinyin_clean} - {cleaned_definition})"
             components.append(component)
 
         except Exception:
@@ -486,11 +521,14 @@ def _get_individual_character_definitions_semantic(chinese_text: str) -> str:
             # Join all definitions with forward slash separator
             combined_definition = "/".join(all_definitions)
 
+            # Clean unwanted patterns from the definition
+            cleaned_definition = clean_character_definition(combined_definition)
+
             # Convert numbered pinyin to toned pinyin for display
             pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
             # Format with semantic markup: 字 (pinyin) - definition
-            component_dict = {"chinese": char, "pinyin": pinyin_clean, "definition": combined_definition}
+            component_dict = {"chinese": char, "pinyin": pinyin_clean, "definition": cleaned_definition}
             components.append(component_dict)
 
         except Exception:
@@ -499,3 +537,60 @@ def _get_individual_character_definitions_semantic(chinese_text: str) -> str:
 
     # Use semantic formatting
     return format_components_semantic(components)
+
+
+def clean_character_definition(definition: str) -> str:
+    """Clean unwanted patterns from single character definitions.
+
+    Removes patterns like:
+    - CL:場|场[chang3] (classifier patterns)
+    - variant of X[pinyin] (variant patterns)
+    - old variant of X[pinyin] (old variant patterns)
+
+    Args:
+        definition: Raw character definition string
+
+    Returns:
+        Cleaned definition string with unwanted patterns removed
+    """
+    if not definition:
+        return definition
+
+    import re
+
+    # Pattern 1: Remove CL:X|Y[pinyin] patterns (classifier patterns)
+    # Matches: CL:場|场[chang3], CL:個|个[ge4], CL:座[zuo4], etc.
+    cl_pattern = r"/CL:[^/]+"
+    definition = re.sub(cl_pattern, "", definition)
+
+    # Pattern 2: Remove "variant of X[pinyin]" patterns
+    # Matches: variant of 屌[diao3], variant of 莊|庄[zhuang1], variant of 歲|岁[sui4], etc.
+    variant_pattern = r"/variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]"
+    definition = re.sub(variant_pattern, "", definition)
+
+    # Pattern 3: Remove "old variant of X[pinyin]" patterns
+    # Matches: old variant of 鼓[gu3], old variant of 莊|庄[zhuang1], etc.
+    old_variant_pattern = r"/old variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]"
+    definition = re.sub(old_variant_pattern, "", definition)
+
+    # Pattern 4: Remove standalone "variant of X[pinyin]" at the beginning (with or without trailing slash)
+    # Matches: "variant of 棋[qi2]/" or "variant of 莊|庄[zhuang1]" at start of definition
+    start_variant_pattern = r"^variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]/?"
+    definition = re.sub(start_variant_pattern, "", definition)
+
+    # Pattern 5: Remove standalone "old variant of X[pinyin]" at the beginning (with or without trailing slash)
+    # Matches: "old variant of 鼓[gu3]/" or "old variant of 莊|庄[zhuang1]" at start of definition
+    start_old_variant_pattern = r"^old variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]/?"
+    definition = re.sub(start_old_variant_pattern, "", definition)
+
+    # Clean up any leftover separators and whitespace
+    # Remove leading/trailing slashes
+    definition = definition.strip("/")
+
+    # Remove double slashes created by removals
+    definition = re.sub(r"/+", "/", definition)
+
+    # Remove leading/trailing whitespace
+    definition = definition.strip()
+
+    return definition

@@ -51,19 +51,21 @@ DOMAIN_MARKERS = {
     r"\bsports\b": "sports",
     r"\bmilitary\b": "military",
     r"\btransportation\b": "transportation",
+    r"\bzoology\b": "zoology",
+    r"\bmedicine\b": "medicine",
 }
 
 # Usage markers that should be marked with usage + specific class
 USAGE_MARKERS = {
     r"\(fig\.\)": "figurative",
-    r"\(derog\.\)": "derogatory",   
+    r"\(derog\.\)": "derogatory",
+    r"derog\.": "derogatory",
     r"\bLIT\b": "literary",
     r"\bliterary\b": "literary",
     r"\bdialect\b": "dialect",
     r"\bpejorative\b": "pejorative",
     r"\bdated\b": "dated",
     r"\bcolloquial\b": "colloquial",
-
 }
 
 # Regex patterns for Chinese example extraction
