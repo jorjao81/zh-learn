@@ -1,6 +1,5 @@
 """Test for zoology domain marker functionality."""
 
-import pytest
 from anki_pleco_importer.pleco import _format_meaning_with_html, _format_meaning_with_semantic_markup
 
 
@@ -34,19 +33,15 @@ class TestZoologyDomainMarker:
         for meaning in test_cases:
             # Test HTML formatting
             result_html = _format_meaning_with_html([meaning])
-            assert (
-                '<span style="color: red;">zoology</span>' in result_html.lower()
-                or '<span style="color: red;">Zoology</span>' in result_html
-                or '<span style="color: red;">ZOOLOGY</span>' in result_html
-            )
+            assert ('<span style="color: red;">zoology</span>' in result_html.lower() or
+                    '<span style="color: red;">Zoology</span>' in result_html or
+                    '<span style="color: red;">ZOOLOGY</span>' in result_html)
 
             # Test semantic formatting
             result_semantic = _format_meaning_with_semantic_markup([meaning])
-            assert (
-                '<span class="domain">zoology</span>' in result_semantic.lower()
-                or '<span class="domain">Zoology</span>' in result_semantic
-                or '<span class="domain">ZOOLOGY</span>' in result_semantic
-            )
+            assert ('<span class="domain">zoology</span>' in result_semantic.lower() or
+                    '<span class="domain">Zoology</span>' in result_semantic or
+                    '<span class="domain">ZOOLOGY</span>' in result_semantic)
 
     def test_zoology_word_boundary(self):
         """Test that zoology only matches as complete word, not as substring."""

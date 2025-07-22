@@ -1,6 +1,5 @@
 """Tests for structural decomposition validation rules."""
 
-import pytest
 from anki_pleco_importer.chinese import get_structural_decomposition_semantic, get_structural_decomposition
 
 
@@ -10,9 +9,7 @@ class TestStructuralDecompositionValidation:
     def test_ziyiweishi_decomposition_should_not_copy_itself(self):
         """Test that 自以为是 is not decomposed to itself as a single component."""
         # Create a mock dictionary that contains ONLY the full word (worst case scenario)
-        anki_dictionary = {
-            "自以为是": {"pinyin": "zi4yi3wei2shi4", "definition": "consider oneself (always) in the right"}
-        }
+        anki_dictionary = {"自以为是": {"pinyin": "zi4yi3wei2shi4", "definition": "consider oneself (always) in the right"}}
 
         # Test semantic version
         result_semantic = get_structural_decomposition_semantic("自以为是", anki_dictionary)

@@ -114,16 +114,12 @@ def _extract_meaning_sections(
         # Check if definition should be split by numbered meanings first
         numbered_sections = _split_by_numbered_meanings(definition)
 
-        if len(numbered_sections) > 1:
-            # If there are numbered sections, use those instead of POS positions
-            for numbered_section in numbered_sections:
-                clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
-                meaning, extracted_examples = extract_examples_from_text(clean_section)
-                meanings.append(meaning)
-                if extracted_examples:
-                    examples.extend(extracted_examples)
-        elif len(pos_positions) > 1 and _should_split_by_pos(definition, pos_positions):
-            # Only split by POS if there are clear separators indicating multiple meanings
+        # Determine whether to use POS splitting or numbered splitting
+        should_split_by_pos = len(pos_positions) > 1 and _should_split_by_pos(definition, pos_positions)
+
+        if should_split_by_pos:
+            # POS splitting takes precedence when there are clear POS boundaries
+            # This handles cases like "noun 1 research 2 study verb 3 to research 4 to study"
             for i, (start, _, pos) in enumerate(pos_positions):
                 # Find the end of this meaning section
                 if i + 1 < len(pos_positions):
@@ -132,7 +128,28 @@ def _extract_meaning_sections(
                     section_end = len(definition)
 
                 section_text = definition[start:section_end].strip()
-                meaning, extracted_examples = extract_examples_from_text(section_text)
+
+                # Check if this POS section has numbered subsections
+                pos_numbered_sections = _split_by_numbered_meanings(section_text)
+                if len(pos_numbered_sections) > 1:
+                    # Process each numbered subsection within this POS
+                    for numbered_section in pos_numbered_sections:
+                        clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
+                        meaning, extracted_examples = extract_examples_from_text(clean_section)
+                        meanings.append(meaning)
+                        if extracted_examples:
+                            examples.extend(extracted_examples)
+                else:
+                    # No numbered subsections, process as single meaning
+                    meaning, extracted_examples = extract_examples_from_text(section_text)
+                    meanings.append(meaning)
+                    if extracted_examples:
+                        examples.extend(extracted_examples)
+        elif len(numbered_sections) > 1:
+            # Use numbered sections when there's no clear POS boundary
+            for numbered_section in numbered_sections:
+                clean_section = re.sub(r"^\s*\d+\s+", "", numbered_section)
+                meaning, extracted_examples = extract_examples_from_text(clean_section)
                 meanings.append(meaning)
                 if extracted_examples:
                     examples.extend(extracted_examples)
@@ -157,9 +174,29 @@ def _should_split_by_pos(definition: str, pos_positions: List[Tuple[int, int, st
         next_start = pos_positions[i + 1][0]
         between_text = definition[current_end:next_start].strip()
 
-        # Only split if there are numbers indicating separate definitions or very clear separators
+        # Split if there are numbers indicating separate definitions or clear separators
         if re.search(r"\d+\s+\w+", between_text) or " | " in between_text:
             return True
+
+        # NEW: Also split if there's substantial content between different POS types
+        # This handles cases like "verb ... examples ... noun ... examples"
+        current_pos = pos_positions[i][2].lower()
+        next_pos = pos_positions[i + 1][2].lower()
+
+        # Case 1: Different POS types with substantial content and Chinese examples
+        if current_pos != next_pos and len(between_text) > 50:
+            # Check for Chinese text (examples) between the POS markers
+            # This indicates separate definitions with their own examples
+            if re.search(r"[一-龯]", between_text):
+                return True
+
+        # Case 2: Different POS types with numbered definitions
+        # E.g. "noun 1 research 2 study verb 3 to research 4 to study"
+        if current_pos != next_pos:
+            # Check if the between_text contains numbered patterns
+            # This suggests the POS markers are separating different numbered sections
+            if re.search(r"\d+\s+[a-zA-Z]", between_text):
+                return True
 
     return False
 
@@ -169,8 +206,8 @@ def _split_by_numbered_meanings(text: str) -> List[str]:
     # Pattern to match numbered meanings like "1 ", "2 ", "3 ", etc.
     # Include numbers at the start of string or preceded by whitespace
     # Make sure we don't match numbers inside Chinese text or other contexts
-    # Allow both letters and digits to follow (for cases like "3D")
-    pattern = r"(?:^|\s)(\d+)\s+(?=[a-zA-Z0-9])"
+    # Allow letters, digits, or opening parenthesis to follow (for cases like "3D" and "2 (fig.)")
+    pattern = r"(?:^|\s)(\d+)\s+(?=[a-zA-Z0-9(])"
 
     # Find all numbered positions
     matches = list(re.finditer(pattern, text))
@@ -426,7 +463,31 @@ def _format_single_example_semantic(example: str) -> str:
             f'<span class="translation">{translation}</span>'
         )
 
-    # Third try pattern without parentheses: "Chinese pinyin translation" (single words/phrases)
+    # Third try pattern: "Chinese phrase pinyin translation" (multi-character phrases without punctuation)
+    # Use a more sophisticated approach to separate Chinese phrase, pinyin, and English
+    # Pattern: Chinese characters followed by pinyin (with tone marks) followed by English
+    phrase_pattern = r"^([一-龯][一-龯\s]*?[一-龯])\s+([a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ\s]+?)\s+([a-zA-Z][a-zA-Z\s]+?)$"
+    match = re.search(phrase_pattern, example)
+    if match:
+        hanzi_candidate = match.group(1).strip()
+        potential_pinyin = match.group(2).strip()
+        potential_translation = match.group(3).strip()
+
+        # Validate that the potential_pinyin contains tone marks or is recognizable pinyin
+        # and the potential_translation looks like English (no tone marks)
+        has_tone_marks = bool(re.search(r"[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]", potential_pinyin))
+        is_english_translation = bool(re.search(r"[a-zA-Z]", potential_translation)) and not bool(
+            re.search(r"[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]", potential_translation)
+        )
+
+        if has_tone_marks and is_english_translation:
+            return (
+                f'<span class="hanzi">{hanzi_candidate}</span> '
+                f'<span class="pinyin">{potential_pinyin}</span> '
+                f'<span class="translation">{potential_translation}</span>'
+            )
+
+    # Fourth try pattern without parentheses: "Chinese pinyin translation" (single words)
     # Split by spaces and find where Chinese ends and English begins
     parts = example.split()
     if len(parts) >= 3:

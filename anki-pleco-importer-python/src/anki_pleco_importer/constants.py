@@ -43,6 +43,7 @@ DOMAIN_MARKERS = {
     r"\bastronomy\b": "astronomy",
     r"\bstatistics\b": "statistics",
     r"\bmathematics\b": "mathematics",
+    r"\bmath\.": "mathematics",
     r"\bmechanics\b": "mechanics",
     r"\bchemistry": "chemistry",
     r"\bengineering\b": "engineering",

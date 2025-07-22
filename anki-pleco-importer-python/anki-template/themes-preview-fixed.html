@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Learning Anki Themes Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .theme-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .theme-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .theme-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .theme-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card-preview {
+            padding: 20px;
+        }
+
+        .toggle-controls {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .toggle-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .toggle-btn.active {
+            background: #4c51bf;
+        }
+
+        .card-side {
+            display: none;
+        }
+
+        .card-side.active {
+            display: block;
+        }
+
+        .font-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .font-info h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .font-info p {
+            margin: 0;
+            font-size: 0.8em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* THEME 1: ORIGINAL DEFAULT */
+        .theme-original .card {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: #ffffff;
+            color: #333333;
+            line-height: 1.6;
+            min-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .theme-original .card-container {
+            text-align: center;
+        }
+
+        .theme-original .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-original .chinese-main {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans CN', sans-serif;
+            font-size: 3.5em;
+            font-weight: 300;
+            color: #2c3e50;
+            line-height: 1.2;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+        }
+
+        .theme-original .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-original .pinyin-main {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 1.2em;
+            color: #e74c3c;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+        }
+
+        .theme-original .prompt {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .theme-original .divider {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #bdc3c7, transparent);
+            margin: 25px 0;
+        }
+
+        .theme-original .section-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #34495e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 15px 0 8px 0;
+            text-align: left;
+        }
+
+        .theme-original .definition-content {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .theme-original .part-of-speech {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin: 2px 4px 2px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .theme-original .components-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .theme-original .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-original .components-content ul li {
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 60px;
+            max-width: 120px;
+            margin: 0;
+            border: 2px solid #3498db;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .theme-original .components-content ul li:not(:last-child)::after {
+            content: "+";
+            position: absolute;
+            color: #95a5a6;
+            font-weight: bold;
+            font-size: 1.2em;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-original .components-content .hanzi {
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            margin-right: 4px;
+        }
+
+        .theme-original .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.8;
+            font-style: italic;
+            font-weight: 500;
+            color: #e74c3c;
+        }
+
+        .theme-original .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.9;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 2px;
+            word-wrap: break-word;
+        }
+
+        /* THEME 2: CLASSIC ACADEMIC */
+        .theme-academic .card {
+            font-family: 'Times New Roman', Times, serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: #fefefe;
+            color: #2c2c2c;
+            line-height: 1.7;
+            min-height: 200px;
+            border: 1px solid #d4d4d4;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .theme-academic .card-container {
+            text-align: center;
+        }
+
+        .theme-academic .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-academic .chinese-main {
+            font-family: 'STSong', 'SimSun', 'Songti SC', 'NSimSun', serif;
+            font-size: 3.2em;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.1;
+            letter-spacing: 0.08em;
+            flex-shrink: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .theme-academic .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-academic .pinyin-main {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1em;
+            color: #8b4513;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            font-style: italic;
+        }
+
+        .theme-academic .prompt {
+            font-size: 0.95em;
+            color: #666;
+            font-style: italic;
+            margin-top: 40px;
+            opacity: 0.8;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .theme-academic .divider {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #8b4513, transparent);
+            margin: 25px 0;
+        }
+
+        .theme-academic .section-title {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #8b4513;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 8px 0;
+            text-align: left;
+            font-family: 'Times New Roman', Times, serif;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+        }
+
+        .theme-academic .definition-content {
+            font-size: 1.05em;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .theme-academic .part-of-speech {
+            display: inline-block;
+            background: #8b4513;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin: 2px 4px 2px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .theme-academic .components-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f7f5f3;
+            border-radius: 4px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #d4d4d4;
+        }
+
+        .theme-academic .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-academic .components-content ul li {
+            background: #ffffff;
+            color: #2c2c2c;
+            padding: 8px 10px;
+            border-radius: 3px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 60px;
+            max-width: 120px;
+            margin: 0;
+            border: 1px solid #8b4513;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .theme-academic .components-content ul li:not(:last-child)::after {
+            content: "+";
+            position: absolute;
+            color: #8b4513;
+            font-weight: bold;
+            font-size: 1.2em;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-academic .components-content .hanzi {
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'STSong', 'SimSun', 'Songti SC', 'NSimSun', serif;
+            margin-right: 4px;
+        }
+
+        .theme-academic .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.8;
+            font-style: italic;
+            font-weight: 500;
+            color: #8b4513;
+        }
+
+        .theme-academic .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.9;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 2px;
+            word-wrap: break-word;
+        }
+
+        /* THEME 3: MODERN MINIMALIST */
+        .theme-minimalist .card {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            min-height: 200px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .theme-minimalist .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-minimalist .chinese-main {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Source Han Sans CN', sans-serif;
+            font-size: 3.8em;
+            font-weight: 200;
+            color: #000000;
+            line-height: 1.1;
+            letter-spacing: 0.02em;
+            flex-shrink: 0;
+        }
+
+        .theme-minimalist .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-minimalist .pinyin-main {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 1.1em;
+            color: #666666;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+        }
+
+        .theme-minimalist .prompt {
+            font-size: 0.9em;
+            color: #999999;
+            margin-top: 40px;
+            font-weight: 300;
+        }
+
+        .theme-minimalist .divider {
+            border: none;
+            height: 1px;
+            background: #e5e5e5;
+            margin: 30px 0;
+        }
+
+        .theme-minimalist .section-title {
+            font-size: 0.8em;
+            font-weight: 500;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 20px 0 10px 0;
+            text-align: left;
+        }
+
+        .theme-minimalist .definition-content {
+            font-size: 1.1em;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .theme-minimalist .part-of-speech {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 500;
+            margin: 2px 6px 2px 0;
+            text-transform: lowercase;
+            letter-spacing: 0.3px;
+        }
+
+        .theme-minimalist .components-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .theme-minimalist .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-minimalist .components-content ul li {
+            background: #ffffff;
+            color: #1a1a1a;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 400;
+            text-align: center;
+            min-width: 70px;
+            max-width: 130px;
+            margin: 0;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .theme-minimalist .components-content ul li:not(:last-child)::after {
+            content: "→";
+            position: absolute;
+            color: #cccccc;
+            font-weight: 300;
+            font-size: 1.4em;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-minimalist .components-content .hanzi {
+            font-size: 1.2em;
+            font-weight: 300;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', sans-serif;
+            margin-right: 6px;
+        }
+
+        .theme-minimalist .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.7;
+            font-weight: 300;
+            color: #666666;
+        }
+
+        .theme-minimalist .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.8;
+            line-height: 1.2;
+            font-weight: 300;
+            margin-top: 3px;
+            word-wrap: break-word;
+        }
+
+        /* THEME 4: TRADITIONAL BRUSH */
+        .theme-brush .card {
+            font-family: 'Kaiti SC', 'STKaiti', 'BiauKai', 'Kaiti', serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 100%);
+            color: #2c1810;
+            line-height: 1.8;
+            min-height: 200px;
+            border: 2px solid #d4b896;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(139, 69, 19, 0.15);
+        }
+
+        .theme-brush .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-brush .chinese-main {
+            font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', 'Kaiti', 'LiSu', serif;
+            font-size: 3.6em;
+            font-weight: 500;
+            color: #1a0f08;
+            line-height: 1.0;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+            text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+        }
+
+        .theme-brush .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-brush .pinyin-main {
+            font-family: 'Kaiti SC', 'STKaiti', 'BiauKai', serif;
+            font-size: 1.2em;
+            color: #8b4513;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+        }
+
+        .theme-brush .prompt {
+            font-size: 1em;
+            color: #8b4513;
+            margin-top: 35px;
+            opacity: 0.8;
+            font-family: 'Kaiti SC', 'STKaiti', serif;
+        }
+
+        .theme-brush .divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #8b4513, #d4af37, #8b4513, transparent);
+            margin: 30px 0;
+        }
+
+        .theme-brush .section-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #8b4513;
+            letter-spacing: 1px;
+            margin: 18px 0 10px 0;
+            text-align: left;
+            font-family: 'Kaiti SC', 'STKaiti', serif;
+            border-bottom: 1px solid #d4b896;
+            padding-bottom: 6px;
+            position: relative;
+        }
+
+        .theme-brush .section-title::before {
+            content: "◆";
+            color: #d4af37;
+            margin-right: 8px;
+            font-size: 0.8em;
+        }
+
+        .theme-brush .definition-content {
+            font-size: 1.1em;
+            color: #2c1810;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .theme-brush .part-of-speech {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: #f5f2ed;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin: 2px 6px 2px 0;
+            text-transform: lowercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 1px 3px rgba(139, 69, 19, 0.3);
+        }
+
+        .theme-brush .components-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f9f6f1, #f5f0e8);
+            border-radius: 8px;
+            margin: 12px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #d4b896;
+            box-shadow: inset 0 1px 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .theme-brush .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-brush .components-content ul li {
+            background: linear-gradient(135deg, #ffffff, #faf8f5);
+            color: #2c1810;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 65px;
+            max-width: 125px;
+            margin: 0;
+            border: 2px solid #d4af37;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(139, 69, 19, 0.15);
+        }
+
+        .theme-brush .components-content ul li:not(:last-child)::after {
+            content: "◇";
+            position: absolute;
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.2em;
+            right: -18px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-brush .components-content .hanzi {
+            font-size: 1.2em;
+            font-weight: 600;
+            font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', serif;
+            margin-right: 5px;
+        }
+
+        .theme-brush .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.8;
+            font-weight: 500;
+            color: #8b4513;
+            font-family: 'Kaiti SC', 'STKaiti', serif;
+        }
+
+        .theme-brush .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.9;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 3px;
+            word-wrap: break-word;
+            color: #4a2c17;
+        }
+
+        /* THEME 5: HIGH CONTRAST DARK */
+        .theme-dark .card {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: #1a1a1a;
+            color: #f0f0f0;
+            line-height: 1.6;
+            min-height: 200px;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .theme-dark .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-dark .chinese-main {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+            font-size: 3.8em;
+            font-weight: 500;
+            color: #ffffff;
+            line-height: 1.1;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .theme-dark .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-dark .pinyin-main {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.2em;
+            color: #00d4ff;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+
+        .theme-dark .prompt {
+            font-size: 0.9em;
+            color: #cccccc;
+            margin-top: 40px;
+            font-weight: 400;
+        }
+
+        .theme-dark .divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #00d4ff, transparent);
+            margin: 25px 0;
+        }
+
+        .theme-dark .section-title {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 15px 0 8px 0;
+            text-align: left;
+        }
+
+        .theme-dark .definition-content {
+            font-size: 1.1em;
+            color: #f0f0f0;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .theme-dark .part-of-speech {
+            display: inline-block;
+            background: #00d4ff;
+            color: #000000;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin: 2px 4px 2px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-dark .components-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #404040;
+        }
+
+        .theme-dark .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-dark .components-content ul li {
+            background: #404040;
+            color: #f0f0f0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 60px;
+            max-width: 120px;
+            margin: 0;
+            border: 2px solid #00d4ff;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+        }
+
+        .theme-dark .components-content ul li:not(:last-child)::after {
+            content: "▶";
+            position: absolute;
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 1em;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-dark .components-content .hanzi {
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            margin-right: 4px;
+            color: #ffffff;
+        }
+
+        .theme-dark .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.9;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .theme-dark .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.8;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 2px;
+            word-wrap: break-word;
+            color: #cccccc;
+        }
+
+        /* THEME 6: ELEGANT GRADIENT */
+        .theme-gradient .card {
+            font-family: 'Avenir Next', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 200px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            position: relative;
+        }
+
+        .theme-gradient .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+
+        .theme-gradient .card-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-gradient .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .theme-gradient .chinese-main {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans CN', 'Noto Sans CJK SC', sans-serif;
+            font-size: 3.6em;
+            font-weight: 300;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .theme-gradient .chinese-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-gradient .pinyin-main {
+            font-family: 'Avenir Next', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.9);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .theme-gradient .prompt {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+            margin-top: 40px;
+            font-weight: 300;
+        }
+
+        .theme-gradient .divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+            margin: 25px 0;
+        }
+
+        .theme-gradient .section-title {
+            font-size: 0.8em;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 8px 0;
+            text-align: left;
+            position: relative;
+        }
+
+        .theme-gradient .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
+        }
+
+        .theme-gradient .definition-content {
+            font-size: 1.1em;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .theme-gradient .part-of-speech {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 500;
+            margin: 2px 6px 2px 0;
+            text-transform: lowercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-gradient .components-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 12px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .theme-gradient .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .theme-gradient .components-content ul li {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+            color: #667eea;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 65px;
+            max-width: 125px;
+            margin: 0;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .theme-gradient .components-content ul li:not(:last-child)::after {
+            content: "✦";
+            position: absolute;
+            color: rgba(255,255,255,0.7);
+            font-weight: normal;
+            font-size: 1em;
+            right: -18px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-gradient .components-content .hanzi {
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans CN', sans-serif;
+            margin-right: 4px;
+            color: #667eea;
+        }
+
+        .theme-gradient .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.8;
+            font-weight: 500;
+            color: #764ba2;
+        }
+
+        .theme-gradient .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.9;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 2px;
+            word-wrap: break-word;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chinese-header {
+                flex-direction: column !important;
+                gap: 12px !important;
+            }
+
+            .chinese-main {
+                font-size: 2.8em !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1>Chinese Learning Anki Themes</h1>
+
+        <div class="theme-grid">
+            <!-- Theme 1: Original Default -->
+            <div class="theme-section theme-original">
+                <div class="theme-header">
+                    <div class="theme-name">Original Default</div>
+                    <div class="theme-description">Clean modern design with optimized layout</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">学习</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">xuéxí</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">学习</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">xuéxí</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">verb</span> to learn; to study
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">学</span> <span class="pinyin">xué</span><span class="definition">to learn</span></li>
+                                            <li><span class="hanzi">习</span> <span class="pinyin">xí</span><span class="definition">to practice</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Hiragino Sans GB, Microsoft YaHei - Modern sans-serif fonts optimized for Chinese characters with clean, readable strokes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 2: Classic Academic -->
+            <div class="theme-section theme-academic">
+                <div class="theme-header">
+                    <div class="theme-name">Classic Academic</div>
+                    <div class="theme-description">Traditional serif fonts with scholarly appeal</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">研究</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yánjiū</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">研究</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yánjiū</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> research; study
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">研</span> <span class="pinyin">yán</span><span class="definition">to grind; study</span></li>
+                                            <li><span class="hanzi">究</span> <span class="pinyin">jiū</span><span class="definition">to investigate</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>STSong, SimSun, Songti SC - Traditional Chinese serif fonts that evoke academic texts and classical literature, excellent for formal study.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 3: Modern Minimalist -->
+            <div class="theme-section theme-minimalist">
+                <div class="theme-header">
+                    <div class="theme-name">Modern Minimalist</div>
+                    <div class="theme-description">Ultra-clean design with contemporary fonts</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">设计</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shèjì</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">设计</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shèjì</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">verb</span> to design; to plan
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">设</span> <span class="pinyin">shè</span><span class="definition">to establish</span></li>
+                                            <li><span class="hanzi">计</span> <span class="pinyin">jì</span><span class="definition">to plan</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Noto Sans CJK SC - Ultra-light weight modern fonts designed for digital interfaces, emphasizing clarity and minimal visual noise.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 4: Traditional Brush -->
+            <div class="theme-section theme-brush">
+                <div class="theme-header">
+                    <div class="theme-name">Traditional Brush</div>
+                    <div class="theme-description">Calligraphy-inspired with traditional elements</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">书法</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shūfǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">书法</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shūfǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> calligraphy; penmanship
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">书</span> <span class="pinyin">shū</span><span class="definition">book; writing</span></li>
+                                            <li><span class="hanzi">法</span> <span class="pinyin">fǎ</span><span class="definition">method; law</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>STKaiti, Kaiti SC, BiauKai - Traditional Chinese brush script fonts that mimic handwritten calligraphy, perfect for cultural immersion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 5: High Contrast Dark -->
+            <div class="theme-section theme-dark">
+                <div class="theme-header">
+                    <div class="theme-name">High Contrast Dark</div>
+                    <div class="theme-description">Dark theme for better accessibility and focus</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">夜晚</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yèwǎn</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">夜晚</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yèwǎn</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> night; evening
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">夜</span> <span class="pinyin">yè</span><span class="definition">night</span></li>
+                                            <li><span class="hanzi">晚</span> <span class="pinyin">wǎn</span><span class="definition">late; evening</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Microsoft YaHei - Bold weights of modern fonts optimized for high contrast display, excellent for low-light study sessions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 6: Elegant Gradient -->
+            <div class="theme-section theme-gradient">
+                <div class="theme-header">
+                    <div class="theme-name">Elegant Gradient</div>
+                    <div class="theme-description">Sophisticated gradients with modern aesthetics</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">优雅</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yōuyǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">优雅</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yōuyǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">adjective</span> elegant; graceful
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">优</span> <span class="pinyin">yōu</span><span class="definition">excellent</span></li>
+                                            <li><span class="hanzi">雅</span> <span class="pinyin">yǎ</span><span class="definition">elegant</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Source Han Sans CN - Light-weight modern fonts with gradient text effects, creating a sophisticated and contemporary appearance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 12px;">
+            <h3>Font Considerations for Chinese Text</h3>
+            <p style="max-width: 800px; margin: 0 auto; color: #666; line-height: 1.6;">
+                Each theme uses carefully selected Chinese fonts optimized for different contexts:
+                <strong>Sans-serif fonts</strong> (PingFang SC, Noto Sans) provide modern clarity,
+                <strong>Serif fonts</strong> (STSong, SimSun) offer traditional academic appeal,
+                <strong>Brush/Kaiti fonts</strong> (STKaiti, BiauKai) evoke calligraphy and cultural heritage.
+                Font choice significantly affects reading comprehension and aesthetic appeal in Chinese language learning.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showSide(button, side) {
+            const section = button.closest('.theme-section');
+            const frontSide = section.querySelector('.card-side.front');
+            const backSide = section.querySelector('.card-side.back');
+            const buttons = section.querySelectorAll('.toggle-btn');
+
+            // Update button states
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Show/hide card sides
+            if (side === 'front') {
+                frontSide.classList.add('active');
+                backSide.classList.remove('active');
+            } else {
+                frontSide.classList.remove('active');
+                backSide.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

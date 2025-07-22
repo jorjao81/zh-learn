@@ -23,9 +23,7 @@ class TestCharacterDefinitionCleanup:
 
     def test_remove_old_variant_patterns(self):
         """Test that 'old variant of X[pinyin]' patterns are removed."""
-        definition = (
-            "old variant of 鼓[gu3]/drum/CL:通[tong4],面[mian4]/to drum/to strike/" "to rouse/to bulge/to swell"
-        )
+        definition = "old variant of 鼓[gu3]/drum/CL:通[tong4],面[mian4]/to drum/to strike/" "to rouse/to bulge/to swell"
         result = clean_character_definition(definition)
         assert result == "drum/to drum/to strike/to rouse/to bulge/to swell"
 
@@ -52,7 +50,10 @@ class TestCharacterDefinitionCleanup:
 
     def test_preserve_valid_cl_patterns(self):
         """Test that CL patterns that are not classifiers are preserved."""
-        definition = "clear/distinct/quiet/just and honest/pure/to clear/to settle (accounts)/the Ch'ing or Qing dynasty (1644-1911)/surname Qing"
+        definition = (
+            "clear/distinct/quiet/just and honest/pure/to clear/to settle (accounts)/"
+            "the Ch'ing or Qing dynasty (1644-1911)/surname Qing"
+        )
         result = clean_character_definition(definition)
         assert result == definition  # Should remain unchanged
 
@@ -129,7 +130,9 @@ class TestCharacterDefinitionCleanup:
 
         for definition, expected in test_cases:
             result = clean_character_definition(definition)
-            assert result == expected, f"Failed for {definition}: got {result}, expected {expected}"
+            assert result == expected, (
+                f"Failed for {definition}: got {result}, expected {expected}"
+            )
 
     def test_standalone_traditional_simplified_variants(self):
         """Test standalone traditional|simplified variant patterns become empty."""

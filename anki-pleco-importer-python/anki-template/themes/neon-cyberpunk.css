@@ -13,7 +13,7 @@
   min-height: 250px;
   border: 2px solid #00ff88;
   border-radius: 0;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(0,255,136,0.5),
     inset 0 0 20px rgba(0,255,136,0.1);
   position: relative;
@@ -27,7 +27,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     repeating-linear-gradient(
       90deg,
       transparent,
@@ -81,7 +81,7 @@
   color: #ffffff;
   line-height: 1;
   letter-spacing: 0.1em;
-  text-shadow: 
+  text-shadow:
     0 0 10px #00ff88,
     0 0 20px #00ff88,
     0 0 40px #00ff88;
@@ -139,12 +139,12 @@
 .divider {
   border: none;
   height: 2px;
-  background: linear-gradient(to right, 
-    transparent, 
-    #00ff88, 
-    #ff006e, 
-    #8338ec, 
-    #ffbe0b, 
+  background: linear-gradient(to right,
+    transparent,
+    #00ff88,
+    #ff006e,
+    #8338ec,
+    #ffbe0b,
     transparent
   );
   margin: 25px 0;
