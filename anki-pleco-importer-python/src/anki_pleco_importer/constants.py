@@ -68,6 +68,7 @@ USAGE_MARKERS = {
     r"\bpejorative\b": "pejorative",
     r"\bdated\b": "dated",
     r"\bcolloquial\b": "colloquial",
+    r"\babbreviation\b": "abbreviation",
 }
 
 # Regex patterns for Chinese example extraction
