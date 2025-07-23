@@ -54,6 +54,7 @@ DOMAIN_MARKERS = {
     r"\btransportation\b": "transportation",
     r"\bzoology\b": "zoology",
     r"\bmedicine\b": "medicine",
+    r"\barcheology\b": "archeology",
 }
 
 # Usage markers that should be marked with usage + specific class
