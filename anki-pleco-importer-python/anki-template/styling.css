@@ -239,6 +239,185 @@ ul li.example {
   font-size: 0.9em;
 }
 
+/* Meaning Tree - Visual Tree Structure */
+ul.meaning-tree {
+  font-family: monospace;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  position: relative;
+  list-style: none;
+  line-height: 1.8;
+}
+
+ul.meaning-tree::before {
+  content: "Meaning Tree";
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background: #f8f9fa;
+  color: #6c757d;
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0 6px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Root node */
+ul.meaning-tree > li:first-child {
+  position: relative;
+  padding: 8px 12px;
+  background: #e8f5e8;
+  border: 2px solid #28a745;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #1e5720;
+}
+
+ul.meaning-tree > li:first-child::before {
+  content: "🌱 ";
+  margin-right: 5px;
+}
+
+/* Tree branches using CSS drawing */
+ul.meaning-tree li {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+ul.meaning-tree li ul {
+  list-style: none;
+  margin: 10px 0 0 20px;
+  padding: 0;
+  position: relative;
+}
+
+/* Vertical line from parent to children */
+ul.meaning-tree li ul::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  border-left: 2px solid #6c757d;
+  height: calc(100% + 10px);
+}
+
+/* Individual branch nodes */
+ul.meaning-tree li ul li {
+  position: relative;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Horizontal line to each child */
+ul.meaning-tree li ul li::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -12px;
+  border-top: 2px solid #6c757d;
+  width: 10px;
+  transform: translateY(-50%);
+}
+
+/* Different colors for different branch levels */
+ul.meaning-tree li ul li:nth-child(1) {
+  border-left: 4px solid #17a2b8;
+  background: linear-gradient(135deg, #e6f3ff 0%, #ffffff 100%);
+}
+
+ul.meaning-tree li ul li:nth-child(2) {
+  border-left: 4px solid #ffc107;
+  background: linear-gradient(135deg, #fffacd 0%, #ffffff 100%);
+}
+
+ul.meaning-tree li ul li:nth-child(3) {
+  border-left: 4px solid #fd7e14;
+  background: linear-gradient(135deg, #fff0e6 0%, #ffffff 100%);
+}
+
+ul.meaning-tree li ul li:nth-child(n+4) {
+  border-left: 4px solid #6f42c1;
+  background: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%);
+}
+
+/* Nested branches (sub-branches) */
+ul.meaning-tree li ul li ul {
+  margin-left: 15px;
+  border-left: 1px dashed #adb5bd;
+  padding-left: 10px;
+}
+
+ul.meaning-tree li ul li ul::before {
+  border-left: 1px dashed #adb5bd;
+  left: -10px;
+}
+
+ul.meaning-tree li ul li ul li {
+  background: #f8f9fa;
+  border: 1px dashed #adb5bd;
+  font-size: 0.9em;
+  padding: 4px 8px;
+}
+
+ul.meaning-tree li ul li ul li::before {
+  border-top: 1px dashed #adb5bd;
+  width: 8px;
+  left: -9px;
+}
+
+/* Branch labels */
+.branch-label {
+  font-weight: bold;
+  color: #495057;
+  font-size: 0.85em;
+  margin-bottom: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Mobile responsiveness for meaning tree */
+@media (max-width: 600px) {
+  ul.meaning-tree {
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 0.9em;
+  }
+
+  ul.meaning-tree > li:first-child {
+    padding: 6px 10px;
+    font-size: 0.9em;
+  }
+
+  ul.meaning-tree li ul {
+    margin-left: 15px;
+  }
+
+  ul.meaning-tree li ul li {
+    padding: 5px 8px;
+    font-size: 0.85em;
+    margin-bottom: 6px;
+  }
+
+  ul.meaning-tree li ul li ul {
+    margin-left: 10px;
+  }
+
+  ul.meaning-tree li ul li ul li {
+    padding: 3px 6px;
+    font-size: 0.8em;
+  }
+}
+
 /* Example Content Styling */
 .hanzi {
   font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
