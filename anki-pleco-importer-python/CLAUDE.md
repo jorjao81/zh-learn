@@ -55,3 +55,9 @@ For all features you develop, use the following workflow:
 - Avoid generalising to much, keep the application simple instead
 - Always confirm commit message and changes before commiting
 - Always push after committing
+
+## Anki
+Each anki note generates 3 cards:
+1. Only the chinese characters in front, everything in the back
+2. Only the audio in the front, everything in the back
+3. Only the definition in the front, everything in the back

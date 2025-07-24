@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meaning Tree - Character Evolution Preview</title>
+    <link rel="stylesheet" href="styling.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .character-example {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .example-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #1565c0;
+        }
+
+        .info-box strong {
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">Meaning Tree - Character Evolution Visualization</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">
+            Visualizing how Chinese character meanings evolved over time through semantic progression
+        </p>
+
+        <div class="info-box">
+            <strong>How to Use:</strong> When your definition field contains a list with <code>class="meaning-tree"</code>,
+            it will automatically render as an evolution tree showing how the character's meaning developed historically.
+            Each stage is color-coded and connected with arrows to show the progression.
+        </div>
+
+        <div class="character-grid">
+            <!-- Complex Evolution: 东 (east) -->
+            <div class="character-example">
+                <div class="example-title">Complex Semantic Evolution - 东</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">东</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">dōng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">A bag tied at both ends (東)</div>
+                                        <div class="meaning-description">Original pictographic meaning showing a bundle or sack</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">East (direction)</div>
+                                        <div class="meaning-description">Via sound-loan, came to represent the cardinal direction</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Host; Master</div>
+                                        <div class="meaning-description">In ancient China, the master/host would sit on the eastern side of the table</div>
+                                        <div class="meaning-examples">东家 (dōngjiā) - host, landlord</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Modern Usage</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">东方</span> (<span class="pinyin">dōngfāng</span>) - <span class="translation">the East; Oriental</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">东西</span> (<span class="pinyin">dōngxi</span>) - <span class="translation">thing; stuff</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensory Evolution: 臭 (smell) -->
+            <div class="character-example">
+                <div class="example-title">Sensory Evolution - 臭</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">臭</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">chòu</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">To have a sensitive, keen nose</div>
+                                        <div class="meaning-description">Original meaning related to having acute smell</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Stench; Odor</div>
+                                        <div class="meaning-description">Extended to refer to strong smells in general</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">To smell bad</div>
+                                        <div class="meaning-description">Modern negative meaning - bad or unpleasant smell</div>
+                                        <div class="meaning-examples">臭味 (chòuwèi) - bad smell, stench</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">自</span>
+                                        <span class="pinyin">zì</span>
+                                        <div class="definition">nose (original meaning)</div>
+                                    </li>
+                                    <li class="semantic">
+                                        <span class="hanzi">犬</span>
+                                        <span class="pinyin">quǎn</span>
+                                        <div class="definition">dog</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complex Multi-stage: 酷 (cool) -->
+            <div class="character-example">
+                <div class="example-title">Multi-stage Evolution - 酷</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">酷</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">kù</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">Alcohol with intense flavor</div>
+                                        <div class="meaning-description">Original meaning: strong-tasting alcoholic drink</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Intense; Strong</div>
+                                        <div class="meaning-description">Extended to describe intensity in general</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Ruthless; Cruel</div>
+                                        <div class="meaning-description">Negative connotation of excessive intensity</div>
+                                        <div class="meaning-examples">酷刑 (kùxíng) - cruel punishment, torture</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Cool; Hip</div>
+                                        <div class="meaning-description">Modern slang meaning borrowed from English "cool"</div>
+                                        <div class="meaning-examples">很酷 (hěn kù) - very cool</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">酉</span>
+                                        <span class="pinyin">yǒu</span>
+                                        <div class="definition">alcohol vessel</div>
+                                    </li>
+                                    <li class="phonetic">
+                                        <span class="hanzi">告</span>
+                                        <span class="pinyin">gào</span>
+                                        <div class="definition">to tell; announce</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body-related Evolution: 欠 (owe) -->
+            <div class="character-example">
+                <div class="example-title">Body-related Evolution - 欠</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">欠</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qiàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">Person with open mouth</div>
+                                        <div class="meaning-description">Original pictograph: person opening their mouth</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">To yawn</div>
+                                        <div class="meaning-description">Direct representation of the mouth opening action</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">To lack</div>
+                                        <div class="meaning-description">From yawning (showing emptiness) to lacking something</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">To owe</div>
+                                        <div class="meaning-description">Modern meaning: being in debt, owing something</div>
+                                        <div class="meaning-examples">欠款 (qiànkuǎn) - debt, money owed</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Debt</div>
+                                        <div class="meaning-description">Noun form: the thing that is owed</div>
+                                        <div class="meaning-examples">拖欠 (tuōqiàn) - to be in arrears</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">As Component (mouth actions)</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">欢</span> (<span class="pinyin">huān</span>) - <span class="translation">joyous; happy</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">歌</span> (<span class="pinyin">gē</span>) - <span class="translation">song</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">饮</span> (<span class="pinyin">yǐn</span>) - <span class="translation">to drink</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Evolution: 青 (blue/green) -->
+            <div class="character-example">
+                <div class="example-title">Color Evolution - 青</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">青</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qīng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">Green (sprouting vegetation)</div>
+                                        <div class="meaning-description">Original color of new plant growth</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Vegetation</div>
+                                        <div class="meaning-description">Extended to mean plants and vegetation in general</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Young</div>
+                                        <div class="meaning-description">Young plants → young in general</div>
+                                        <div class="meaning-examples">青年 (qīngnián) - young person, youth</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Blue</div>
+                                        <div class="meaning-description">Color expansion from green to blue spectrum</div>
+                                        <div class="meaning-examples">青天 (qīngtiān) - blue sky</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Black</div>
+                                        <div class="meaning-description">Further color extension to dark colors</div>
+                                        <div class="meaning-examples">青丝 (qīngsī) - black hair</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">As Phonetic Component</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">清</span> (<span class="pinyin">qīng</span>) - <span class="translation">clear; pure</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">请</span> (<span class="pinyin">qǐng</span>) - <span class="translation">please; to request</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">情</span> (<span class="pinyin">qíng</span>) - <span class="translation">emotion; feeling</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architectural Evolution: 京 (capital) -->
+            <div class="character-example">
+                <div class="example-title">Architectural Evolution - 京</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">京</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">jīng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Meaning Evolution</div>
+                            <div class="definition-content">
+                                <ul class="meaning-tree">
+                                    <li>
+                                        <div class="meaning-stage">Tall building</div>
+                                        <div class="meaning-description">Original meaning: a high, prominent structure</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Tall hill</div>
+                                        <div class="meaning-description">Extended to natural elevated features</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Tall; High</div>
+                                        <div class="meaning-description">General adjective for height and prominence</div>
+                                    </li>
+                                    <li>
+                                        <div class="meaning-stage">Capital city</div>
+                                        <div class="meaning-description">Cities built on high ground → important cities → capitals</div>
+                                        <div class="meaning-examples">北京 (Běijīng) - Beijing (Northern Capital)</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">As Phonetic Component</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">惊</span> (<span class="pinyin">jīng</span>) - <span class="translation">to be frightened</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">景</span> (<span class="pinyin">jǐng</span>) - <span class="translation">scenery; view</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Technical Implementation:</strong> To use this feature, simply add a <code>&lt;ul class="meaning-tree"&gt;</code>
+            to your definition field. Each <code>&lt;li&gt;</code> represents a stage in the meaning evolution.
+            The system automatically colors and connects them with arrows to show the progression.
+        </div>
+
+        <div style="text-align: center; color: #7f8c8d; font-size: 0.9em; margin-top: 40px; padding: 20px; background: white; border-radius: 8px;">
+            <strong>Color Legend:</strong><br>
+            <span style="color: #28a745;">🟢 Green</span> = Original meaning &nbsp;&nbsp;
+            <span style="color: #17a2b8;">🔵 Teal</span> = First evolution &nbsp;&nbsp;
+            <span style="color: #ffc107;">🟡 Amber</span> = Second evolution &nbsp;&nbsp;
+            <span style="color: #fd7e14;">🟠 Orange</span> = Third evolution &nbsp;&nbsp;
+            <span style="color: #6f42c1;">🟣 Purple</span> = Later evolutions
+        </div>
+    </div>
+</body>
+</html>

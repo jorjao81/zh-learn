@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Learning Anki Template Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f6fa;
+            line-height: 1.6;
+        }
+
+        .preview-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        .card-preview {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .toggle-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            font-size: 0.9em;
+        }
+
+        .toggle-btn:hover {
+            background: #2980b9;
+        }
+
+        .card-side {
+            display: none;
+        }
+
+        .card-side.active {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="styling.css">
+</head>
+<body>
+    <div class="preview-container">
+        <h1>🎴 Chinese Learning Anki Template Preview</h1>
+
+        <!-- Card 1: Simple Definition (no part of speech) -->
+        <div class="card-preview">
+            <div class="preview-header">
+                Card with Simple Definition - 休息室
+                <button class="toggle-btn" onclick="toggleCard(this)">Show Back</button>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="card-side front active">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">休息室</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">xiūxīshì</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <div class="prompt">Think of the meaning...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-side back">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">休息室</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">xiūxīshì</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                lounge; lobby; vestibule; foyer; room for relaxation
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Structural Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li><span class="hanzi">休息</span> <span class="pinyin">xiūxī</span><span class="definition">to rest; take a break</span></li>
+                                    <li><span class="hanzi">室</span> <span class="pinyin">shì</span><span class="definition">room/work unit</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Part of Speech with Domain Marker Inline -->
+        <div class="card-preview">
+            <div class="preview-header">
+                Card with Part of Speech + Domain Marker - 宿主
+                <button class="toggle-btn" onclick="toggleCard(this)">Show Back</button>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="card-side front active">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">宿主</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">sùzhǔ</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <div class="prompt">Think of the meaning...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-side back">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">宿主</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">sùzhǔ</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <span class="part-of-speech">noun</span> <span class="domain">biology</span> host (of parasite)
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Structural Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li><span class="hanzi">宿</span> <span class="pinyin">sù</span><span class="definition">lodge for the night</span></li>
+                                    <li><span class="hanzi">主</span> <span class="pinyin">zhǔ</span><span class="definition">owner/master/host</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <span class="hanzi">终宿主</span> <span class="pinyin">zhōng sùzhǔ</span> <span class="translation">final host</span><br>
+                                <span class="hanzi">中间宿主</span> <span class="pinyin">zhōngjiān sùzhǔ</span> <span class="translation">intermediate host</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Part of Speech with Examples -->
+        <div class="card-preview">
+            <div class="preview-header">
+                Card with Part of Speech + Examples - 打击
+                <button class="toggle-btn" onclick="toggleCard(this)">Show Back</button>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="card-side front active">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">打击</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">dǎjī</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <div class="prompt">Think of the meaning...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-side back">
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">打击</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">dǎjī</div>
+                                <div class="audio-section">🔊</div>
+                            </div>
+                        </div>
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <span class="part-of-speech">verb</span> hit; strike; attack
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Structural Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li><span class="hanzi">打</span> <span class="pinyin">dǎ</span><span class="definition">to beat/to strike</span></li>
+                                    <li><span class="hanzi">击</span> <span class="pinyin">jī</span><span class="definition">to hit/to strike</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <span class="hanzi">打击犯罪</span> <span class="pinyin">dǎjī fànzuì</span> <span class="translation">crack down on crimes</span><br>
+                                <span class="hanzi">打击歪风</span> <span class="pinyin">dǎjī wāifēng</span> <span class="translation">take strong measures against unhealthy tendencies</span><br>
+                                <span class="hanzi">打击积极性</span> <span class="pinyin">dǎjī jījíxìng</span> <span class="translation">dampen sb.'s enthusiasm</span><br>
+                                <span class="hanzi">狠狠打击敌人</span> <span class="pinyin">hěnhěn dǎjī dírén</span> <span class="translation">strike relentless blows at the enemy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(button) {
+            const container = button.closest('.card-preview');
+            const front = container.querySelector('.front');
+            const back = container.querySelector('.back');
+
+            if (front.classList.contains('active')) {
+                front.classList.remove('active');
+                back.classList.add('active');
+                button.textContent = 'Show Front';
+            } else {
+                back.classList.remove('active');
+                front.classList.add('active');
+                button.textContent = 'Show Back';
+            }
+        }
+    </script>
+</body>
+</html>

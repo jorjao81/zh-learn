@@ -1,0 +1,439 @@
+/* Zen Default Hybrid Theme */
+/* Combines the horizontal layout of Original Default with Zen Vertical fonts */
+
+/* Card Container - Original Default layout */
+.card {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Georgia', serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+  background: #ffffff;
+  color: #2c2c2c;
+  line-height: 1.6;
+  min-height: 200px;
+}
+
+.card-container {
+  text-align: center;
+}
+
+/* Chinese Header - Original Default horizontal layout */
+.chinese-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+/* Chinese Characters - Zen Vertical fonts with Original Default sizing */
+.chinese-main {
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', 'Brush Script MT', cursive;
+  font-size: 3.5em;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* Chinese Side Content - Original Default layout */
+.chinese-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Pinyin - Zen Vertical font styling */
+.pinyin-main {
+  font-family: 'Georgia', serif;
+  font-size: 1.2em;
+  color: #666;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  font-style: italic;
+}
+
+/* Audio */
+.audio-section {
+  margin: 0;
+}
+
+/* Prompt on front */
+.prompt {
+  font-size: 0.9em;
+  color: #888;
+  font-style: italic;
+  margin-top: 40px;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+/* Divider between front and back - Original Default style */
+.divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #bdc3c7, transparent);
+  margin: 25px 0;
+}
+
+/* Section Styling - Original Default layout with Zen typography */
+.section-title {
+  font-size: 0.9em;
+  font-weight: 400;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 15px 0 8px 0;
+  text-align: left;
+}
+
+.definition-section,
+.examples-section,
+.components-section,
+.similar-section {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.examples-content {
+  line-height: 1.8;
+}
+
+.examples-content .hanzi {
+  font-weight: 600;
+}
+
+.examples-content .pinyin {
+  margin: 0 8px;
+}
+
+.examples-content .translation {
+  margin-left: 8px;
+}
+
+/* Definition Content */
+.definition-content {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 300;
+}
+
+/* Semantic Markup Styles */
+
+/* Part of Speech Tags */
+.part-of-speech {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin: 2px 4px 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Domain Tags */
+.domain {
+  display: inline-block;
+  background: #9b59b6;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  font-weight: 500;
+  margin: 2px 3px 2px 0;
+  text-transform: lowercase;
+}
+
+/* Usage Tags */
+.usage {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.65em;
+  font-weight: 500;
+  margin: 2px 3px 2px 0;
+  border: 1px solid #95a5a6;
+  color: #7f8c8d;
+  background: #ecf0f1;
+  font-style: italic;
+}
+
+.usage.literary {
+  background: #d5f4e6;
+  border-color: #27ae60;
+  color: #27ae60;
+}
+
+.usage.dated {
+  background: #fdeaa7;
+  border-color: #f39c12;
+  color: #d68910;
+}
+
+.usage.colloquial {
+  background: #d6eaf8;
+  border-color: #3498db;
+  color: #2980b9;
+}
+
+.usage.pejorative {
+  background: #fadbd8;
+  border-color: #e74c3c;
+  color: #c0392b;
+}
+
+/* Definition Lists */
+ol {
+  margin: 15px 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: definition-counter;
+}
+
+ol li {
+  counter-increment: definition-counter;
+  margin: 8px 0;
+  padding: 10px 12px 10px 35px;
+  background: #f8f9fa;
+  border-left: 3px solid #3498db;
+  border-radius: 0 6px 6px 0;
+  position: relative;
+  font-size: 0.95em;
+}
+
+ol li::before {
+  content: counter(definition-counter);
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #3498db;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+
+/* Example Lists */
+ul {
+  margin: 15px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+ul li.example {
+  margin: 10px 0;
+  padding: 12px 15px;
+  background: #f7f9fc;
+  border-radius: 8px;
+  border: 1px solid #e1e8ed;
+  font-size: 0.9em;
+}
+
+/* Example Content Styling with Zen fonts */
+.hanzi {
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', cursive;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.pinyin {
+  font-family: 'Georgia', serif;
+  color: #666;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.translation {
+  color: #34495e;
+  font-weight: 300;
+}
+
+/* Structural Analysis - Original Default horizontal layout */
+.components-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid #e9ecef;
+}
+
+.components-content ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.components-content ul li {
+  background: #ffffff;
+  color: #333;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 300;
+  text-align: center;
+  min-width: 60px;
+  max-width: 120px;
+  margin: 0;
+  border: 2px solid #3498db;
+  font-size: 0.85em;
+  line-height: 1.3;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.components-content ul li:not(:last-child)::after {
+  content: "+";
+  position: absolute;
+  color: #95a5a6;
+  font-weight: bold;
+  font-size: 1.2em;
+  background: none;
+  border: none;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Component types in horizontal layout */
+.components-content .semantic {
+  border-color: #27ae60;
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.components-content .phonetic {
+  border-color: #e74c3c;
+  background: #fadbd8;
+  color: #c0392b;
+}
+
+.components-content .unknown {
+  border-color: #95a5a6;
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+/* Component content styling with Zen fonts */
+.components-content .hanzi {
+  font-size: 1.1em;
+  font-weight: 400;
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', cursive;
+  margin-right: 4px;
+}
+
+.components-content .pinyin {
+  font-size: 0.75em;
+  opacity: 0.7;
+  font-style: italic;
+  font-weight: 300;
+  color: #666;
+}
+
+.components-content .definition {
+  display: block;
+  font-size: 0.7em;
+  opacity: 0.8;
+  line-height: 1.2;
+  font-weight: 300;
+  margin-top: 2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.definition {
+  color: #555;
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .card {
+    padding: 12px;
+    margin: 5px;
+  }
+
+  .chinese-header {
+    flex-direction: column;
+    gap: 12px;
+    margin: 15px 0;
+  }
+
+  .chinese-main {
+    font-size: 2.8em;
+  }
+
+  .pinyin-main {
+    font-size: 1.1em;
+  }
+
+  .section-title {
+    font-size: 0.8em;
+  }
+
+  ol li, ul li.example {
+    padding: 8px 10px 8px 28px;
+    margin: 6px 0;
+    font-size: 0.9em;
+  }
+
+  ol li::before {
+    width: 16px;
+    height: 16px;
+    left: 6px;
+    font-size: 0.7em;
+  }
+
+  .part-of-speech, .domain {
+    font-size: 0.7em;
+    padding: 2px 6px;
+  }
+
+  .usage {
+    font-size: 0.6em;
+    padding: 1px 4px;
+  }
+
+  .components-content {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .components-content ul {
+    gap: 6px;
+  }
+
+  .components-content ul li {
+    min-width: 50px;
+    max-width: 100px;
+    padding: 6px 8px;
+    font-size: 0.8em;
+  }
+
+  .components-content ul li:not(:last-child)::after {
+    right: -12px;
+    font-size: 1em;
+  }
+}

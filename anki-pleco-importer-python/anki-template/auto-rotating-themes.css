@@ -1,0 +1,809 @@
+/* Auto-Rotating Anki Themes */
+/* Master CSS file that includes all themes with proper class prefixes */
+/* Themes rotate automatically based on current date via JavaScript */
+
+/* Base styles applied to all themes */
+* {
+  box-sizing: border-box;
+}
+
+/* ===========================================
+   THEME 1: ORIGINAL DEFAULT
+   =========================================== */
+.theme-original-default .card {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+  background: #ffffff;
+  color: #333333;
+  line-height: 1.6;
+  min-height: 200px;
+}
+
+.theme-original-default .card-container {
+  text-align: center;
+}
+
+.theme-original-default .chinese-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.theme-original-default .chinese-main {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans CN', sans-serif;
+  font-size: 3.5em;
+  font-weight: 300;
+  color: #2c3e50;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.theme-original-default .chinese-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-original-default .pinyin-main {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.2em;
+  color: #e74c3c;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.theme-original-default .audio-section {
+  margin: 0;
+}
+
+.theme-original-default .prompt {
+  font-size: 0.9em;
+  color: #7f8c8d;
+  font-style: italic;
+  margin-top: 40px;
+  opacity: 0.8;
+}
+
+.theme-original-default .divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #bdc3c7, transparent);
+  margin: 25px 0;
+}
+
+.theme-original-default .section-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #34495e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 15px 0 8px 0;
+  text-align: left;
+}
+
+.theme-original-default .definition-section,
+.theme-original-default .examples-section,
+.theme-original-default .components-section,
+.theme-original-default .similar-section {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.theme-original-default .definition-content {
+  font-size: 1.1em;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.theme-original-default .part-of-speech {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin: 2px 4px 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.theme-original-default .components-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid #e9ecef;
+}
+
+.theme-original-default .components-content ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.theme-original-default .components-content ul li {
+  background: #ffffff;
+  color: #2c3e50;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 60px;
+  max-width: 120px;
+  margin: 0;
+  border: 2px solid #3498db;
+  font-size: 0.85em;
+  line-height: 1.3;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.theme-original-default .components-content ul li:not(:last-child)::after {
+  content: "+";
+  position: absolute;
+  color: #95a5a6;
+  font-weight: bold;
+  font-size: 1.2em;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-original-default .hanzi {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.theme-original-default .pinyin {
+  color: #e74c3c;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.theme-original-default .translation {
+  color: #34495e;
+  font-weight: 500;
+}
+
+/* ===========================================
+   THEME 2: ZEN VERTICAL
+   =========================================== */
+.theme-zen-vertical .card {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Georgia', serif;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%);
+  color: #2c2c2c;
+  line-height: 2;
+  min-height: 500px;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 0 40px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.theme-zen-vertical .card::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, #ddd, transparent);
+  transform: translateX(-50%);
+}
+
+.theme-zen-vertical .card-container {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-zen-vertical .chinese-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0 40px 0;
+  position: relative;
+}
+
+.theme-zen-vertical .chinese-main {
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', 'Brush Script MT', cursive;
+  font-size: 4.5em;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 0.9;
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  margin: 20px 0;
+}
+
+.theme-zen-vertical .chinese-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-zen-vertical .pinyin-main {
+  font-family: 'Georgia', serif;
+  font-size: 0.9em;
+  color: #666;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  font-style: italic;
+}
+
+.theme-zen-vertical .audio-section {
+  margin-top: 5px;
+  font-size: 0.9em;
+}
+
+.theme-zen-vertical .prompt {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 50px;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.theme-zen-vertical .divider {
+  border: none;
+  height: 80px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, #ccc, transparent);
+  margin: 30px auto;
+}
+
+.theme-zen-vertical .section-title {
+  font-size: 0.7em;
+  font-weight: 400;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 25px 0 15px 0;
+  text-align: center;
+  writing-mode: horizontal-tb;
+}
+
+.theme-zen-vertical .definition-section,
+.theme-zen-vertical .components-section {
+  margin: 25px 0;
+  text-align: center;
+}
+
+.theme-zen-vertical .definition-content {
+  font-size: 1em;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.theme-zen-vertical .part-of-speech {
+  display: block;
+  background: transparent;
+  color: #666;
+  padding: 5px 0;
+  font-size: 0.75em;
+  font-weight: 400;
+  margin: 10px 0;
+  text-transform: lowercase;
+  border-bottom: 1px solid #eee;
+  font-style: italic;
+}
+
+.theme-zen-vertical .components-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+  background: transparent;
+  border: none;
+  margin: 20px 0;
+}
+
+.theme-zen-vertical .components-content ul {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.theme-zen-vertical .components-content ul li {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  padding: 15px 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  font-weight: 300;
+  text-align: center;
+  width: 180px;
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.theme-zen-vertical .components-content .hanzi {
+  display: block;
+  font-size: 2em;
+  font-weight: 400;
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', cursive;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+
+.theme-zen-vertical .components-content .pinyin {
+  display: block;
+  font-size: 0.8em;
+  opacity: 0.7;
+  font-weight: 300;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 5px;
+}
+
+.theme-zen-vertical .components-content .definition {
+  display: block;
+  font-size: 0.8em;
+  opacity: 0.8;
+  line-height: 1.4;
+  font-weight: 300;
+  color: #555;
+}
+
+/* ===========================================
+   THEME 3: ZEN DEFAULT HYBRID
+   =========================================== */
+.theme-zen-default-hybrid .card {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Georgia', serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+  background: #ffffff;
+  color: #2c2c2c;
+  line-height: 1.6;
+  min-height: 200px;
+}
+
+.theme-zen-default-hybrid .card-container {
+  text-align: center;
+}
+
+.theme-zen-default-hybrid .chinese-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.theme-zen-default-hybrid .chinese-main {
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', 'Brush Script MT', cursive;
+  font-size: 3.5em;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.theme-zen-default-hybrid .chinese-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-zen-default-hybrid .pinyin-main {
+  font-family: 'Georgia', serif;
+  font-size: 1.2em;
+  color: #666;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  font-style: italic;
+}
+
+.theme-zen-default-hybrid .audio-section {
+  margin: 0;
+}
+
+.theme-zen-default-hybrid .prompt {
+  font-size: 0.9em;
+  color: #888;
+  font-style: italic;
+  margin-top: 40px;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+.theme-zen-default-hybrid .divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #bdc3c7, transparent);
+  margin: 25px 0;
+}
+
+.theme-zen-default-hybrid .section-title {
+  font-size: 0.9em;
+  font-weight: 400;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 15px 0 8px 0;
+  text-align: left;
+}
+
+.theme-zen-default-hybrid .definition-section,
+.theme-zen-default-hybrid .components-section {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.theme-zen-default-hybrid .definition-content {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 300;
+}
+
+.theme-zen-default-hybrid .part-of-speech {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin: 2px 4px 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.theme-zen-default-hybrid .components-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid #e9ecef;
+}
+
+.theme-zen-default-hybrid .components-content ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.theme-zen-default-hybrid .components-content ul li {
+  background: #ffffff;
+  color: #333;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 300;
+  text-align: center;
+  min-width: 60px;
+  max-width: 120px;
+  margin: 0;
+  border: 2px solid #3498db;
+  font-size: 0.85em;
+  line-height: 1.3;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.theme-zen-default-hybrid .components-content ul li:not(:last-child)::after {
+  content: "+";
+  position: absolute;
+  color: #95a5a6;
+  font-weight: bold;
+  font-size: 1.2em;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-zen-default-hybrid .components-content .hanzi {
+  font-size: 1.1em;
+  font-weight: 400;
+  font-family: 'STKaiti', 'Kaiti SC', 'BiauKai', cursive;
+  margin-right: 4px;
+}
+
+.theme-zen-default-hybrid .components-content .pinyin {
+  font-size: 0.75em;
+  opacity: 0.7;
+  font-style: italic;
+  font-weight: 300;
+  color: #666;
+}
+
+.theme-zen-default-hybrid .components-content .definition {
+  display: block;
+  font-size: 0.7em;
+  opacity: 0.8;
+  line-height: 1.2;
+  font-weight: 300;
+  margin-top: 2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* ===========================================
+   THEME 4: NEON CYBERPUNK
+   =========================================== */
+.theme-neon-cyberpunk .card {
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 25px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+  color: #00ff88;
+  line-height: 1.4;
+  min-height: 250px;
+  border: 2px solid #00ff88;
+  border-radius: 0;
+  box-shadow:
+    0 0 20px rgba(0,255,136,0.5),
+    inset 0 0 20px rgba(0,255,136,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-neon-cyberpunk .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      rgba(0,255,136,0.03) 100px
+    );
+  pointer-events: none;
+}
+
+.theme-neon-cyberpunk .card::after {
+  content: '> CHINESE_LEARNING_SYSTEM v2.1';
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  font-size: 0.6em;
+  color: #00ff88;
+  opacity: 0.3;
+}
+
+.theme-neon-cyberpunk .card-container {
+  text-align: left;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-neon-cyberpunk .chinese-header {
+  display: block;
+  margin: 20px 0 30px 0;
+  padding: 15px;
+  background: rgba(0,255,136,0.05);
+  border-left: 4px solid #00ff88;
+  position: relative;
+}
+
+.theme-neon-cyberpunk .chinese-header::before {
+  content: '$ query_hanzi --display';
+  position: absolute;
+  top: -15px;
+  left: 0;
+  font-size: 0.7em;
+  color: #00ff88;
+  opacity: 0.6;
+}
+
+.theme-neon-cyberpunk .chinese-main {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  font-size: 4em;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-shadow:
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 40px #00ff88;
+  display: inline-block;
+  margin-right: 30px;
+}
+
+.theme-neon-cyberpunk .chinese-side {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 15px;
+}
+
+.theme-neon-cyberpunk .pinyin-main {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 1.1em;
+  color: #ff006e;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 5px #ff006e;
+}
+
+.theme-neon-cyberpunk .pinyin-main::before {
+  content: 'PINYIN: ';
+  color: #00ff88;
+  opacity: 0.7;
+}
+
+.theme-neon-cyberpunk .audio-section {
+  margin-top: 8px;
+  color: #8338ec;
+}
+
+.theme-neon-cyberpunk .audio-section::before {
+  content: 'AUDIO: ';
+  color: #00ff88;
+  opacity: 0.7;
+}
+
+.theme-neon-cyberpunk .prompt {
+  font-size: 0.9em;
+  color: #ffbe0b;
+  margin-top: 40px;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.theme-neon-cyberpunk .prompt::before {
+  content: '> ';
+  color: #00ff88;
+}
+
+.theme-neon-cyberpunk .divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right,
+    transparent,
+    #00ff88,
+    #ff006e,
+    #8338ec,
+    #ffbe0b,
+    transparent
+  );
+  margin: 25px 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.theme-neon-cyberpunk .section-title {
+  font-size: 0.8em;
+  font-weight: 400;
+  color: #00ff88;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 20px 0 10px 0;
+  text-align: left;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.theme-neon-cyberpunk .section-title::before {
+  content: '$ cat ';
+  color: #ffbe0b;
+}
+
+.theme-neon-cyberpunk .definition-section,
+.theme-neon-cyberpunk .components-section {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.theme-neon-cyberpunk .definition-content {
+  font-size: 1.1em;
+  color: #ffffff;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-left: 2px solid #ff006e;
+}
+
+.theme-neon-cyberpunk .part-of-speech {
+  display: inline-block;
+  background: rgba(255,0,110,0.2);
+  color: #ff006e;
+  padding: 4px 8px;
+  border: 1px solid #ff006e;
+  font-size: 0.7em;
+  font-weight: 600;
+  margin: 2px 4px 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px #ff006e;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+/* Mobile Responsiveness for all themes */
+@media (max-width: 600px) {
+  .theme-original-default .card,
+  .theme-zen-default-hybrid .card {
+    padding: 12px;
+    margin: 5px;
+  }
+
+  .theme-original-default .chinese-header,
+  .theme-zen-default-hybrid .chinese-header {
+    flex-direction: column;
+    gap: 12px;
+    margin: 15px 0;
+  }
+
+  .theme-original-default .chinese-main,
+  .theme-zen-default-hybrid .chinese-main {
+    font-size: 2.8em;
+  }
+
+  .theme-zen-vertical .card {
+    max-width: 280px;
+    padding: 20px 15px;
+    min-height: 400px;
+  }
+
+  .theme-zen-vertical .chinese-main {
+    font-size: 3.5em;
+  }
+
+  .theme-neon-cyberpunk .card {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .theme-neon-cyberpunk .chinese-main {
+    font-size: 3em;
+  }
+}

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Decomposition Tree Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .example-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .pronunciation {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .definition {
+            color: #34495e;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Tree View Style */
+        .decomposition-tree {
+            font-family: 'Courier New', monospace;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            margin: 15px 0;
+        }
+
+        .tree-node {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+
+        .tree-node .character {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .tree-node .pinyin {
+            color: #e74c3c;
+            font-style: italic;
+            margin: 0 10px;
+        }
+
+        .tree-node .meaning {
+            color: #27ae60;
+        }
+
+        .tree-level-1 { margin-left: 0; border-left-color: #e74c3c; }
+        .tree-level-2 { margin-left: 30px; border-left-color: #f39c12; }
+        .tree-level-3 { margin-left: 60px; border-left-color: #27ae60; }
+
+        /* Horizontal Layout Style */
+        .decomposition-horizontal {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .component {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .component .char {
+            display: block;
+            font-size: 18px;
+        }
+
+        .component .pinyin {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .component .meaning {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .plus {
+            font-size: 20px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        /* Collapsible Tree Style */
+        .collapsible-tree {
+            margin: 15px 0;
+        }
+
+        .collapsible {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            outline: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            text-align: left;
+        }
+
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
+
+        .collapsible.active {
+            background-color: #2980b9;
+        }
+
+        .content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #ecf0f1;
+        }
+
+        .content.active {
+            max-height: 200px;
+            padding: 15px;
+        }
+
+        .sub-component {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .style-title {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            margin: 20px 0 0 0;
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chinese Word Decomposition Examples</h1>
+    <p>Examples of semantic HTML representation for Chinese word decompositions</p>
+
+    <!-- Example 1: 去哪儿啊 -->
+    <div class="example-card">
+        <div class="card-title">去哪儿啊</div>
+        <div class="pronunciation">qùnǎr'a</div>
+        <div class="definition">→ a colloquial greeting</div>
+
+        <div class="style-title">Tree View</div>
+        <div class="decomposition-tree">
+            <div class="tree-node tree-level-1">
+                <span class="character">去哪儿啊</span>
+                <span class="pinyin">qùnǎr'a</span>
+                <span class="meaning">colloquial greeting</span>
+            </div>
+            <div class="tree-node tree-level-2">
+                <span class="character">去</span>
+                <span class="pinyin">qù</span>
+                <span class="meaning">go</span>
+            </div>
+            <div class="tree-node tree-level-2">
+                <span class="character">哪儿</span>
+                <span class="pinyin">nǎr</span>
+                <span class="meaning">where</span>
+            </div>
+            <div class="tree-node tree-level-2">
+                <span class="character">啊</span>
+                <span class="pinyin">a</span>
+                <span class="meaning">modal particle</span>
+            </div>
+        </div>
+
+        <div class="style-title">Horizontal Layout</div>
+        <div class="decomposition-horizontal">
+            <div class="component">
+                <span class="char">去</span>
+                <div class="pinyin">qù</div>
+                <div class="meaning">go</div>
+            </div>
+            <span class="plus">+</span>
+            <div class="component">
+                <span class="char">哪儿</span>
+                <div class="pinyin">nǎr</div>
+                <div class="meaning">where</div>
+            </div>
+            <span class="plus">+</span>
+            <div class="component">
+                <span class="char">啊</span>
+                <div class="pinyin">a</div>
+                <div class="meaning">particle</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Example 2: 恍然大悟 -->
+    <div class="example-card">
+        <div class="card-title">恍然大悟</div>
+        <div class="pronunciation">huǎngrán-dàwù</div>
+        <div class="definition">idiom: suddenly see the light; suddenly realize what has happened</div>
+
+        <div class="style-title">Collapsible Tree</div>
+        <div class="collapsible-tree">
+            <button class="collapsible">恍然大悟 (huǎngrán-dàwù) - suddenly realize</button>
+            <div class="content">
+                <div class="sub-component">
+                    <strong>恍然</strong> (huǎngrán) - suddenly understand
+                    <div style="margin-left: 20px; margin-top: 5px;">
+                        <small>恍 (huǎng) - suddenly + 然 (rán) - like this</small>
+                    </div>
+                </div>
+                <div class="sub-component">
+                    <strong>大悟</strong> (dàwù) - great enlightenment
+                    <div style="margin-left: 20px; margin-top: 5px;">
+                        <small>大 (dà) - big/great + 悟 (wù) - understand/realize</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-title">Horizontal Layout</div>
+        <div class="decomposition-horizontal">
+            <div class="component">
+                <span class="char">恍然</span>
+                <div class="pinyin">huǎngrán</div>
+                <div class="meaning">suddenly</div>
+            </div>
+            <span class="plus">+</span>
+            <div class="component">
+                <span class="char">大悟</span>
+                <div class="pinyin">dàwù</div>
+                <div class="meaning">enlightenment</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Example 3: 夜生活 -->
+    <div class="example-card">
+        <div class="card-title">夜生活</div>
+        <div class="pronunciation">yèshēnghuó</div>
+        <div class="definition">night life</div>
+
+        <div class="style-title">Tree View</div>
+        <div class="decomposition-tree">
+            <div class="tree-node tree-level-1">
+                <span class="character">夜生活</span>
+                <span class="pinyin">yèshēnghuó</span>
+                <span class="meaning">night life</span>
+            </div>
+            <div class="tree-node tree-level-2">
+                <span class="character">夜</span>
+                <span class="pinyin">yè</span>
+                <span class="meaning">night</span>
+            </div>
+            <div class="tree-node tree-level-2">
+                <span class="character">生活</span>
+                <span class="pinyin">shēnghuó</span>
+                <span class="meaning">life/activity</span>
+            </div>
+            <div class="tree-node tree-level-3">
+                <span class="character">生</span>
+                <span class="pinyin">shēng</span>
+                <span class="meaning">life/birth</span>
+            </div>
+            <div class="tree-node tree-level-3">
+                <span class="character">活</span>
+                <span class="pinyin">huó</span>
+                <span class="meaning">live/alive</span>
+            </div>
+        </div>
+
+        <div class="style-title">Horizontal Layout</div>
+        <div class="decomposition-horizontal">
+            <div class="component">
+                <span class="char">夜</span>
+                <div class="pinyin">yè</div>
+                <div class="meaning">night</div>
+            </div>
+            <span class="plus">+</span>
+            <div class="component">
+                <span class="char">生活</span>
+                <div class="pinyin">shēnghuó</div>
+                <div class="meaning">life</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Example 4: 寄生虫 -->
+    <div class="example-card">
+        <div class="card-title">寄生虫</div>
+        <div class="pronunciation">jìshēngchóng</div>
+        <div class="definition">parasite</div>
+
+        <div class="style-title">Collapsible Tree with Sub-decompositions</div>
+        <div class="collapsible-tree">
+            <button class="collapsible">寄生虫 (jìshēngchóng) - parasite</button>
+            <div class="content">
+                <div class="sub-component">
+                    <strong>寄生</strong> (jìshēng) - parasitism/be parasitic
+                    <div style="margin-left: 20px; margin-top: 5px;">
+                        <small>寄 (jì) - send/entrust + 生 (shēng) - life/birth</small>
+                    </div>
+                </div>
+                <div class="sub-component">
+                    <strong>虫</strong> (chóng) - insect/bug
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity to collapsible elements
+        var collapsibles = document.getElementsByClassName("collapsible");
+        for (var i = 0; i < collapsibles.length; i++) {
+            collapsibles[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                content.classList.toggle("active");
+            });
+        }
+    </script>
+</body>
+</html>

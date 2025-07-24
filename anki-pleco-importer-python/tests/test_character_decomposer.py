@@ -25,10 +25,7 @@ class TestCharacterDecomposer:
             ComponentType.PHONETIC,
         ]
         assert result.component_pinyin == ["三点水", "qīng"]
-        assert (
-            "(meaning)" in result.structure_notes
-            and "(sound)" in result.structure_notes
-        )
+        assert "(meaning)" in result.structure_notes and "(sound)" in result.structure_notes
         assert "青 (qīng)" in result.structure_notes
 
     def test_semantic_semantic_compound(self):
@@ -83,26 +80,12 @@ class TestCharacterDecomposer:
     def test_pinyin_extraction(self):
         """Test pinyin extraction for phonetic components and Chinese names for semantic components."""
         # Test phonetic component pinyin extraction (should always use pinyin)
-        assert (
-            self.decomposer._get_component_pinyin("青", ComponentType.PHONETIC) == "qīng"
-        )
-        assert (
-            self.decomposer._get_component_pinyin("工", ComponentType.PHONETIC) == "gōng"
-        )
-        assert (
-            self.decomposer._get_component_pinyin("马", ComponentType.PHONETIC) == "mǎ"
-        )
+        assert self.decomposer._get_component_pinyin("青", ComponentType.PHONETIC) == "qīng"
+        assert self.decomposer._get_component_pinyin("工", ComponentType.PHONETIC) == "gōng"
+        assert self.decomposer._get_component_pinyin("马", ComponentType.PHONETIC) == "mǎ"
 
         # Test semantic component names (should use Chinese names for radicals)
-        assert (
-            self.decomposer._get_component_pinyin("氵", ComponentType.SEMANTIC) == "三点水"
-        )
-        assert (
-            self.decomposer._get_component_pinyin("女", ComponentType.SEMANTIC) == "女字旁"
-        )
-        assert (
-            self.decomposer._get_component_pinyin("日", ComponentType.SEMANTIC) == "日字旁"
-        )
-        assert (
-            self.decomposer._get_component_pinyin("月", ComponentType.SEMANTIC) == "月字旁"
-        )
+        assert self.decomposer._get_component_pinyin("氵", ComponentType.SEMANTIC) == "三点水"
+        assert self.decomposer._get_component_pinyin("女", ComponentType.SEMANTIC) == "女字旁"
+        assert self.decomposer._get_component_pinyin("日", ComponentType.SEMANTIC) == "日字旁"
+        assert self.decomposer._get_component_pinyin("月", ComponentType.SEMANTIC) == "月字旁"

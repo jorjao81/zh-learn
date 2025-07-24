@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 from .parser import PlecoTSVParser
-from .pleco import pleco_to_anki
+from .pleco import pleco_to_anki, format_examples_with_semantic_markup
 from .audio import MultiProviderAudioGenerator
 from .hsk import HSKWordLists
 from .epub_analyzer import ChineseEPUBAnalyzer
@@ -388,13 +388,9 @@ def convert(
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
                             "meaning": convert_to_html_format(card.meaning),
-                            "examples": (convert_list_to_html_format(card.examples) if card.examples else None),
+                            "examples": format_examples_with_semantic_markup(card.examples),
                             "phonetic_component": card.phonetic_component,
-                            "structural_decomposition": (
-                                convert_to_html_format(card.structural_decomposition)
-                                if card.structural_decomposition
-                                else None
-                            ),
+                            "structural_decomposition": card.structural_decomposition,
                             "similar_characters": (
                                 "<br>".join(card.similar_characters) if card.similar_characters else None
                             ),
