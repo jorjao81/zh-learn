@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Tree Structure - Meaning Trees</title>
+    <link rel="stylesheet" href="styling.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .character-example {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .example-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8em;
+            overflow-x: auto;
+        }
+
+        .info-note {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">Binary Tree Structure - True Tree Visualization</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">
+            Nodes positioned like in CS textbooks with absolute positioning and connecting lines
+        </p>
+
+        <div class="info-note">
+            <strong>True Tree Structure:</strong> Each node is positioned absolutely with connecting lines,
+            creating a layout that looks exactly like binary trees in computer science textbooks.
+        </div>
+
+        <div class="character-grid">
+            <!-- Simple Linear Tree: 臭 -->
+            <div class="character-example">
+                <div class="example-title">Linear Tree - 臭</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">臭</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">chòu</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree simple">
+                                    <div class="tree-container">
+                                        <!-- Root node -->
+                                        <div class="tree-node root">sensitive nose</div>
+
+                                        <!-- Connecting line from root to level 1 -->
+                                        <div class="tree-line root-to-level1"></div>
+
+                                        <!-- Level 1 -->
+                                        <div class="tree-node level-1 pos-center">stench, odor</div>
+
+                                        <!-- Connecting line from level 1 to level 2 -->
+                                        <div class="tree-line level1-to-level2" style="left: 50%; width: 2px; transform: translateX(-50%);"></div>
+
+                                        <!-- Level 2 -->
+                                        <div class="tree-node level-2 pos-center">to smell bad</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree simple"&gt;
+  &lt;div class="tree-container"&gt;
+    &lt;div class="tree-node root"&gt;sensitive nose&lt;/div&gt;
+    &lt;div class="tree-line root-to-level1"&gt;&lt;/div&gt;
+    &lt;div class="tree-node level-1 pos-center"&gt;stench, odor&lt;/div&gt;
+    &lt;div class="tree-line level1-to-level2"&gt;&lt;/div&gt;
+    &lt;div class="tree-node level-2 pos-center"&gt;to smell bad&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Binary Tree: 难 -->
+            <div class="character-example">
+                <div class="example-title">Binary Tree - 难</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">难</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">nán | nàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree binary">
+                                    <div class="tree-container">
+                                        <!-- Root node -->
+                                        <div class="tree-node root">type of bird</div>
+
+                                        <!-- Connecting line from root -->
+                                        <div class="tree-line root-to-level1"></div>
+
+                                        <!-- Level 1 -->
+                                        <div class="tree-node level-1 pos-center">difficult<br><small>(hard to catch)</small></div>
+
+                                        <!-- Connecting lines to branches -->
+                                        <div class="tree-line level1-to-level2" style="left: 25%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level1-to-level2" style="left: 75%; width: 2px; transform: translateX(-50%);"></div>
+
+                                        <!-- Horizontal connector between siblings -->
+                                        <div class="tree-line h-connector" style="top: 170px; left: 25%; width: 50%;"></div>
+
+                                        <!-- Level 2 branches -->
+                                        <div class="tree-node level-2 pos-left">
+                                            <span class="branch-label">[nán]</span>
+                                            trouble
+                                        </div>
+                                        <div class="tree-node level-2 pos-right">
+                                            <span class="branch-label">[nàn]</span>
+                                            disaster
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree binary"&gt;
+  &lt;div class="tree-container"&gt;
+    &lt;div class="tree-node root"&gt;type of bird&lt;/div&gt;
+    &lt;div class="tree-line root-to-level1"&gt;&lt;/div&gt;
+    &lt;div class="tree-node level-1 pos-center"&gt;difficult&lt;/div&gt;
+
+    &lt;!-- Branch lines --&gt;
+    &lt;div class="tree-line level1-to-level2" style="left: 25%;"&gt;&lt;/div&gt;
+    &lt;div class="tree-line level1-to-level2" style="left: 75%;"&gt;&lt;/div&gt;
+    &lt;div class="tree-line h-connector" style="top: 170px; left: 25%; width: 50%;"&gt;&lt;/div&gt;
+
+    &lt;div class="tree-node level-2 pos-left"&gt;[nán] trouble&lt;/div&gt;
+    &lt;div class="tree-node level-2 pos-right"&gt;[nàn] disaster&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wide Tree: 青 -->
+            <div class="character-example">
+                <div class="example-title">Wide Tree - 青</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">青</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qīng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-container">
+                                        <!-- Root node -->
+                                        <div class="tree-node root">green vegetation</div>
+
+                                        <!-- Connecting line from root -->
+                                        <div class="tree-line root-to-level1"></div>
+
+                                        <!-- Level 1 branches - 4 children -->
+                                        <div class="tree-node level-1 pos-far-left">vegetation</div>
+                                        <div class="tree-node level-1 pos-left-mid">blue</div>
+                                        <div class="tree-node level-1 pos-right-mid">black</div>
+                                        <div class="tree-node level-1 pos-far-right">young</div>
+
+                                        <!-- Connecting lines to all children -->
+                                        <div class="tree-line level1-to-level2" style="left: 12.5%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level1-to-level2" style="left: 37.5%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level1-to-level2" style="left: 62.5%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level1-to-level2" style="left: 87.5%; width: 2px; transform: translateX(-50%);"></div>
+
+                                        <!-- Horizontal connector spanning all children -->
+                                        <div class="tree-line h-connector" style="top: 100px; left: 12.5%; width: 75%;"></div>
+
+                                        <!-- Level 2 - only one child from vegetation -->
+                                        <div class="tree-node level-2 pos-far-left">plants</div>
+
+                                        <!-- Connection from vegetation to plants -->
+                                        <div class="tree-line level2-to-level3" style="left: 12.5%; width: 2px; transform: translateX(-50%);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complex Multi-level: 欠 -->
+            <div class="character-example">
+                <div class="example-title">Complex Tree - 欠</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">欠</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qiàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-container">
+                                        <!-- Root node -->
+                                        <div class="tree-node root">open mouth</div>
+
+                                        <!-- Connecting line from root -->
+                                        <div class="tree-line root-to-level1"></div>
+
+                                        <!-- Level 1 - two main branches -->
+                                        <div class="tree-node level-1 pos-left">
+                                            <span class="branch-label">as character</span>
+                                            to yawn
+                                        </div>
+                                        <div class="tree-node level-1 pos-right">
+                                            <span class="branch-label">as component</span>
+                                            mouth actions
+                                        </div>
+
+                                        <!-- Connecting lines -->
+                                        <div class="tree-line level1-to-level2" style="left: 25%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level1-to-level2" style="left: 75%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line h-connector" style="top: 100px; left: 25%; width: 50%;"></div>
+
+                                        <!-- Level 2 -->
+                                        <div class="tree-node level-2 pos-left">to lack</div>
+                                        <div class="tree-node level-2 pos-right">to desire</div>
+
+                                        <!-- Level 2 to 3 connections -->
+                                        <div class="tree-line level2-to-level3" style="left: 25%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line level2-to-level3" style="left: 75%; width: 2px; transform: translateX(-50%);"></div>
+                                        <div class="tree-line h-connector" style="top: 170px; left: 25%; width: 50%;"></div>
+
+                                        <!-- Level 3 -->
+                                        <div class="tree-node level-3 pos-left">to owe</div>
+                                        <div class="tree-node level-3 pos-right">欢 (joy)</div>
+
+                                        <!-- Level 3 to 4 connection (only left side) -->
+                                        <div class="tree-line level3-to-level4" style="left: 25%; width: 2px; transform: translateX(-50%);"></div>
+
+                                        <!-- Level 4 -->
+                                        <div class="tree-node level-4 pos-left">debt</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-note">
+            <strong>Technical Details:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li>📍 <strong>Absolute Positioning</strong>: Each node positioned exactly like CS diagrams</li>
+                <li>🔗 <strong>Manual Connecting Lines</strong>: CSS elements draw lines between parent-child nodes</li>
+                <li>🎯 <strong>Precise Layout</strong>: Uses percentage-based positioning for consistency</li>
+                <li>🌳 <strong>Tree Classes</strong>: simple, binary, wide layouts supported</li>
+                <li>📐 <strong>Position Classes</strong>: pos-center, pos-left, pos-right, pos-far-left, etc.</li>
+                <li>📱 <strong>Mobile Responsive</strong>: Scales down proportionally on small screens</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

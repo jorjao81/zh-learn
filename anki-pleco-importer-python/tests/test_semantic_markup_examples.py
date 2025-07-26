@@ -1,9 +1,6 @@
 """Test cases for semantic markup of examples."""
 
-from src.anki_pleco_importer.pleco import (
-    _format_single_example_semantic, 
-    format_examples_with_semantic_markup
-)
+from src.anki_pleco_importer.pleco import _format_single_example_semantic, format_examples_with_semantic_markup
 
 
 class TestSemanticMarkupExamples:
@@ -14,7 +11,7 @@ class TestSemanticMarkupExamples:
         example = "终宿主 (zhōng sùzhǔ) - final host"
         result = _format_single_example_semantic(example)
         expected = (
-            '<span class="hanzi">终宿主</span> (<span class="pinyin">zhōng sùzhǔ</span>) - '
+            '<span class="hanzi">终宿主</span> <span class="pinyin">zhōng sùzhǔ</span> - '
             '<span class="translation">final host</span>'
         )
         assert result == expected
@@ -29,10 +26,7 @@ class TestSemanticMarkupExamples:
 
     def test_sentence_pattern_with_periods(self):
         """Test pattern: Chinese sentence. Pinyin sentence. English sentence."""
-        example = (
-            "这事她仿佛已经知道了。 Zhè shì tā fǎngfú yǐjing zhīdao le. "
-            "She seems to know about it already."
-        )
+        example = "这事她仿佛已经知道了。 Zhè shì tā fǎngfú yǐjing zhīdao le. " "She seems to know about it already."
         result = _format_single_example_semantic(example)
         expected = (
             '<span class="hanzi">这事她仿佛已经知道了。</span> '
@@ -44,10 +38,7 @@ class TestSemanticMarkupExamples:
 
     def test_complex_sentence_pattern(self):
         """Test complex sentence with punctuation."""
-        example = (
-            "探险队急需一位向导。 Tànxiǎnduì jíxū yī wèi xiàngdǎo. "
-            "The exploring party needs a guide urgently."
-        )
+        example = "探险队急需一位向导。 Tànxiǎnduì jíxū yī wèi xiàngdǎo. " "The exploring party needs a guide urgently."
         result = _format_single_example_semantic(example)
         expected = (
             '<span class="hanzi">探险队急需一位向导。</span> '
@@ -58,10 +49,7 @@ class TestSemanticMarkupExamples:
 
     def test_sentence_with_comma_and_question(self):
         """Test sentence with comma and question mark."""
-        example = (
-            "我来给你们做向导, 怎么样？ Wǒ lái gěi nǐmen zuò xiàngdǎo, zěnmeyàng？ "
-            "How about taking me as your guide?"
-        )
+        example = "我来给你们做向导, 怎么样？ Wǒ lái gěi nǐmen zuò xiàngdǎo, zěnmeyàng？ " "How about taking me as your guide?"
         result = _format_single_example_semantic(example)
         expected = (
             '<span class="hanzi">我来给你们做向导, 怎么样？</span> '
@@ -84,10 +72,7 @@ class TestSemanticMarkupExamples:
     def test_multiple_examples_formatting(self):
         """Test formatting multiple examples into list."""
         examples = [
-            (
-                "这事她仿佛已经知道了。 Zhè shì tā fǎngfú yǐjing zhīdao le. "
-                "She seems to know about it already."
-            ),
+            ("这事她仿佛已经知道了。 Zhè shì tā fǎngfú yǐjing zhīdao le. " "She seems to know about it already."),
             "别小觑对手。 bié xiǎoqù duìshǒu. Don't underestimate your opponent.",
         ]
         result = format_examples_with_semantic_markup(examples)

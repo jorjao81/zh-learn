@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Tree - Git-style Branching</title>
+    <link rel="stylesheet" href="styling.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .character-example {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .example-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8em;
+            overflow-x: auto;
+        }
+
+        .info-note {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">Canvas Tree - Git-style Branching Model</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">
+            Trees drawn with canvas like git commit graphs with smooth curves and branching
+        </p>
+
+        <div class="info-note">
+            <strong>Git-style Trees:</strong> Uses HTML5 Canvas to draw smooth curved lines between nodes,
+            just like git branching diagrams. Each node is positioned and connected with beautiful curves.
+        </div>
+
+        <div class="character-grid">
+            <!-- Simple Linear Tree: 臭 -->
+            <div class="character-example">
+                <div class="example-title">Linear Evolution - 臭</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">臭</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">chòu</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" data-structure="linear" id="tree-1">
+                                    <canvas class="tree-canvas" width="600" height="250"></canvas>
+                                    <div class="tree-container">
+                                        <div class="tree-node root" data-x="50" data-y="15">sensitive nose</div>
+                                        <div class="tree-node level-1" data-x="50" data-y="40">stench, odor</div>
+                                        <div class="tree-node level-2" data-x="50" data-y="65">to smell bad</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree" data-structure="linear"&gt;
+  &lt;canvas class="tree-canvas"&gt;&lt;/canvas&gt;
+  &lt;div class="tree-container"&gt;
+    &lt;div class="tree-node root" data-x="50" data-y="15"&gt;sensitive nose&lt;/div&gt;
+    &lt;div class="tree-node level-1" data-x="50" data-y="40"&gt;stench, odor&lt;/div&gt;
+    &lt;div class="tree-node level-2" data-x="50" data-y="65"&gt;to smell bad&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Binary Tree: 难 -->
+            <div class="character-example">
+                <div class="example-title">Binary Branching - 难</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">难</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">nán | nàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" data-structure="binary" id="tree-2">
+                                    <canvas class="tree-canvas" width="600" height="300"></canvas>
+                                    <div class="tree-container">
+                                        <div class="tree-node root" data-x="50" data-y="15">type of bird</div>
+                                        <div class="tree-node level-1" data-x="50" data-y="40">difficult<br><small>(hard to catch)</small></div>
+                                        <div class="tree-node level-2" data-x="25" data-y="70">
+                                            <span class="branch-label">[nán]</span>
+                                            trouble
+                                        </div>
+                                        <div class="tree-node level-2" data-x="75" data-y="70">
+                                            <span class="branch-label">[nàn]</span>
+                                            disaster
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree" data-structure="binary"&gt;
+  &lt;canvas class="tree-canvas"&gt;&lt;/canvas&gt;
+  &lt;div class="tree-container"&gt;
+    &lt;div class="tree-node root" data-x="50" data-y="15"&gt;type of bird&lt;/div&gt;
+    &lt;div class="tree-node level-1" data-x="50" data-y="40"&gt;difficult&lt;/div&gt;
+    &lt;div class="tree-node level-2" data-x="25" data-y="70"&gt;[nán] trouble&lt;/div&gt;
+    &lt;div class="tree-node level-2" data-x="75" data-y="70"&gt;[nàn] disaster&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wide Branching: 青 -->
+            <div class="character-example">
+                <div class="example-title">Wide Branching - 青</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">青</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qīng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" data-structure="wide" id="tree-3">
+                                    <canvas class="tree-canvas" width="600" height="200"></canvas>
+                                    <div class="tree-container">
+                                        <div class="tree-node root" data-x="50" data-y="15">green vegetation</div>
+                                        <div class="tree-node level-1" data-x="15" data-y="50">vegetation</div>
+                                        <div class="tree-node level-1" data-x="40" data-y="50">blue</div>
+                                        <div class="tree-node level-1" data-x="65" data-y="50">black</div>
+                                        <div class="tree-node level-1" data-x="85" data-y="50">young</div>
+                                        <div class="tree-node level-2" data-x="15" data-y="80">plants</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complex Multi-level: 欠 -->
+            <div class="character-example">
+                <div class="example-title">Complex Branching - 欠</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">欠</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qiàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" data-structure="complex" id="tree-4">
+                                    <canvas class="tree-canvas" width="600" height="400"></canvas>
+                                    <div class="tree-container">
+                                        <div class="tree-node root" data-x="50" data-y="10">open mouth</div>
+                                        <div class="tree-node level-1" data-x="30" data-y="25">
+                                            <span class="branch-label">as character</span>
+                                            to yawn
+                                        </div>
+                                        <div class="tree-node level-1" data-x="70" data-y="25">
+                                            <span class="branch-label">as component</span>
+                                            mouth actions
+                                        </div>
+                                        <div class="tree-node level-2" data-x="20" data-y="45">to lack</div>
+                                        <div class="tree-node level-2" data-x="80" data-y="45">to desire</div>
+                                        <div class="tree-node level-3" data-x="20" data-y="65">to owe</div>
+                                        <div class="tree-node level-3" data-x="80" data-y="65">欢 (joy)</div>
+                                        <div class="tree-node level-4" data-x="20" data-y="85">debt</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-note">
+            <strong>Canvas Features:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li>🎨 <strong>Smooth Curves</strong>: Uses quadratic curves like git graphs</li>
+                <li>🔗 <strong>Auto-connecting</strong>: Automatically draws lines between parent-child nodes</li>
+                <li>📍 <strong>Position-based</strong>: Nodes positioned with data-x and data-y percentages</li>
+                <li>🎯 <strong>Smart Layout</strong>: Different structures (linear, binary, wide, complex)</li>
+                <li>🌈 <strong>Color Coding</strong>: Different colors for each evolution level</li>
+                <li>📱 <strong>Responsive</strong>: Canvas scales to container size</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Tree drawing functionality
+        function drawTree(treeId) {
+            const treeContainer = document.getElementById(treeId);
+            if (!treeContainer) return;
+
+            const canvas = treeContainer.querySelector('.tree-canvas');
+            const nodes = treeContainer.querySelectorAll('.tree-node');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Set up canvas scaling
+            const rect = treeContainer.getBoundingClientRect();
+            const scaleX = canvas.width / 100; // Convert percentage to pixels
+            const scaleY = canvas.height / 100;
+
+            // Position nodes and collect coordinates
+            const nodePositions = [];
+            nodes.forEach(node => {
+                const x = parseFloat(node.dataset.x);
+                const y = parseFloat(node.dataset.y);
+
+                // Position the node
+                node.style.left = x + '%';
+                node.style.top = y + '%';
+
+                // Store position for drawing connections
+                nodePositions.push({
+                    element: node,
+                    x: x * scaleX,
+                    y: y * scaleY,
+                    level: node.className.includes('root') ? 0 :
+                           parseInt(node.className.match(/level-(\d+)/)?.[1] || 0)
+                });
+            });
+
+            // Sort by level to draw connections properly
+            nodePositions.sort((a, b) => a.level - b.level);
+
+            // Draw connections
+            ctx.strokeStyle = '#6c757d';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            // Group nodes by level
+            const levelGroups = {};
+            nodePositions.forEach(node => {
+                if (!levelGroups[node.level]) levelGroups[node.level] = [];
+                levelGroups[node.level].push(node);
+            });
+
+            // Draw connections between levels
+            for (let level = 0; level < Object.keys(levelGroups).length - 1; level++) {
+                const currentLevel = levelGroups[level];
+                const nextLevel = levelGroups[level + 1];
+
+                if (!currentLevel || !nextLevel) continue;
+
+                currentLevel.forEach(parent => {
+                    nextLevel.forEach(child => {
+                        // Simple heuristic: connect if child is roughly below parent
+                        const distance = Math.abs(parent.x - child.x);
+                        const maxDistance = 200; // pixels
+
+                        if (distance < maxDistance || currentLevel.length === 1) {
+                            drawCurvedLine(ctx, parent.x, parent.y + 20, child.x, child.y - 20);
+                        }
+                    });
+                });
+            }
+        }
+
+        function drawCurvedLine(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+
+            // Create a curved line like git branches
+            const midY = (y1 + y2) / 2;
+            const controlX1 = x1;
+            const controlY1 = midY;
+            const controlX2 = x2;
+            const controlY2 = midY;
+
+            // Use bezier curve for smooth git-like branches
+            ctx.bezierCurveTo(controlX1, controlY1, controlX2, controlY2, x2, y2);
+            ctx.stroke();
+
+            // Add small dots at connection points like git commits
+            ctx.fillStyle = '#495057';
+            ctx.beginPath();
+            ctx.arc(x1, y1, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x2, y2, 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Initialize all trees when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Draw all trees
+            for (let i = 1; i <= 4; i++) {
+                drawTree(`tree-${i}`);
+            }
+
+            // Redraw on window resize
+            window.addEventListener('resize', function() {
+                setTimeout(() => {
+                    for (let i = 1; i <= 4; i++) {
+                        drawTree(`tree-${i}`);
+                    }
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

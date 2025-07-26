@@ -91,6 +91,7 @@
 .definition-section,
 .examples-section,
 .components-section,
+.etymology-section,
 .similar-section {
   margin: 15px 0;
   text-align: left;
@@ -117,6 +118,60 @@
   font-size: 1.1em;
   color: #2c3e50;
   margin-bottom: 15px;
+}
+
+/* Etymology Content */
+.etymology-content {
+  font-size: 0.95em;
+  color: #2c3e50;
+  line-height: 1.7;
+}
+
+.etymology-content ul {
+  margin: 10px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.etymology-content > ul > li {
+  margin: 15px 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.etymology-content ul li strong {
+  color: #34495e;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1em;
+}
+
+/* Nested lists in etymology - flatten the appearance */
+.etymology-content ul ul {
+  margin: 8px 0 0 0;
+  padding-left: 15px;
+}
+
+.etymology-content ul ul li {
+  margin: 6px 0;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #bdc3c7;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.etymology-content ul ul li strong {
+  display: inline;
+  margin-bottom: 0;
+  margin-right: 4px;
+  font-size: 0.95em;
+  color: #2c3e50;
 }
 
 /* Semantic Markup Styles */
@@ -239,20 +294,21 @@ ul li.example {
   font-size: 0.9em;
 }
 
-/* Meaning Tree - Visual Tree Structure */
-ul.meaning-tree {
-  font-family: monospace;
+/* Meaning Tree - D3.js Professional Tree Visualization */
+.meaning-tree {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 15px;
+  padding: 20px;
   margin: 15px 0;
   position: relative;
-  list-style: none;
-  line-height: 1.8;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: visible;
+  min-height: 300px;
+  width: 100%;
 }
 
-ul.meaning-tree::before {
+.meaning-tree::before {
   content: "Meaning Tree";
   position: absolute;
   top: -8px;
@@ -264,157 +320,120 @@ ul.meaning-tree::before {
   text-transform: uppercase;
   letter-spacing: 0.3px;
   padding: 0 6px;
+}
+
+/* D3.js SVG container */
+.meaning-tree svg {
+  width: 100%;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Root node */
-ul.meaning-tree > li:first-child {
-  position: relative;
-  padding: 8px 12px;
-  background: #e8f5e8;
-  border: 2px solid #28a745;
-  border-radius: 8px;
-  margin-bottom: 15px;
+/* D3.js tree node styling */
+.meaning-tree .node circle {
+  fill: #fff;
+  stroke: #3498db;
+  stroke-width: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.meaning-tree .node circle:hover {
+  stroke-width: 3px;
+  fill: #e8f4fd;
+}
+
+/* Root node styling */
+.meaning-tree .node.root circle {
+  fill: #e8f5e8;
+  stroke: #28a745;
+  stroke-width: 3px;
+}
+
+/* Different levels with different colors */
+.meaning-tree .node.level-1 circle {
+  fill: #e6f3ff;
+  stroke: #17a2b8;
+}
+
+.meaning-tree .node.level-2 circle {
+  fill: #fffacd;
+  stroke: #ffc107;
+}
+
+.meaning-tree .node.level-3 circle {
+  fill: #fff0e6;
+  stroke: #fd7e14;
+}
+
+.meaning-tree .node.level-4 circle,
+.meaning-tree .node.level-5 circle,
+.meaning-tree .node.level-6 circle {
+  fill: #f3e8ff;
+  stroke: #6f42c1;
+}
+
+/* Node text styling */
+.meaning-tree .node text {
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #2c3e50;
+  pointer-events: none;
+}
+
+.meaning-tree .node.root text {
   font-weight: 600;
-  color: #1e5720;
+  fill: #1e5720;
 }
 
-ul.meaning-tree > li:first-child::before {
-  content: "🌱 ";
-  margin-right: 5px;
+/* Link styling - the connecting lines */
+.meaning-tree .link {
+  fill: none;
+  stroke: #6c757d;
+  stroke-width: 2px;
+  stroke-opacity: 0.8;
 }
 
-/* Tree branches using CSS drawing */
-ul.meaning-tree li {
-  position: relative;
-  margin: 0;
-  padding: 0;
-}
-
-ul.meaning-tree li ul {
-  list-style: none;
-  margin: 10px 0 0 20px;
-  padding: 0;
-  position: relative;
-}
-
-/* Vertical line from parent to children */
-ul.meaning-tree li ul::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  border-left: 2px solid #6c757d;
-  height: calc(100% + 10px);
-}
-
-/* Individual branch nodes */
-ul.meaning-tree li ul li {
-  position: relative;
-  padding: 6px 10px;
-  margin-bottom: 8px;
-  background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* Horizontal line to each child */
-ul.meaning-tree li ul li::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -12px;
-  border-top: 2px solid #6c757d;
-  width: 10px;
-  transform: translateY(-50%);
-}
-
-/* Different colors for different branch levels */
-ul.meaning-tree li ul li:nth-child(1) {
-  border-left: 4px solid #17a2b8;
-  background: linear-gradient(135deg, #e6f3ff 0%, #ffffff 100%);
-}
-
-ul.meaning-tree li ul li:nth-child(2) {
-  border-left: 4px solid #ffc107;
-  background: linear-gradient(135deg, #fffacd 0%, #ffffff 100%);
-}
-
-ul.meaning-tree li ul li:nth-child(3) {
-  border-left: 4px solid #fd7e14;
-  background: linear-gradient(135deg, #fff0e6 0%, #ffffff 100%);
-}
-
-ul.meaning-tree li ul li:nth-child(n+4) {
-  border-left: 4px solid #6f42c1;
-  background: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%);
-}
-
-/* Nested branches (sub-branches) */
-ul.meaning-tree li ul li ul {
-  margin-left: 15px;
-  border-left: 1px dashed #adb5bd;
-  padding-left: 10px;
-}
-
-ul.meaning-tree li ul li ul::before {
-  border-left: 1px dashed #adb5bd;
-  left: -10px;
-}
-
-ul.meaning-tree li ul li ul li {
-  background: #f8f9fa;
-  border: 1px dashed #adb5bd;
-  font-size: 0.9em;
-  padding: 4px 8px;
-}
-
-ul.meaning-tree li ul li ul li::before {
-  border-top: 1px dashed #adb5bd;
-  width: 8px;
-  left: -9px;
+.meaning-tree .link:hover {
+  stroke-width: 3px;
+  stroke-opacity: 1;
 }
 
 /* Branch labels */
-.branch-label {
-  font-weight: bold;
-  color: #495057;
-  font-size: 0.85em;
-  margin-bottom: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+.meaning-tree .branch-label {
+  font-size: 10px;
+  font-weight: 600;
+  fill: #495057;
+  text-anchor: middle;
+  dominant-baseline: middle;
 }
 
-/* Mobile responsiveness for meaning tree */
+/* Tree container for D3 */
+.tree-container {
+  width: 100%;
+  height: 300px;
+  position: relative;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
-  ul.meaning-tree {
-    padding: 12px;
+  .meaning-tree {
+    padding: 15px;
     margin: 12px 0;
-    font-size: 0.9em;
   }
 
-  ul.meaning-tree > li:first-child {
-    padding: 6px 10px;
-    font-size: 0.9em;
+  .tree-container {
+    height: 250px;
   }
 
-  ul.meaning-tree li ul {
-    margin-left: 15px;
+  .meaning-tree .node text {
+    font-size: 10px;
   }
 
-  ul.meaning-tree li ul li {
-    padding: 5px 8px;
-    font-size: 0.85em;
-    margin-bottom: 6px;
-  }
-
-  ul.meaning-tree li ul li ul {
-    margin-left: 10px;
-  }
-
-  ul.meaning-tree li ul li ul li {
-    padding: 3px 6px;
-    font-size: 0.8em;
+  .meaning-tree .branch-label {
+    font-size: 8px;
   }
 }
 
@@ -448,6 +467,28 @@ ul.meaning-tree li ul li ul li::before {
   flex-wrap: wrap;
   justify-content: center;
   border: 1px solid #e9ecef;
+}
+
+/* Override Anki's default styling for all Chinese characters in components */
+.components-content *,
+.components-section * {
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Restore our intentional styling */
+.components-content {
+  background: #f8f9fa !important;
+  border: 1px solid #e9ecef !important;
+}
+
+.components-content ul li {
+  background: #ffffff !important;
+  border: 2px solid #3498db !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
 }
 
 .components-content ul {
@@ -514,23 +555,67 @@ ul.meaning-tree li ul li ul li::before {
   }
 }
 
-/* Component types in horizontal layout */
-.components-content .semantic {
-  border-color: #27ae60;
-  background: #d5f4e6;
-  color: #27ae60;
-}
-
-.components-content .phonetic {
-  border-color: #e74c3c;
-  background: #fadbd8;
-  color: #c0392b;
-}
-
+/* Component types in horizontal layout - with titles */
+.components-content .semantic,
+.components-content .phonetic,
 .components-content .unknown {
-  border-color: #95a5a6;
-  background: #ecf0f1;
-  color: #7f8c8d;
+  border-color: #bdc3c7;
+  background: #f8f9fa;
+  color: #2c3e50;
+  position: relative;
+  padding-top: 20px;
+}
+
+/* Component type titles */
+.components-content .semantic::before {
+  content: "SEMANTIC";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #34495e;
+  color: white;
+  font-size: 0.6em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.components-content .phonetic::before {
+  content: "PHONETIC";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #34495e;
+  color: white;
+  font-size: 0.6em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.components-content .unknown::before {
+  content: "UNKNOWN";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #34495e;
+  color: white;
+  font-size: 0.6em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
 /* Component content styling */
@@ -539,6 +624,12 @@ ul.meaning-tree li ul li ul li::before {
   font-weight: 700;
   font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   margin-right: 4px;
+  /* Override Anki's default CJK styling */
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .components-content .pinyin {

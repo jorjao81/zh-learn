@@ -442,7 +442,7 @@ def _format_single_example_semantic(example: str) -> str:
 
         return (
             f'<span class="hanzi">{hanzi}</span> '
-            f'(<span class="pinyin">{pinyin}</span>) - '
+            f'<span class="pinyin">{pinyin}</span> - '
             f'<span class="translation">{translation}</span>'
         )
 
@@ -663,6 +663,35 @@ def extract_examples_from_text(text: str) -> Tuple[str, Optional[List[str]]]:
     return meaning, examples if examples else None
 
 
+def find_existing_pronunciation(
+    character: str, pinyin: str, anki_parser: Optional[AnkiExportParser] = None
+) -> Optional[str]:
+    """
+    Find existing pronunciation for any character with exactly matching pinyin in Anki export.
+
+    Args:
+        character: Single Chinese character to search for (used for validation only)
+        pinyin: Pinyin to match exactly
+        anki_parser: AnkiExportParser instance with loaded cards
+
+    Returns:
+        Existing pronunciation filename if found, None otherwise
+    """
+    if not anki_parser or len(character) != 1:
+        return None
+
+    # Convert input pinyin to tones for consistent comparison
+    target_pinyin = convert_numbered_pinyin_to_tones(pinyin)
+
+    for card in anki_parser.cards:
+        # Check if this card has matching pinyin and audio (ignoring the specific character)
+        clean_chars = card.get_clean_characters()
+        if len(clean_chars) == 1 and card.pinyin == target_pinyin and card.audio:  # Only match single-character cards
+            return card.audio
+
+    return None
+
+
 def find_multi_character_words_containing(character: str, anki_parser: Optional[AnkiExportParser] = None) -> List[str]:
     """
     Find multi-character words containing the given character from Anki export.
@@ -684,8 +713,8 @@ def find_multi_character_words_containing(character: str, anki_parser: Optional[
         if len(clean_chars) > 1 and character in clean_chars:
             # Convert pinyin from numbered format to tone marks
             tone_pinyin = convert_numbered_pinyin_to_tones(card.pinyin)
-            # Format: word (pinyin) - meaning
-            example = f"{clean_chars} ({tone_pinyin}) - {card.definitions}"
+            # Format: word pinyin - meaning
+            example = f"{clean_chars} {tone_pinyin} - {card.definitions}"
             examples.append(example)
 
     # Limit to top 10 examples to avoid overwhelming the card
@@ -730,10 +759,10 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
         enhanced_similar_characters = []
         for char in similar_characters:
             if char in anki_dictionary:
-                # Format: character (pinyin) - definition
+                # Format: character pinyin definition
                 char_info = anki_dictionary[char]
                 tone_pinyin = convert_numbered_pinyin_to_tones(char_info["pinyin"])
-                enhanced_char = f"{char} ({tone_pinyin}) - {char_info['definition']}"
+                enhanced_char = f"{char} {tone_pinyin} {char_info['definition']}"
                 enhanced_similar_characters.append(enhanced_char)
             else:
                 # Just the character if not found in dictionary
@@ -741,8 +770,18 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
 
     structural_decomposition = get_structural_decomposition_semantic(pleco_entry.chinese, anki_dictionary)
 
-    # For single character words, add multi-character examples from Anki export
+    # Check for existing pronunciation for single characters
+    existing_pronunciation = None
+    skip_audio = False
     if len(pleco_entry.chinese) == 1 and anki_export_parser:
+        # Look for existing pronunciation with exactly matching pinyin
+        existing_pronunciation = find_existing_pronunciation(
+            pleco_entry.chinese, pleco_entry.pinyin, anki_export_parser
+        )
+        if existing_pronunciation:
+            skip_audio = True
+
+        # Add multi-character examples from Anki export
         multi_char_examples = find_multi_character_words_containing(pleco_entry.chinese, anki_export_parser)
         # Add multi-character examples to existing examples
         if multi_char_examples:
@@ -755,6 +794,7 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
         examples=examples,
         similar_characters=enhanced_similar_characters,
         structural_decomposition=structural_decomposition,
+        pronunciation=existing_pronunciation,
         passive=True,
-        nohearing=True,
+        nohearing=skip_audio,
     )

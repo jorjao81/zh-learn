@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Tree Structure - Meaning Trees</title>
+    <link rel="stylesheet" href="styling.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .character-example {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .example-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8em;
+            overflow-x: auto;
+        }
+
+        .info-note {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">Computer Science Tree Structure - True Tree Visualization</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">
+            Nodes positioned spatially like in data structure textbooks
+        </p>
+
+        <div class="info-note">
+            <strong>True Tree Structure:</strong> Each node is positioned spatially with connecting lines,
+            creating a layout that looks like organizational charts or binary trees in CS textbooks.
+        </div>
+
+        <div class="character-grid">
+            <!-- Simple Linear Tree: 臭 -->
+            <div class="character-example">
+                <div class="example-title">Linear Evolution - 臭</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">臭</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">chòu</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">sensitive, keen nose</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-node level-1">stench, odor</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-node level-2">to smell bad</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree"&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node root"&gt;sensitive, keen nose&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node level-1"&gt;stench, odor&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node level-2"&gt;to smell bad&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branching Tree: 难 -->
+            <div class="character-example">
+                <div class="example-title">Branching Tree - 难</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">难</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">nán | nàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">type of bird</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-node level-1">difficult<br><small>(hard to catch)</small></div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">
+                                                <span class="branch-label">[nán]</span>
+                                                trouble
+                                            </div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">
+                                                <span class="branch-label">[nàn]</span>
+                                                disaster
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree"&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node root"&gt;type of bird&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node level-1"&gt;difficult&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-branch"&gt;
+      &lt;div class="tree-node level-2"&gt;[nán] trouble&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="tree-branch"&gt;
+      &lt;div class="tree-node level-2"&gt;[nàn] disaster&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complex Multi-branch: 欠 -->
+            <div class="character-example">
+                <div class="example-title">Multi-branch Tree - 欠</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">欠</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qiàn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">open mouth</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">
+                                                <span class="branch-label">as character</span>
+                                                to yawn
+                                            </div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">
+                                                <span class="branch-label">as component</span>
+                                                mouth actions
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">to lack</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">to desire</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-3">to owe</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-3">欢 (joy)</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-4">debt</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+&lt;div class="meaning-tree"&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-node root"&gt;open mouth&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="tree-level"&gt;
+    &lt;div class="tree-branch"&gt;
+      &lt;div class="tree-node level-1"&gt;to yawn&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="tree-branch"&gt;
+      &lt;div class="tree-node level-1"&gt;mouth actions&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- more levels... --&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wide Branching: 青 -->
+            <div class="character-example">
+                <div class="example-title">Wide Branching - 青</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">青</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qīng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">green vegetation</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">vegetation</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">blue</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">black</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">young</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Binary Tree Style: 关 -->
+            <div class="character-example">
+                <div class="example-title">Binary Tree Style - 关</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">关</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">guān</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">border gate</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-node level-1">gate</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">to close</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">latch</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-3">turn off</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-3">to link</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Spread: 文 -->
+            <div class="character-example">
+                <div class="example-title">Organizational Chart Style - 文</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">文</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">wén</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree">
+                                    <div class="tree-level">
+                                        <div class="tree-node root">body markings</div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">linear marks</div>
+                                        </div>
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-1">mark</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-2">script</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-3">literature</div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-level">
+                                        <div class="tree-branch">
+                                            <div class="tree-node level-4">culture</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-note">
+            <strong>How it works:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li>🏗️ <strong>Tree Structure</strong>: Each level is a `tree-level` div containing nodes</li>
+                <li>📦 <strong>Tree Nodes</strong>: Individual `tree-node` divs positioned spatially</li>
+                <li>🌿 <strong>Tree Branches</strong>: Group sibling nodes with `tree-branch` divs</li>
+                <li>🔗 <strong>Connecting Lines</strong>: CSS automatically draws lines between levels</li>
+                <li>🎨 <strong>Level Colors</strong>: Each level gets different colors (level-1, level-2, etc.)</li>
+                <li>📱 <strong>Responsive</strong>: Adapts to mobile with smaller nodes</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

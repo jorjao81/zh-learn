@@ -74,7 +74,7 @@ Feature: Semantic HTML markup for Anki cards
 
     Examples: Multiple examples
       | chinese | pinyin  | definition                                                                                                                                    | expected_pinyin | expected_examples                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-      | 学习    | xue2xi2 | to learn; to study 学习中文 xue2xi2zhong1wen2 learn Chinese 我在学习 wo3zai4xue2xi2 I am studying 学习很重要 xue2xi2hen3zhong4yao4 studying is important | xuéxí           | <ul><li class="example"><span class="hanzi">学习中文</span> (<span class="pinyin">xuéxízhōngwén</span>) - <span class="translation">learn Chinese</span></li><li class="example"><span class="hanzi">我在学习</span> (<span class="pinyin">wǒzàixuéxí</span>) - <span class="translation">I am studying</span></li><li class="example"><span class="hanzi">学习很重要</span> (<span class="pinyin">xuéxíhěnzhòngyào</span>) - <span class="translation">studying is important</span></li></ul> |
+      | 学习    | xue2xi2 | to learn; to study 学习中文 xue2xi2zhong1wen2 learn Chinese 我在学习 wo3zai4xue2xi2 I am studying 学习很重要 xue2xi2hen3zhong4yao4 studying is important | xuéxí           | <ul><li class="example"><span class="hanzi">学习中文</span> <span class="pinyin">xuéxízhōngwén</span> - <span class="translation">learn Chinese</span></li><li class="example"><span class="hanzi">我在学习</span> <span class="pinyin">wǒzàixuéxí</span> - <span class="translation">I am studying</span></li><li class="example"><span class="hanzi">学习很重要</span> <span class="pinyin">xuéxíhěnzhòngyào</span> - <span class="translation">studying is important</span></li></ul> |
 
   Scenario Outline: Convert character decomposition to semantic markup
     Given I have the following character decomposition:
@@ -87,8 +87,8 @@ Feature: Semantic HTML markup for Anki cards
 
     Examples: Character decomposition
       | character | components | radical_meanings | component_types | component_pinyin | structure_notes | expected_decomposition |
-      | 语       | ["讠", "吾"] | ["speech", "I/me"] | ["semantic", "phonetic"] | ["言字旁", "wú"] | 讠(言字旁) (meaning) + 吾(wú) (sound) | <ul><li><span class="semantic">讠</span> (<span class="pinyin">言字旁</span>) - <span class="definition">speech</span></li><li><span class="phonetic">吾</span> (<span class="pinyin">wú</span>) - <span class="definition">I/me</span></li></ul> |
-      | 江       | ["氵", "工"] | ["water", "work"] | ["semantic", "phonetic"] | ["三点水", "gōng"] | 氵(三点水) (meaning) + 工(gōng) (sound) | <ul><li><span class="semantic">氵</span> (<span class="pinyin">三点水</span>) - <span class="definition">water</span></li><li><span class="phonetic">工</span> (<span class="pinyin">gōng</span>) - <span class="definition">work</span></li></ul> |
+      | 语       | ["讠", "吾"] | ["speech", "I/me"] | ["semantic", "phonetic"] | ["言字旁", "wú"] | 讠 言字旁 (meaning) + 吾 wú (sound) | <ul><li><span class="semantic">讠</span> <span class="pinyin">言字旁</span> - <span class="definition">speech</span></li><li><span class="phonetic">吾</span> <span class="pinyin">wú</span> - <span class="definition">I/me</span></li></ul> |
+      | 江       | ["氵", "工"] | ["water", "work"] | ["semantic", "phonetic"] | ["三点水", "gōng"] | 氵 三点水 (meaning) + 工 gōng (sound) | <ul><li><span class="semantic">氵</span> <span class="pinyin">三点水</span> - <span class="definition">water</span></li><li><span class="phonetic">工</span> <span class="pinyin">gōng</span> - <span class="definition">work</span></li></ul> |
 
   Scenario Outline: Convert word decomposition to semantic markup
     Given I have the following word decomposition:
@@ -101,8 +101,8 @@ Feature: Semantic HTML markup for Anki cards
 
     Examples: Word decomposition
       | word | components | component_pinyin | component_definitions | expected_decomposition |
-      | 学习 | ["学", "习"] | ["xué", "xí"] | ["to learn", "to practice"] | <ul><li><span class="hanzi">学</span> (<span class="pinyin">xué</span>) - <span class="definition">to learn</span></li><li><span class="hanzi">习</span> (<span class="pinyin">xí</span>) - <span class="definition">to practice</span></li></ul> |
-      | 北京 | ["北", "京"] | ["běi", "jīng"] | ["north", "capital"] | <ul><li><span class="hanzi">北</span> (<span class="pinyin">běi</span>) - <span class="definition">north</span></li><li><span class="hanzi">京</span> (<span class="pinyin">jīng</span>) - <span class="definition">capital</span></li></ul> |
+      | 学习 | ["学", "习"] | ["xué", "xí"] | ["to learn", "to practice"] | <ul><li><span class="hanzi">学</span> <span class="pinyin">xué</span> - <span class="definition">to learn</span></li><li><span class="hanzi">习</span> <span class="pinyin">xí</span> - <span class="definition">to practice</span></li></ul> |
+      | 北京 | ["北", "京"] | ["běi", "jīng"] | ["north", "capital"] | <ul><li><span class="hanzi">北</span> <span class="pinyin">běi</span> - <span class="definition">north</span></li><li><span class="hanzi">京</span> <span class="pinyin">jīng</span> - <span class="definition">capital</span></li></ul> |
 
   Scenario Outline: Convert complex entries with all semantic markup features
     Given I have the following Pleco entries:

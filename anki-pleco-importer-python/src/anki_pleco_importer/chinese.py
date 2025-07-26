@@ -348,8 +348,8 @@ def _format_components(components: list) -> str:
         pinyin = component["pinyin"]
         definition = component["definition"]
 
-        # Format as: 字(pinyin - meaning)
-        formatted_part = f"{chinese}({pinyin} - {definition})"
+        # Format as: 字 pinyin meaning
+        formatted_part = f"{chinese} {pinyin} {definition}"
         formatted_parts.append(formatted_part)
 
     return " + ".join(formatted_parts)
@@ -460,8 +460,8 @@ def _get_individual_character_definitions(chinese_text: str) -> str:
             # Convert numbered pinyin to toned pinyin for display
             pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
-            # Format as: 字(pinyin - meaning)
-            component = f"{char}({pinyin_clean} - {cleaned_definition})"
+            # Format as: 字 pinyin meaning
+            component = f"{char} {pinyin_clean} {cleaned_definition}"
             components.append(component)
 
         except Exception:

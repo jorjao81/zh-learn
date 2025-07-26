@@ -102,10 +102,10 @@ class CharacterDecomposer:
             component_html = f'<span class="{type_class}">{component}</span>'
 
             if component_pinyin:
-                component_html += f' (<span class="pinyin">{component_pinyin}</span>)'
+                component_html += f' <span class="pinyin">{component_pinyin}</span>'
 
             if component_meaning and component_meaning != "unknown":
-                component_html += f' - <span class="definition">{component_meaning}</span>'
+                component_html += f' <span class="definition">{component_meaning}</span>'
 
             component_items.append(component_html)
 
@@ -240,6 +240,8 @@ class CharacterDecomposer:
             "足": "足字旁",  # zu zi pang
             # Walk radical
             "辶": "走之旁",  # zou zhi pang
+            # Spirit/God radical
+            "礻": "示字旁",  # shi zi pang
             # Door radical
             "门": "门字框",  # men zi kuang
             # Enclosure radical
@@ -300,50 +302,68 @@ class CharacterDecomposer:
 
     def _classify_component(self, component: str, original_character: str) -> ComponentType:
         """
-        Classify component as semantic, phonetic, or pictographic.
-        This is a simplified heuristic-based classification.
+        Classify component as semantic, phonetic, or pictographic using hanzipy data.
+        Uses radical database and phonetic regularity analysis for accurate classification.
         """
-        # Common semantic radicals (simplified heuristic)
-        semantic_radicals = {
-            "氵": ComponentType.SEMANTIC,  # water
-            "木": ComponentType.SEMANTIC,  # wood
-            "火": ComponentType.SEMANTIC,  # fire
-            "土": ComponentType.SEMANTIC,  # earth
-            "金": ComponentType.SEMANTIC,  # metal
-            "女": ComponentType.SEMANTIC,  # woman
-            "子": ComponentType.SEMANTIC,  # child
-            "心": ComponentType.SEMANTIC,  # heart
-            "忄": ComponentType.SEMANTIC,  # heart radical
-            "手": ComponentType.SEMANTIC,  # hand
-            "扌": ComponentType.SEMANTIC,  # hand radical
-            "口": ComponentType.SEMANTIC,  # mouth
-            "目": ComponentType.SEMANTIC,  # eye
-            "日": ComponentType.SEMANTIC,  # sun
-            "月": ComponentType.SEMANTIC,  # moon
-            "人": ComponentType.SEMANTIC,  # person
-            "亻": ComponentType.SEMANTIC,  # person radical
-            "艹": ComponentType.SEMANTIC,  # grass radical
-            "犭": ComponentType.SEMANTIC,  # dog radical
-            "阝": ComponentType.SEMANTIC,  # city radical
-            "讠": ComponentType.SEMANTIC,  # speech radical
-            "饣": ComponentType.SEMANTIC,  # food radical
-            "衤": ComponentType.SEMANTIC,  # clothes radical
-            "疒": ComponentType.SEMANTIC,  # sickness radical
-            "石": ComponentType.SEMANTIC,  # stone
-            "宀": ComponentType.SEMANTIC,  # roof radical
-            "冫": ComponentType.SEMANTIC,  # ice radical
-        }
-
-        if component in semantic_radicals:
-            return semantic_radicals[component]
-
         # If component is same as original character, it's pictographic
         if component == original_character:
             return ComponentType.PICTOGRAPHIC
 
-        # For components that are not semantic radicals and not the same as original character,
-        # they are likely phonetic components (providing sound)
-        return ComponentType.PHONETIC
+        try:
+            # First check if it's a recognized radical (likely semantic)
+            if hasattr(self.decomposer, "is_radical") and self.decomposer.is_radical(component):
+                # Most radicals are semantic, but some can be phonetic
+                # Use phonetic regularity analysis to double-check
+                try:
+                    # Check if component provides phonetic information
+                    component_pinyin = self._get_component_pinyin(component, ComponentType.UNKNOWN)
+                    character_pinyin = self._get_component_pinyin(original_character, ComponentType.UNKNOWN)
+
+                    # If pinyin is similar, component might be phonetic despite being a radical
+                    comp_clean = component_pinyin.lower().replace(" ", "") if component_pinyin else ""
+                    char_clean = character_pinyin.lower().replace(" ", "") if character_pinyin else ""
+                    if comp_clean and char_clean and comp_clean == char_clean:
+                        return ComponentType.PHONETIC
+                    else:
+                        return ComponentType.SEMANTIC
+                except Exception:
+                    # If pinyin comparison fails, default to semantic for radicals
+                    return ComponentType.SEMANTIC
+
+            # For non-radicals, check if they provide phonetic information
+            try:
+                component_pinyin = self._get_component_pinyin(component, ComponentType.UNKNOWN)
+                character_pinyin = self._get_component_pinyin(original_character, ComponentType.UNKNOWN)
+
+                if component_pinyin and character_pinyin:
+                    # Normalize pinyin for comparison (remove tones, spaces)
+                    comp_normalized = "".join(c.lower() for c in component_pinyin if c.isalpha())
+                    char_normalized = "".join(c.lower() for c in character_pinyin if c.isalpha())
+
+                    # If pinyin is similar, it's likely a phonetic component
+                    if comp_normalized and char_normalized:
+                        # Check for exact match or if component pinyin is contained in character pinyin
+                        exact_match = comp_normalized == char_normalized
+                        comp_in_char = comp_normalized in char_normalized
+                        char_in_comp = char_normalized in comp_normalized
+                        if exact_match or comp_in_char or char_in_comp:
+                            return ComponentType.PHONETIC
+
+            except Exception:
+                pass
+
+            # Fallback: check if component exists as a standalone character with meaning
+            # If it has a clear meaning, it's more likely semantic
+            component_meaning = self._get_radical_meaning(component)
+            if component_meaning and component_meaning != "unknown":
+                return ComponentType.SEMANTIC
+
+            # Final fallback: if we can't determine the type, mark as unknown
+            return ComponentType.UNKNOWN
+
+        except Exception:
+            # If any hanzipy operation fails, fall back to unknown
+            return ComponentType.UNKNOWN
 
     def _generate_structure_notes(
         self,
@@ -362,16 +382,16 @@ class CharacterDecomposer:
             pinyin1, pinyin2 = component_pinyin[0], component_pinyin[1]
 
             if type1 == ComponentType.SEMANTIC and type2 == ComponentType.SEMANTIC:
-                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
-                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
+                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
+                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} + {comp2}{pinyin2_note}"
             elif type1 == ComponentType.SEMANTIC and type2 == ComponentType.PHONETIC:
-                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
-                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
+                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
+                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
             elif type1 == ComponentType.PHONETIC and type2 == ComponentType.SEMANTIC:
-                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
-                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
+                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
+                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
             else:
                 # For unknown types, show both pinyin and meaning
@@ -399,18 +419,18 @@ class CharacterDecomposer:
         if component_type == ComponentType.UNKNOWN:
             # For unknown types, show both pinyin and meaning
             if pinyin and meaning and meaning != "unknown":
-                return f"{component} ({pinyin} - {meaning})"
+                return f"{component} {pinyin} - {meaning}"
             elif pinyin:
-                return f"{component} ({pinyin})"
+                return f"{component} {pinyin}"
             elif meaning and meaning != "unknown":
-                return f"{component} ({meaning})"
+                return f"{component} {meaning}"
             else:
                 return component
         else:
             # For known types, use existing logic
             if component_type == ComponentType.SEMANTIC:
-                return f"{component} ({pinyin})" if pinyin else component
+                return f"{component} {pinyin}" if pinyin else component
             elif component_type == ComponentType.PHONETIC:
-                return f"{component} ({pinyin})" if pinyin else component
+                return f"{component} {pinyin}" if pinyin else component
             else:
                 return component
