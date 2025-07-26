@@ -14,6 +14,7 @@ class CandidateCharacter(NamedTuple):
     score: int
     word_count: int
     pinyin: str
+    hsk_level: Optional[int] = None
 
 
 @dataclass
@@ -170,12 +171,18 @@ class AnkiExportParser:
 
         return None
 
-    def analyze_candidate_characters(self) -> List[CandidateCharacter]:
+    def analyze_candidate_characters(
+        self, hsk_char_mapping: Optional[Dict[str, int]] = None
+    ) -> List[CandidateCharacter]:
         """
         Find candidate characters to learn based on:
-        1. Characters that appear in many multi-character words
-        2. Characters that are components in other characters
-        3. Characters that are NOT already single-character words
+        1. HSK level (lower levels prioritized)
+        2. Characters that appear in many multi-character words
+        3. Characters that are components in other characters
+        4. Characters that are NOT already single-character words
+
+        Args:
+            hsk_char_mapping: Optional mapping of characters to HSK levels
         """
         single_chars = self.get_single_character_words()
         multi_words = self.get_multi_character_words()
@@ -191,11 +198,15 @@ class AnkiExportParser:
         # Calculate scores for candidate characters
         candidates: List[CandidateCharacter] = []
         for char in multi_char_freq:
-            score = multi_char_freq[char]
+            # Get HSK level for this character
+            hsk_level = hsk_char_mapping.get(char) if hsk_char_mapping else None
+
+            # Start with base frequency score
+            base_score = multi_char_freq[char]
 
             # Give extra weight if it's a component character
             if char in component_chars:
-                score += 10  # Heavy weight for component characters
+                base_score += 10  # Heavy weight for component characters
 
             # Get pinyin for the character
             pinyin = self.get_character_pinyin(char) or "?"
@@ -203,13 +214,21 @@ class AnkiExportParser:
             candidates.append(
                 CandidateCharacter(
                     character=char,
-                    score=score,
+                    score=base_score,
                     word_count=multi_char_freq[char],
                     pinyin=pinyin,
+                    hsk_level=hsk_level,
                 )
             )
 
-        # Sort by score (descending)
-        candidates.sort(key=lambda x: x.score, reverse=True)
+        # Sort by HSK level first (lower levels first), then by score (descending)
+        def sort_key(candidate: CandidateCharacter) -> tuple:
+            # HSK level priority: None (no HSK) = 999, actual levels = their value
+            hsk_priority = candidate.hsk_level if candidate.hsk_level is not None else 999
+            # Higher scores are better, so negate for ascending sort
+            score_priority = -candidate.score
+            return (hsk_priority, score_priority)
+
+        candidates.sort(key=sort_key)
 
         return candidates

@@ -652,18 +652,34 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
         # Candidate characters analysis
         click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
-        click.echo("(Characters that appear in many words OR as components, but are not single-character words)")
+        click.echo("(Prioritized by HSK level, then by frequency and component usage)")
 
-        candidates = parser.analyze_candidate_characters()
+        # Create HSK character mapping for prioritization
+        hsk_char_mapping = None
+        try:
+            hsk_char_mapping = hsk_word_lists.create_character_hsk_mapping()
+            if hsk_char_mapping:
+                click.echo(f"Using HSK character mapping with {len(hsk_char_mapping)} characters")
+        except Exception as e:
+            click.echo(f"Warning: Could not create HSK character mapping: {e}")
+
+        candidates = parser.analyze_candidate_characters(hsk_char_mapping)
 
         if candidates:
             click.echo(f"\nTop {min(top_candidates, len(candidates))} candidates:")
             for i, candidate in enumerate(candidates[:top_candidates], 1):
                 is_component = candidate.character in component_chars
                 component_indicator = " 🔧" if is_component else ""
+
+                # Format HSK level prominently
+                if candidate.hsk_level is not None:
+                    hsk_display = click.style(f"HSK{candidate.hsk_level}", fg="green", bold=True)
+                else:
+                    hsk_display = click.style("No HSK", fg="red")
+
                 click.echo(
                     f"{i:2d}. {candidate.character} ({candidate.pinyin}) - "
-                    f"score: {candidate.score}, appears in {candidate.word_count} words"
+                    f"{hsk_display}, score: {candidate.score}, appears in {candidate.word_count} words"
                     f"{component_indicator}"
                 )
 
