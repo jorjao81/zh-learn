@@ -121,6 +121,27 @@ def step_given_anki_dictionary(context):
         context.anki_dictionary[chinese] = {"pinyin": pinyin, "definition": definition}
 
 
+@given("I have the following Anki export dictionary with mixed note types")
+def step_given_anki_dictionary_mixed_note_types(context):
+    """Store the Anki export dictionary with note types."""
+    from anki_pleco_importer.anki_parser import AnkiCard, AnkiExportParser
+
+    # Create mock AnkiCard objects with different note types
+    cards = []
+    for row in context.table:
+        chinese = row["chinese"]
+        pinyin = row["pinyin"]
+        definition = row["definition"]
+        notetype = row["notetype"]
+
+        card = AnkiCard(notetype=notetype, pinyin=pinyin, characters=chinese, audio="", definitions=definition)
+        cards.append(card)
+
+    # Create mock AnkiExportParser
+    context.anki_parser = AnkiExportParser()
+    context.anki_parser.cards = cards
+
+
 @when('I decompose the 3-character word "{word}"')
 def step_when_decompose_3_char_word(context, word):
     """Decompose a 3-character word using dictionary lookup."""
@@ -140,6 +161,18 @@ def step_when_decompose_5_char_word(context, word):
     """Decompose a 5-character word using dictionary lookup."""
     context.word = word
     context.result_decomposition = get_structural_decomposition(word, context.anki_dictionary)
+
+
+@when('I decompose the 4-character word "{word}" using the Anki parser')
+def step_when_decompose_4_char_word_with_parser(context, word):
+    """Decompose a 4-character word using AnkiExportParser."""
+    from anki_pleco_importer.pleco import _create_anki_dictionary
+    from anki_pleco_importer.chinese import get_structural_decomposition
+
+    context.word = word
+    # Use the actual function that needs to be fixed
+    anki_dictionary = _create_anki_dictionary(context.anki_parser)
+    context.result_decomposition = get_structural_decomposition(word, anki_dictionary)
 
 
 @then('I should get the structural decomposition "{expected_decomposition}"')

@@ -442,7 +442,7 @@ def _format_single_example_semantic(example: str) -> str:
 
         return (
             f'<span class="hanzi">{hanzi}</span> '
-            f'<span class="pinyin">{pinyin}</span> - '
+            f'<span class="pinyin">{pinyin}</span> '
             f'<span class="translation">{translation}</span>'
         )
 
@@ -713,8 +713,8 @@ def find_multi_character_words_containing(character: str, anki_parser: Optional[
         if len(clean_chars) > 1 and character in clean_chars:
             # Convert pinyin from numbered format to tone marks
             tone_pinyin = convert_numbered_pinyin_to_tones(card.pinyin)
-            # Format: word pinyin - meaning
-            example = f"{clean_chars} {tone_pinyin} - {card.definitions}"
+            # Format: word pinyin meaning
+            example = f"{clean_chars} {tone_pinyin} {card.definitions}"
             examples.append(example)
 
     # Limit to top 10 examples to avoid overwhelming the card
@@ -734,7 +734,7 @@ def _create_anki_dictionary(anki_parser: AnkiExportParser) -> dict:
     dictionary = {}
 
     for card in anki_parser.cards:
-        if card.notetype == "Chinese":
+        if card.notetype in ["Chinese", "Chinese 2"]:
             clean_chars = card.get_clean_characters()
             if clean_chars and len(clean_chars) <= 4:  # Limit to reasonable word lengths
                 dictionary[clean_chars] = {
