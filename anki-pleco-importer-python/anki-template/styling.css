@@ -1,6 +1,9 @@
 /* Chinese Learning Card Theme */
 /* Optimized for mobile and desktop, clean and functional design */
 
+/* Import comprehensive CJK font support */
+@import url('themes/cjk-fonts.css');
+
 /* Card Container */
 .card {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -29,7 +32,7 @@
 
 /* Chinese Characters - Main Focus */
 .chinese-main {
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans CN', sans-serif;
+  font-family: var(--cjk-font-stack);
   font-size: 3.5em;
   font-weight: 300;
   color: #2c3e50;
@@ -439,7 +442,7 @@ ul li.example {
 
 /* Example Content Styling */
 .hanzi {
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-family: var(--cjk-font-stack);
   font-weight: 500;
   color: #2c3e50;
 }
@@ -622,7 +625,7 @@ ul li.example {
 .components-content .hanzi {
   font-size: 1.1em;
   font-weight: 700;
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-family: var(--cjk-font-stack);
   margin-right: 4px;
   /* Override Anki's default CJK styling */
   background: none !important;

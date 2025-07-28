@@ -238,6 +238,7 @@ class CharacterDecomposer:
             "糸": "绞丝底",  # jiao si di
             # Foot radical
             "足": "足字旁",  # zu zi pang
+            "⻊": "足字旁",  # zu zi pang (variant form)
             # Walk radical
             "辶": "走之旁",  # zou zhi pang
             # Spirit/God radical
