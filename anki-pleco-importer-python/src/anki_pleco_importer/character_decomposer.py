@@ -238,6 +238,7 @@ class CharacterDecomposer:
             "糸": "绞丝底",  # jiao si di
             # Foot radical
             "足": "足字旁",  # zu zi pang
+            "⻊": "足字旁",  # zu zi pang (variant form)
             # Walk radical
             "辶": "走之旁",  # zou zhi pang
             # Spirit/God radical
@@ -309,6 +310,21 @@ class CharacterDecomposer:
         if component == original_character:
             return ComponentType.PICTOGRAPHIC
 
+        # Known phonetic pairs - these are traditional phonetic components that may not match perfectly
+        known_phonetic_pairs = {
+            ("可", "河"): True,  # kě provides phonetic basis for hé
+            ("青", "清"): True,  # qīng provides phonetic basis for qīng
+            ("马", "妈"): True,  # mǎ provides phonetic basis for mā
+            ("工", "江"): True,  # gōng provides phonetic basis for jiāng
+            ("尔", "你"): True,  # ěr provides phonetic basis for nǐ
+            ("相", "想"): True,  # xiāng provides phonetic basis for xiǎng
+            ("董", "懂"): True,  # dǒng provides phonetic basis for dǒng
+        }
+
+        # Check known phonetic pairs
+        if (component, original_character) in known_phonetic_pairs:
+            return ComponentType.PHONETIC
+
         try:
             # First check if it's a recognized radical (likely semantic)
             if hasattr(self.decomposer, "is_radical") and self.decomposer.is_radical(component):
@@ -346,7 +362,13 @@ class CharacterDecomposer:
                         exact_match = comp_normalized == char_normalized
                         comp_in_char = comp_normalized in char_normalized
                         char_in_comp = char_normalized in comp_normalized
-                        if exact_match or comp_in_char or char_in_comp:
+
+                        # Also check if they share the same initial consonant (common in Chinese phonetic components)
+                        same_initial = (
+                            comp_normalized[0] == char_normalized[0] if comp_normalized and char_normalized else False
+                        )
+
+                        if exact_match or comp_in_char or char_in_comp or same_initial:
                             return ComponentType.PHONETIC
 
             except Exception:
@@ -382,16 +404,16 @@ class CharacterDecomposer:
             pinyin1, pinyin2 = component_pinyin[0], component_pinyin[1]
 
             if type1 == ComponentType.SEMANTIC and type2 == ComponentType.SEMANTIC:
-                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
-                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
+                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
+                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} + {comp2}{pinyin2_note}"
             elif type1 == ComponentType.SEMANTIC and type2 == ComponentType.PHONETIC:
-                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
-                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
+                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
+                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} (meaning) + {comp2}{pinyin2_note} (sound)"
             elif type1 == ComponentType.PHONETIC and type2 == ComponentType.SEMANTIC:
-                pinyin1_note = f" {pinyin1}" if pinyin1 else ""
-                pinyin2_note = f" {pinyin2}" if pinyin2 else ""
+                pinyin1_note = f" ({pinyin1})" if pinyin1 else ""
+                pinyin2_note = f" ({pinyin2})" if pinyin2 else ""
                 return f"{comp1}{pinyin1_note} (sound) + {comp2}{pinyin2_note} (meaning)"
             else:
                 # For unknown types, show both pinyin and meaning

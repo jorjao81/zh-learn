@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJK Font Preview - Anki Templates</title>
+    <style>
+        /* Import comprehensive CJK font support */
+        @import url('themes/cjk-fonts.css');
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .font-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .font-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .font-name {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .char-test {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .test-char {
+            font-size: 3em;
+            margin: 5px;
+            display: inline-block;
+            font-family: var(--cjk-font-stack);
+        }
+        
+        .test-desc {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .component-demo {
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        /* Anki card preview styles */
+        .anki-preview {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #ffffff;
+            color: #333333;
+            line-height: 1.6;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .chinese-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .chinese-main {
+            font-family: var(--cjk-font-stack);
+            font-size: 3.5em;
+            font-weight: 300;
+            color: #2c3e50;
+            line-height: 1.2;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+        }
+        
+        .pinyin-main {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 1.2em;
+            color: #e74c3c;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+        }
+        
+        .section-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #34495e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 15px 0 8px 0;
+            text-align: left;
+        }
+        
+        .definition-content {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        /* Component analysis styling */
+        .components-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .components-content ul {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .components-content ul li {
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 60px;
+            max-width: 120px;
+            margin: 0;
+            border: 2px solid #3498db;
+            font-size: 0.85em;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .components-content .hanzi {
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: var(--cjk-font-stack);
+            margin-right: 4px;
+        }
+        
+        .components-content .pinyin {
+            font-size: 0.75em;
+            opacity: 0.8;
+            font-style: italic;
+            font-weight: 500;
+            color: #e74c3c;
+        }
+        
+        .components-content .definition {
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.9;
+            line-height: 1.2;
+            font-weight: 400;
+            margin-top: 2px;
+            word-wrap: break-word;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .unicode-info {
+            font-family: monospace;
+            background: #f1f3f4;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            color: #5f6368;
+        }
+        
+        .extension-badge {
+            display: inline-block;
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .extension-badge.ext-b {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .extension-badge.ext-c {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+        
+        .fallback-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #856404;
+        }
+        
+        .success-indicator {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .fail-indicator {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .font-test {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-char {
+                font-size: 2em;
+            }
+            
+            .chinese-main {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CJK Font Preview</h1>
+            <p>Comprehensive Unicode character support for Anki Chinese learning templates</p>
+        </div>
+        
+        <div class="content">
+            <!-- Font Coverage Test -->
+            <div class="section">
+                <h2>🔤 Font Coverage Test</h2>
+                <p>This section tests how well different fonts handle rare CJK characters. If you see squares (□) or question marks (?), the font doesn't support that character.</p>
+                
+                <div class="font-test">
+                    <div class="font-card">
+                        <div class="font-name">Common Characters</div>
+                        <div class="char-test">
+                            <div class="test-char">学习汉字</div>
+                            <div class="test-desc">Basic CJK characters - should work with any font</div>
+                        </div>
+                    </div>
+                    
+                    <div class="font-card">
+                        <div class="font-name">Extension A Characters</div>
+                        <div class="char-test">
+                            <div class="test-char">㐀㐁㐂㐃</div>
+                            <div class="test-desc unicode-info">U+3400-4DBF</div>
+                            <div class="test-desc">Test: BabelStone Han & HanaMinA</div>
+                        </div>
+                    </div>
+                    
+                    <div class="font-card">
+                        <div class="font-name">Extension B Characters <span class="extension-badge ext-b">Critical</span></div>
+                        <div class="char-test">
+                            <div class="test-char">𠀀𠀁𦐇𪚥</div>
+                            <div class="test-desc unicode-info">U+20000-2A6DF</div>
+                            <div class="test-desc">Test: BabelStone Han & HanaMinB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="font-card">
+                        <div class="font-name">Component Radicals</div>
+                        <div class="char-test">
+                            <div class="test-char">⻊⻌⻍⻎</div>
+                            <div class="test-desc">Rare radical variants for structural analysis</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fallback-warning">
+                    <strong>⚠️ Font Installation Required:</strong> To see all characters properly, install the fonts from the fonts/ directory to your Anki collection. Characters showing as squares indicate missing font support.
+                </div>
+            </div>
+            
+            <!-- Anki Card Preview -->
+            <div class="section">
+                <h2>📱 Anki Card Preview</h2>
+                <p>This shows how a Chinese character card would appear in Anki with proper font support:</p>
+                
+                <div class="anki-preview">
+                    <div class="chinese-header">
+                        <div class="chinese-main">塌</div>
+                        <div class="pinyin-main">tā</div>
+                    </div>
+                    
+                    <div class="section-title">Definition</div>
+                    <div class="definition-content">
+                        to collapse; to fall down
+                    </div>
+                    
+                    <div class="section-title">Components</div>
+                    <div class="components-content">
+                        <ul>
+                            <li>
+                                <span class="hanzi">土</span>
+                                <span class="pinyin">土字旁</span>
+                                <span class="definition">earth</span>
+                            </li>
+                            <li>
+                                <span class="hanzi">𦐇</span>
+                                <span class="pinyin">tà</span>
+                                <span class="definition">phonetic component</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Structural Analysis Demo -->
+            <div class="section">
+                <h2>🏗️ Structural Analysis Demo</h2>
+                <p>Examples showing how rare components are displayed in character analysis:</p>
+                
+                <div class="component-demo">
+                    <h3>踏 (tà) - to step on</h3>
+                    <div class="components-content">
+                        <ul>
+                            <li>
+                                <span class="hanzi">⻊</span>
+                                <span class="pinyin">足字旁</span>
+                                <span class="definition">foot radical</span>
+                            </li>
+                            <li>
+                                <span class="hanzi">沓</span>
+                                <span class="pinyin">dá</span>
+                                <span class="definition">phonetic</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <h3>𪚥 (Extension F Character)</h3>
+                    <div class="components-content">
+                        <ul>
+                            <li>
+                                <span class="hanzi">𪚥</span>
+                                <span class="pinyin">rare character</span>
+                                <span class="definition">Unicode F extension</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="test-desc">
+                        <span class="unicode-info">U+2A6A5</span>
+                        <span class="extension-badge ext-c">Extension F</span>
+                        Only BabelStone Han supports this
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Font Status Indicators -->
+            <div class="section">
+                <h2>📊 Font Status Check</h2>
+                <p>This section helps you verify which fonts are working in your browser:</p>
+                
+                <div class="font-test">
+                    <div class="font-card">
+                        <div class="font-name">BabelStone Han Status</div>
+                        <div class="char-test">
+                            <div class="test-char" style="font-family: 'BabelStone Han', monospace;">𦐇</div>
+                            <div class="test-desc">
+                                <span id="babelstone-status">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="font-card">
+                        <div class="font-name">HanaMin Status</div>
+                        <div class="char-test">
+                            <div class="test-char" style="font-family: 'HanaMinB', monospace;">𦐇</div>
+                            <div class="test-desc">
+                                <span id="hanamin-status">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="font-card">
+                        <div class="font-name">System Fallback</div>
+                        <div class="char-test">
+                            <div class="test-char" style="font-family: system-ui, sans-serif;">𦐇</div>
+                            <div class="test-desc">
+                                <span id="system-status">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Installation Instructions -->
+            <div class="section">
+                <h2>⚙️ Installation Instructions</h2>
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 4px solid #2196f3;">
+                    <h3>Quick Setup</h3>
+                    <ol>
+                        <li><strong>Download fonts:</strong> <code>python download_fonts.py</code></li>
+                        <li><strong>Install to Anki:</strong> <code>python install_fonts.py</code></li>
+                        <li><strong>Sync collection:</strong> Upload fonts to all devices</li>
+                        <li><strong>Test display:</strong> Check rare characters render properly</li>
+                    </ol>
+                    
+                    <h3>Font Recommendations</h3>
+                    <ul>
+                        <li><strong>Best Overall:</strong> BabelStone Han (49.6 MB) - Maximum coverage</li>
+                        <li><strong>Extension B Focus:</strong> HanaMin collection (73.3 MB) - Modular approach</li>
+                        <li><strong>Space Conscious:</strong> HanaMinB only (30.7 MB) - Extension B specialist</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Font detection script
+        function detectFont(fontFamily, testChar, statusElementId) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Test with fallback font
+            context.font = '72px monospace';
+            const fallbackWidth = context.measureText(testChar).width;
+            
+            // Test with target font
+            context.font = `72px ${fontFamily}, monospace`;
+            const targetWidth = context.measureText(testChar).width;
+            
+            const statusElement = document.getElementById(statusElementId);
+            
+            if (Math.abs(targetWidth - fallbackWidth) > 1) {
+                statusElement.innerHTML = '<span class="success-indicator">✅ Font loaded</span>';
+                statusElement.style.color = '#28a745';
+            } else {
+                statusElement.innerHTML = '<span class="fail-indicator">❌ Font not available</span>';
+                statusElement.style.color = '#dc3545';
+            }
+        }
+        
+        // Run font detection when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                detectFont('BabelStone Han', '𦐇', 'babelstone-status');
+                detectFont('HanaMinB', '𦐇', 'hanamin-status');
+                
+                // System font is always available, but may not support the character
+                const systemStatus = document.getElementById('system-status');
+                systemStatus.innerHTML = '<span class="fail-indicator">❌ No Extension B support</span>';
+                systemStatus.style.color = '#dc3545';
+            }, 1000);
+        });
+        
+        // Add visual feedback for missing characters
+        document.addEventListener('DOMContentLoaded', function() {
+            const testChars = document.querySelectorAll('.test-char');
+            
+            testChars.forEach(char => {
+                const text = char.textContent;
+                let hasUnsupportedChars = false;
+                
+                for (let i = 0; i < text.length; i++) {
+                    const codePoint = text.codePointAt(i);
+                    if (codePoint > 0x20000) { // Extension B and beyond
+                        hasUnsupportedChars = true;
+                        break;
+                    }
+                }
+                
+                if (hasUnsupportedChars) {
+                    char.style.border = '2px dashed #ffc107';
+                    char.style.padding = '5px';
+                    char.style.borderRadius = '4px';
+                    char.title = 'This character requires comprehensive CJK fonts';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

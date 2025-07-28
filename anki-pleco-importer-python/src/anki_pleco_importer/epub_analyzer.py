@@ -2,6 +2,10 @@
 
 import re
 import logging
+import json
+import hashlib
+import os
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Set, NamedTuple, Optional, Tuple
@@ -16,11 +20,12 @@ except ImportError:
     EBOOKLIB_AVAILABLE = False
 
 try:
-    import jieba
+    from azure.ai.textanalytics import TextAnalyticsClient
+    from azure.core.credentials import AzureKeyCredential
 
-    JIEBA_AVAILABLE = True
+    AZURE_AVAILABLE = True
 except ImportError:
-    JIEBA_AVAILABLE = False
+    AZURE_AVAILABLE = False
 
 try:
     from pypinyin import lazy_pinyin, Style
@@ -89,46 +94,47 @@ class BookAnalysis(NamedTuple):
 class ChineseEPUBAnalyzer:
     """Analyzer for Chinese vocabulary in EPUB files."""
 
-    def __init__(self, hsk_word_lists: Optional[HSKWordLists] = None, custom_dict_path: Optional[Path] = None):
+    def __init__(
+        self,
+        hsk_word_lists: Optional[HSKWordLists] = None,
+        cache_dir: Optional[Path] = None,
+    ):
         """
         Initialize the EPUB analyzer.
 
         Args:
             hsk_word_lists: HSK word lists for level analysis
-            custom_dict_path: Optional path to custom dictionary for domain-specific terms
+            cache_dir: Optional directory for caching Azure API results
         """
         if not EBOOKLIB_AVAILABLE:
             raise ImportError("ebooklib is required for EPUB analysis. " "Install it with: pip install ebooklib")
 
-        if not JIEBA_AVAILABLE:
-            raise ImportError("jieba is required for Chinese text segmentation. " "Install it with: pip install jieba")
+        if not AZURE_AVAILABLE:
+            raise ImportError(
+                "Azure Text Analytics is required for key phrase extraction. "
+                "Install with: pip install azure-ai-textanalytics==5.3.0"
+            )
 
         self.hsk_word_lists = hsk_word_lists or HSKWordLists()
         self.chinese_pattern = re.compile(r"[\u4e00-\u9fff]+")
 
-        # Configure jieba for absolute highest quality settings
-        jieba.setLogLevel(logging.WARNING)
-
-        # Enable Paddle mode for best accuracy if available
+        # Set up Azure credentials
         try:
-            import paddle  # noqa: F401
+            self.endpoint = os.environ["AZURE_LANGUAGE_ENDPOINT"]
+            self.key = os.environ["AZURE_LANGUAGE_KEY"]
+        except KeyError:
+            raise ValueError("Please set the AZURE_LANGUAGE_ENDPOINT and " "AZURE_LANGUAGE_KEY environment variables.")
 
-            jieba.enable_paddle()
-            logger.info("Enabled jieba Paddle mode for highest accuracy")
-        except ImportError:
-            logger.info("Paddle not available, using jieba HMM mode")
+        # Initialize Azure Text Analytics client
+        self.text_analytics_client = TextAnalyticsClient(
+            endpoint=self.endpoint, credential=AzureKeyCredential(self.key)
+        )
 
-        # Initialize jieba tokenizer
-        jieba.dt.check_initialized()
-
-        # Load custom dictionary if provided for domain-specific terms
-        if custom_dict_path and custom_dict_path.exists():
-            logger.info(f"Loading custom dictionary: {custom_dict_path}")
-            jieba.load_userdict(str(custom_dict_path))
-            logger.info("Custom dictionary loaded successfully")
-
-        # Force jieba to finish initialization for best performance
-        jieba.initialize()
+        # Set up cache directory
+        default_cache = Path.home() / ".anki_pleco_importer" / "azure_cache"
+        self.cache_dir = cache_dir or default_cache
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Using Azure API cache directory: {self.cache_dir}")
 
     def extract_text_from_epub(self, epub_path: Path) -> Tuple[str, str]:
         """
@@ -193,16 +199,162 @@ class ChineseEPUBAnalyzer:
 
         return text.strip()
 
-    def segment_chinese_text(self, text: str, min_length: int = 1) -> List[str]:
+    def _get_cache_key(self, text: str) -> str:
+        """Generate a cache key for the given text."""
+        return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+    def _load_from_cache(self, cache_key: str) -> Optional[List[str]]:
+        """Load key phrases from cache if available."""
+        cache_file = self.cache_dir / f"{cache_key}.json"
+        if cache_file.exists():
+            try:
+                with open(cache_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    logger.debug(f"📁 Loaded from cache: {cache_file.name}")
+                    phrases = data.get("key_phrases", [])
+                    return phrases if isinstance(phrases, list) else []
+            except Exception as e:
+                logger.warning(f"Failed to load cache file {cache_file}: {e}")
+        return None
+
+    def _smart_chunk_text(self, text: str, max_chunk_size: int) -> List[str]:
         """
-        Segment Chinese text into words using jieba.
+        Split text into chunks respecting paragraph and sentence boundaries.
+
+        Args:
+            text: Input text to chunk
+            max_chunk_size: Maximum size for each chunk
+
+        Returns:
+            List of text chunks with natural boundaries preserved
+        """
+        if len(text) <= max_chunk_size:
+            return [text]
+
+        chunks = []
+        current_chunk = ""
+
+        # Split by paragraphs first (double newlines, or common Chinese punctuation)
+        paragraphs = re.split(r"\n\s*\n|。\s*\n|！\s*\n|？\s*\n", text)
+
+        for paragraph in paragraphs:
+            paragraph = paragraph.strip()
+            if not paragraph:
+                continue
+
+            # If paragraph is small enough, add to current chunk
+            if len(current_chunk) + len(paragraph) + 1 <= max_chunk_size:
+                if current_chunk:
+                    current_chunk += "\n" + paragraph
+                else:
+                    current_chunk = paragraph
+            else:
+                # Current chunk is ready, start new one
+                if current_chunk:
+                    chunks.append(current_chunk)
+
+                # If paragraph itself is too large, split by sentences
+                if len(paragraph) > max_chunk_size:
+                    sentence_chunks = self._split_by_sentences(paragraph, max_chunk_size)
+                    chunks.extend(sentence_chunks[:-1])  # Add all but last
+                    current_chunk = sentence_chunks[-1] if sentence_chunks else ""
+                else:
+                    current_chunk = paragraph
+
+        # Add final chunk
+        if current_chunk:
+            chunks.append(current_chunk)
+
+        # Log chunk sizes for debugging
+        chunk_sizes = [len(chunk) for chunk in chunks]
+        logger.debug(f"Created {len(chunks)} chunks with sizes: {chunk_sizes}")
+
+        return chunks
+
+    def _split_by_sentences(self, text: str, max_chunk_size: int) -> List[str]:
+        """
+        Split text by sentence boundaries when paragraph is too large.
+
+        Args:
+            text: Input text to split
+            max_chunk_size: Maximum size for each chunk
+
+        Returns:
+            List of sentence-based chunks
+        """
+        # Chinese sentence endings
+        sentences = re.split(r"([。！？；])", text)
+
+        chunks = []
+        current_chunk = ""
+
+        # Rejoin sentences with their punctuation
+        for i in range(0, len(sentences) - 1, 2):
+            sentence = sentences[i]
+            if i + 1 < len(sentences):
+                sentence += sentences[i + 1]  # Add punctuation
+
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+
+            if len(current_chunk) + len(sentence) <= max_chunk_size:
+                current_chunk += sentence
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk)
+
+                # If single sentence is still too long, force split
+                if len(sentence) > max_chunk_size:
+                    # Split at max_chunk_size but try to find a comma or space near the boundary
+                    while sentence:
+                        if len(sentence) <= max_chunk_size:
+                            current_chunk = sentence
+                            break
+
+                        # Look for a good break point near max_chunk_size
+                        break_point = max_chunk_size
+                        for punct in ["，", "、", " ", "的", "了", "在"]:
+                            punct_pos = sentence.rfind(punct, max_chunk_size - 200, max_chunk_size)
+                            if punct_pos > max_chunk_size - 500:  # Within reasonable range
+                                break_point = punct_pos + len(punct)
+                                break
+
+                        chunks.append(sentence[:break_point])
+                        sentence = sentence[break_point:].strip()
+
+                    current_chunk = sentence
+                else:
+                    current_chunk = sentence
+
+        # Add final chunk
+        if current_chunk:
+            chunks.append(current_chunk)
+
+        return chunks
+
+    def _save_to_cache(self, cache_key: str, key_phrases: List[str]) -> None:
+        """Save key phrases to cache."""
+        cache_file = self.cache_dir / f"{cache_key}.json"
+        try:
+            data = {"key_phrases": key_phrases, "timestamp": time.time()}
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+                logger.info(f"💾 Saved key phrases to cache: {cache_file}")
+        except Exception as e:
+            logger.warning(f"Failed to save cache file {cache_file}: {e}")
+
+    def extract_key_phrases_from_text(self, text: str, min_length: int = 1, chunk_size: int = 5000) -> List[str]:
+        """
+        Extract key phrases from Chinese text using Azure Text Analytics.
 
         Args:
             text: Input Chinese text
-            min_length: Minimum word length to include
+            min_length: Minimum phrase length to include
+            chunk_size: Maximum size of text chunks to send to Azure API
 
         Returns:
-            List of segmented Chinese words
+            List of extracted Chinese key phrases
         """
         # Extract Chinese characters only
         chinese_text = "".join(self.chinese_pattern.findall(text))
@@ -210,23 +362,95 @@ class ChineseEPUBAnalyzer:
         if not chinese_text:
             return []
 
-        # Segment using jieba with absolute highest quality settings
-        # cut_all=False: Use precise mode (not full mode)
-        # HMM=True: Enable HMM for new word recognition
-        words = jieba.cut(chinese_text, cut_all=False, HMM=True)
+        # Check cache first
+        cache_key = self._get_cache_key(chinese_text)
+        cached_phrases = self._load_from_cache(cache_key)
+        if cached_phrases is not None:
+            logger.info("💾 Using cached key phrases (no API call needed)")
+            return [phrase for phrase in cached_phrases if len(phrase) >= min_length]
 
-        # Convert generator to list for processing
-        words = list(words)
+        # Split text into chunks if too large, respecting text boundaries
+        all_key_phrases = []
+        text_chunks = self._smart_chunk_text(chinese_text, chunk_size)
 
-        # Filter words: Chinese characters only, minimum length
-        filtered_words = []
+        logger.info(f"Processing {len(text_chunks)} text chunks for extraction")
 
-        for word in words:
-            word = word.strip()
-            if len(word) >= min_length and self.chinese_pattern.match(word) and len(word) > 0:
-                filtered_words.append(word)
+        for i, chunk in enumerate(text_chunks):
+            if not chunk.strip():
+                continue
 
-        return filtered_words
+            logger.info(f"🌐 Making Azure API call for chunk {i+1}/{len(text_chunks)} " f"(size: {len(chunk)} chars)")
+            try:
+                documents = [{"id": str(i), "language": "zh-hans", "text": chunk}]
+                response = self.text_analytics_client.extract_key_phrases(documents=documents)
+                logger.info(f"✅ Azure API call completed for chunk {i+1}")
+
+                for doc in response:
+                    if not doc.is_error:
+                        for phrase in doc.key_phrases:
+                            # Filter Chinese chars only and minimum length
+                            if self.chinese_pattern.match(phrase) and len(phrase) >= min_length:
+                                all_key_phrases.append(phrase)
+                    else:
+                        logger.error(f"Error processing text chunk {i}: " f"{doc.error.message}")
+
+            except Exception as e:
+                logger.error(f"❌ Azure API error for chunk {i+1}: {e}")
+                continue
+
+        # Remove duplicates while preserving order
+        unique_phrases = list(dict.fromkeys(all_key_phrases))
+
+        # Save to cache
+        self._save_to_cache(cache_key, unique_phrases)
+
+        logger.info(
+            f"✨ Extracted {len(unique_phrases)} unique key phrases from text "
+            f"({len(text_chunks)} Azure API calls made)"
+        )
+        return unique_phrases
+
+    def count_phrase_frequencies_in_text(self, key_phrases: List[str], full_text: str) -> Dict[str, int]:
+        """
+        Count how many times each key phrase appears in the full text.
+        Filters to only include 2-4 character words appearing 3+ times.
+
+        Args:
+            key_phrases: List of key phrases identified by Azure
+            full_text: Original text from the EPUB
+
+        Returns:
+            Dictionary mapping filtered phrases to their frequencies in the text
+        """
+        phrase_frequencies = {}
+
+        # Extract only Chinese characters from the full text for matching
+        chinese_text = "".join(self.chinese_pattern.findall(full_text))
+
+        for phrase in key_phrases:
+            if not phrase:
+                continue
+
+            # Count occurrences of this phrase in the text
+            # Use case-sensitive search since Chinese characters are case-sensitive
+            count = chinese_text.count(phrase)
+
+            # Filter: only keep 2-4 character words with frequency >= 3
+            if count >= 3 and 2 <= len(phrase) <= 4:
+                phrase_frequencies[phrase] = count
+
+        logger.info(
+            f"Found frequencies for {len(phrase_frequencies)} filtered key phrases (2-4 chars, 3+ occurrences) in text"
+        )
+
+        # Log some examples for debugging
+        if phrase_frequencies:
+            # Sort by length first (longest first), then by frequency (descending)
+            sorted_phrases = sorted(phrase_frequencies.items(), key=lambda x: (-len(x[0]), -x[1]))
+            top_phrases = sorted_phrases[:10]
+            logger.debug(f"Sample phrases by length: {top_phrases}")
+
+        return phrase_frequencies
 
     def get_word_pinyin(self, word: str) -> str:
         """
@@ -344,7 +568,10 @@ class ChineseEPUBAnalyzer:
         return known_words, unknown_words
 
     def calculate_coverage_targets(
-        self, word_frequencies: Dict[str, int], known_words: Set[str], targets: List[int] = [80, 90, 95, 98]
+        self,
+        word_frequencies: Dict[str, int],
+        known_words: Set[str],
+        targets: List[int] = [80, 90, 95, 98],
     ) -> Dict[int, CoverageTarget]:
         """
         Calculate words needed to achieve target coverage percentages.
@@ -382,6 +609,9 @@ class ChineseEPUBAnalyzer:
                 priority_words.append((word, freq, pinyin, hsk_level))
                 cumulative_freq += freq
 
+            # Sort priority words by length first (longest first), then by frequency
+            priority_words.sort(key=lambda x: (-len(x[0]), -x[1]))
+
             results[target] = CoverageTarget(
                 target_percentage=target,
                 words_needed=len(priority_words),
@@ -395,17 +625,26 @@ class ChineseEPUBAnalyzer:
         self, unknown_words: Dict[str, int], count: int = 50
     ) -> List[Tuple[str, int, str, Optional[int]]]:
         """
-        Get the most frequent unknown words.
+        Get the most frequent unknown words, sorted by length then frequency.
 
         Args:
             unknown_words: Dictionary of unknown words with frequencies
             count: Number of words to return
 
         Returns:
-            List of (word, frequency, pinyin, hsk_level) tuples sorted by frequency
+            List of (word, frequency, pinyin, hsk_level) tuples sorted by length then frequency
         """
-        sorted_words = sorted(unknown_words.items(), key=lambda x: x[1], reverse=True)[:count]
-        return [(word, freq, self.get_word_pinyin(word), self.get_word_hsk_level(word)) for word, freq in sorted_words]
+        # Sort by length first (longest first), then by frequency (descending)
+        sorted_words = sorted(unknown_words.items(), key=lambda x: (-len(x[0]), -x[1]))[:count]
+        return [
+            (
+                word,
+                freq,
+                self.get_word_pinyin(word),
+                self.get_word_hsk_level(word),
+            )
+            for word, freq in sorted_words
+        ]
 
     def identify_non_hsk_words(self, word_frequencies: Dict[str, int]) -> Dict[str, int]:
         """
@@ -459,8 +698,8 @@ class ChineseEPUBAnalyzer:
                     unknown_at_level.append((word, freq, pinyin))
                     total_word_count += freq
 
-            # Sort by frequency (descending)
-            unknown_at_level.sort(key=lambda x: x[1], reverse=True)
+            # Sort by length first (longest first), then by frequency (descending)
+            unknown_at_level.sort(key=lambda x: (-len(x[0]), -x[1]))
 
             # Calculate potential coverage gain
             potential_coverage_gain = (total_word_count / total_words * 100) if total_words > 0 else 0
@@ -503,21 +742,18 @@ class ChineseEPUBAnalyzer:
         # Extract text from EPUB
         title, full_text = self.extract_text_from_epub(epub_path)
 
-        # Segment Chinese text
-        words = self.segment_chinese_text(full_text)
-        logger.info(f"Segmented {len(words)} words from text")
+        # Extract key phrases using Azure
+        key_phrases = self.extract_key_phrases_from_text(full_text)
+        logger.info(f"Extracted {len(key_phrases)} key phrases from text")
 
-        # Calculate word frequencies
-        word_frequencies = self.analyze_vocabulary_frequency(words)
-
-        # Filter by minimum frequency
-        if min_frequency > 1:
-            word_frequencies = {word: freq for word, freq in word_frequencies.items() if freq >= min_frequency}
+        # Calculate frequencies of key phrases in the original text
+        # (automatically filters to 2-4 character words with 3+ occurrences)
+        word_frequencies = self.count_phrase_frequencies_in_text(key_phrases, full_text)
 
         # Calculate vocabulary statistics
         total_words = sum(word_frequencies.values())
         unique_words = len(word_frequencies)
-        chinese_words = total_words  # All words are Chinese after segmentation
+        chinese_words = total_words  # All phrases are Chinese after key phrase extraction
         unique_chinese_words = unique_words
 
         stats = VocabularyStats(

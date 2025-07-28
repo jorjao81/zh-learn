@@ -29,6 +29,7 @@ class AnkiCard:
     components: str = ""
     radicals: str = ""
     tags: str = ""
+    _original_parts: Optional[List[str]] = None
 
     def get_clean_characters(self) -> str:
         """Extract clean Chinese characters without HTML tags."""
@@ -221,13 +222,13 @@ class AnkiExportParser:
                 )
             )
 
-        # Sort by HSK level first (lower levels first), then by score (descending)
+        # Sort by score first (higher scores first), then by HSK level (lower levels first)
         def sort_key(candidate: CandidateCharacter) -> tuple:
-            # HSK level priority: None (no HSK) = 999, actual levels = their value
-            hsk_priority = candidate.hsk_level if candidate.hsk_level is not None else 999
             # Higher scores are better, so negate for ascending sort
             score_priority = -candidate.score
-            return (hsk_priority, score_priority)
+            # HSK level priority: None (no HSK) = 999, actual levels = their value
+            hsk_priority = candidate.hsk_level if candidate.hsk_level is not None else 999
+            return (score_priority, hsk_priority)
 
         candidates.sort(key=sort_key)
 

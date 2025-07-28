@@ -78,7 +78,7 @@ def step_verify_semantic_html(context):
 
         # Examples tests
         elif "expected_examples" in row:
-            expected_simplified = row["simplified"]
+            expected_simplified = row["chinese"]  # Use "chinese" column instead of "simplified"
             expected_pinyin = row["expected_pinyin"]
             expected_examples = row["expected_examples"]
 
