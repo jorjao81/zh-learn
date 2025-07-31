@@ -11,11 +11,12 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 from .parser import PlecoTSVParser
-from .pleco import pleco_to_anki
+from .pleco import pleco_to_anki, format_examples_with_semantic_markup
 from .audio import MultiProviderAudioGenerator
 from .hsk import HSKWordLists
 from .epub_analyzer import ChineseEPUBAnalyzer
 from .anki_parser import AnkiExportParser, AnkiCard
+from .improver import AnkiImprover
 
 
 def convert_to_html_format(text: str) -> str:
@@ -242,10 +243,27 @@ def convert(
     # Configure logging level
     import logging
 
+    # Force configure logging by clearing existing handlers first
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
+    # Configure logging with appropriate level
     if verbose:
-        logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+        logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
     else:
-        logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    # Ensure all loggers are at the right level
+    logging.getLogger().setLevel(logging.DEBUG if verbose else logging.INFO)
+    epub_logger = logging.getLogger("anki_pleco_importer.epub_analyzer")
+    epub_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
+    # Silence noisy Azure SDK loggers
+    logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
+    logging.getLogger("azure.core.pipeline.policies").setLevel(logging.WARNING)
+    logging.getLogger("azure.core").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
 
     if tsv_file:
         parser = PlecoTSVParser()
@@ -316,8 +334,8 @@ def convert(
             for i, entry in enumerate(collection, 1):
                 anki_card = pleco_to_anki(entry, parser)
 
-                # Generate audio if requested and not in dry-run mode
-                if audio_generator and not dry_run:
+                # Generate audio if requested and not in dry-run mode and not skipped
+                if audio_generator and not dry_run and not anki_card.nohearing:
                     try:
                         if verbose:
                             click.echo(f"    Generating audio for '{anki_card.simplified}'...")
@@ -388,13 +406,9 @@ def convert(
                             "pinyin": card.pinyin,
                             "pronunciation": card.pronunciation,
                             "meaning": convert_to_html_format(card.meaning),
-                            "examples": (convert_list_to_html_format(card.examples) if card.examples else None),
+                            "examples": format_examples_with_semantic_markup(card.examples),
                             "phonetic_component": card.phonetic_component,
-                            "structural_decomposition": (
-                                convert_to_html_format(card.structural_decomposition)
-                                if card.structural_decomposition
-                                else None
-                            ),
+                            "structural_decomposition": card.structural_decomposition,
                             "similar_characters": (
                                 "<br>".join(card.similar_characters) if card.similar_characters else None
                             ),
@@ -656,18 +670,34 @@ def summary(anki_file: Path, top_candidates: int, verbose: bool) -> None:
 
         # Candidate characters analysis
         click.echo(f"\n{click.style('Candidate Characters to Learn:', fg='yellow', bold=True)}")
-        click.echo("(Characters that appear in many words OR as components, but are not single-character words)")
+        click.echo("(Prioritized by HSK level, then by frequency and component usage)")
 
-        candidates = parser.analyze_candidate_characters()
+        # Create HSK character mapping for prioritization
+        hsk_char_mapping = None
+        try:
+            hsk_char_mapping = hsk_word_lists.create_character_hsk_mapping()
+            if hsk_char_mapping:
+                click.echo(f"Using HSK character mapping with {len(hsk_char_mapping)} characters")
+        except Exception as e:
+            click.echo(f"Warning: Could not create HSK character mapping: {e}")
+
+        candidates = parser.analyze_candidate_characters(hsk_char_mapping)
 
         if candidates:
             click.echo(f"\nTop {min(top_candidates, len(candidates))} candidates:")
             for i, candidate in enumerate(candidates[:top_candidates], 1):
                 is_component = candidate.character in component_chars
                 component_indicator = " 🔧" if is_component else ""
+
+                # Format HSK level prominently
+                if candidate.hsk_level is not None:
+                    hsk_display = click.style(f"HSK{candidate.hsk_level}", fg="green", bold=True)
+                else:
+                    hsk_display = click.style("No HSK", fg="red")
+
                 click.echo(
                     f"{i:2d}. {candidate.character} ({candidate.pinyin}) - "
-                    f"score: {candidate.score}, appears in {candidate.word_count} words"
+                    f"{hsk_display}, score: {candidate.score}, appears in {candidate.word_count} words"
                     f"{component_indicator}"
                 )
 
@@ -883,6 +913,31 @@ def analyze_epub(
 ) -> None:
     """Analyze Chinese vocabulary in an EPUB file against your Anki collection."""
 
+    # Configure logging level
+    import logging
+
+    # Force configure logging by clearing existing handlers first
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
+    # Configure logging with appropriate level
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+    else:
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    # Ensure all loggers are at the right level
+    logging.getLogger().setLevel(logging.DEBUG if verbose else logging.INFO)
+    epub_logger = logging.getLogger("anki_pleco_importer.epub_analyzer")
+    epub_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
+    # Silence noisy Azure SDK loggers
+    logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
+    logging.getLogger("azure.core.pipeline.policies").setLevel(logging.WARNING)
+    logging.getLogger("azure.core").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+
     try:
         # Load Anki collection
         click.echo("Loading Anki collection...")
@@ -932,7 +987,7 @@ def analyze_epub(
         except ImportError as e:
             click.echo(f"Error: {e}")
             click.echo("Please install required dependencies:")
-            click.echo("  pip install ebooklib jieba")
+            click.echo("  pip install ebooklib hanlp[full]")
             raise click.Abort()
 
         # Analyze EPUB
@@ -1216,7 +1271,7 @@ def improve_cards(
             if not export_csv:
                 export_csv = Path("improved_cards.txt")
 
-            exported_count = _export_improved_cards_to_csv(cards, suggestions_to_show, export_csv, anki_file)
+            exported_count = _export_improved_cards_to_csv(suggestions_to_show, export_csv, anki_file)
             if exported_count > 0:
                 click.echo(f"\n📄 Exported {exported_count} improved cards to: {export_csv}")
             else:
@@ -1450,9 +1505,7 @@ def _format_decomposition(decomposition: str) -> str:
     return f" {click.style('+', fg='yellow')} ".join(formatted_parts)
 
 
-def _export_improved_cards_to_csv(
-    cards: List[AnkiCard], suggestions: List[dict], export_path: Path, original_file: Path
-) -> int:
+def _export_improved_cards_to_csv(suggestions: List[dict], export_path: Path, original_file: Path) -> int:
     """Export only the specific cards with improved decompositions to a CSV file."""
     # Create a mapping of words to their improved decompositions
     improvements_map = {}
@@ -1515,6 +1568,100 @@ def _export_improved_cards_to_csv(
                     f.write(separator.join(parts) + "\n")
 
     return exported_count
+
+
+@cli.command()
+@click.argument("anki_file", type=click.Path(exists=True, path_type=Path))
+@click.option("-o", "--output", type=click.Path(path_type=Path), help="Output file (default: input_file.csv)")
+@click.option("--no-components", is_flag=True, help="Don't update components field")
+@click.option("--no-radicals", is_flag=True, help="Don't update radicals field")
+@click.option("--include-examples", is_flag=True, help="Include reformatted examples in the CSV output")
+@click.option("--verbose", "-v", is_flag=True, help="Show detailed progress and changes")
+def improve_decomposition(
+    anki_file: Path,
+    output: Optional[Path],
+    no_components: bool,
+    no_radicals: bool,
+    include_examples: bool,
+    verbose: bool,
+) -> None:
+    """Create CSV with structural decomposition for single characters from Anki export.
+
+    This command reads an Anki export file, finds single Chinese characters,
+    and creates a simple CSV file with the character and its structural
+    decomposition. Perfect for importing structural analysis into Anki.
+
+    Example:
+    python -m anki_pleco_importer.cli improve-decomposition SelectedNotes.txt
+    """
+
+    if verbose:
+        click.echo("🔧 Starting structural decomposition CSV creation...")
+        click.echo(f"📁 Input file: {anki_file}")
+        click.echo(f"📁 Output file: {output or anki_file.with_suffix('.csv')}")
+
+    try:
+        # Initialize the improver
+        improver = AnkiImprover(
+            update_components=not no_components, update_radicals=not no_radicals, include_examples=include_examples
+        )
+
+        # Run the improvement
+        results = improver.improve_file(anki_file, output)
+
+        # Calculate statistics
+        total_processed = len(results)
+        changed_count = len(
+            [r for r in results if r.changes_made and not any("Error:" in change for change in r.changes_made)]
+        )
+        error_count = len([r for r in results if any("Error:" in change for change in r.changes_made)])
+
+        # Display results
+        click.echo()
+        click.echo("✅ " + click.style("Improvement complete!", fg="green", bold=True))
+        click.echo(f"📊 {total_processed} single characters processed")
+        click.echo(f"✏️  {changed_count} cards improved")
+
+        if error_count > 0:
+            click.echo(f"❌ {error_count} errors encountered")
+
+        if verbose and changed_count > 0:
+            click.echo("\n📝 " + click.style("Changed cards:", fg="blue", bold=True))
+            for result in results:
+                if result.changes_made and not any("Error:" in change for change in result.changes_made):
+                    char = result.improved_card.get_clean_characters()
+                    changes = ", ".join(result.changes_made)
+                    click.echo(f"   {char}: {changes}")
+
+        if verbose and error_count > 0:
+            click.echo("\n❌ " + click.style("Errors:", fg="red", bold=True))
+            for result in results:
+                if any("Error:" in change for change in result.changes_made):
+                    char = result.original_card.get_clean_characters()
+                    errors = [change for change in result.changes_made if "Error:" in change]
+                    click.echo(f"   {char}: {'; '.join(errors)}")
+
+        # Show sample improvements
+        if changed_count > 0 and not verbose:
+            sample_results = [
+                r for r in results if r.changes_made and not any("Error:" in change for change in r.changes_made)
+            ][:3]
+            if sample_results:
+                click.echo("\n📝 " + click.style("Sample improvements:", fg="blue"))
+                for result in sample_results:
+                    char = result.improved_card.get_clean_characters()
+                    click.echo(f"   {char}: {', '.join(result.changes_made)}")
+                if len(sample_results) < changed_count:
+                    click.echo(f"   ... and {changed_count - len(sample_results)} more")
+
+        click.echo(f"\n📁 Output saved to: {output or anki_file.with_suffix('.csv')}")
+
+    except ImportError as e:
+        click.echo(click.style(f"❌ Missing dependency: {e}", fg="red"))
+        click.echo("   Install hanzipy with: pip install hanzipy")
+    except Exception as e:
+        click.echo(click.style(f"❌ Error: {e}", fg="red"))
+        raise click.Abort()
 
 
 def main() -> None:

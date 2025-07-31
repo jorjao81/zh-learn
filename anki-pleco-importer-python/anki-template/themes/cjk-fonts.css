@@ -1,0 +1,89 @@
+/* CJK Font Declarations for Comprehensive Character Support */
+/* Import this file in themes to ensure rare character rendering */
+
+/* BabelStone Han - Comprehensive CJK support including Extensions */
+/* Font files should be placed in Anki media collection folder */
+@font-face {
+  font-family: 'BabelStone Han';
+  src: url('_BabelStoneHan.woff2') format('woff2'),
+       url('_BabelStoneHan.woff') format('woff'),
+       url('_BabelStoneHan.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+4E00-9FFF, U+3400-4DBF, U+20000-2A6DF, U+2A700-2B73F, U+2B740-2B81F, U+2B820-2CEAF;
+}
+
+/* HanaMin Fonts - Alternative comprehensive CJK support */
+@font-face {
+  font-family: 'HanaMinA';
+  src: url('_HanaMinA.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+4E00-9FFF, U+3400-4DBF;
+}
+
+@font-face {
+  font-family: 'HanaMinB';
+  src: url('_HanaMinB.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+20000-2A6DF;
+}
+
+@font-face {
+  font-family: 'HanaMinC';
+  src: url('_HanaMinC.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2A700-2B73F, U+2B740-2B81F, U+2B820-2CEAF;
+}
+
+/* Noto CJK Fonts - Modern fallback support */
+@font-face {
+  font-family: 'Noto Sans CJK SC';
+  src: url('_NotoSansCJKsc.woff2') format('woff2'),
+       url('_NotoSansCJKsc.woff') format('woff'),
+       url('_NotoSansCJKsc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Serif CJK SC';
+  src: url('_NotoSerifCJKsc.woff2') format('woff2'),
+       url('_NotoSerifCJKsc.woff') format('woff'),
+       url('_NotoSerifCJKsc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Comprehensive CJK Font Stack */
+:root {
+  --cjk-font-stack: 'BabelStone Han', 'HanaMinA', 'HanaMinB', 'HanaMinC', 'Noto Sans CJK SC', 'Noto Serif CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'SimSun-ExtB', 'MingLiU-ExtB', 'Source Han Sans CN', sans-serif;
+  --cjk-serif-stack: 'BabelStone Han', 'HanaMinA', 'HanaMinB', 'HanaMinC', 'Noto Serif CJK SC', 'Source Han Serif CN', 'Songti SC', 'SimSun', 'SimSun-ExtB', serif;
+  --cjk-mono-stack: 'BabelStone Han', 'HanaMinA', 'HanaMinB', 'Noto Sans Mono CJK SC', 'SF Mono', 'Menlo', 'Consolas', monospace;
+}
+
+/* Base CJK character styling */
+.hanzi,
+.chinese,
+.chinese-main,
+[lang="zh"],
+[lang="zh-CN"],
+[lang="zh-TW"] {
+  font-family: var(--cjk-font-stack);
+}
+
+/* Component-specific styling for rare characters */
+.components-content .hanzi,
+.etymology-content .hanzi,
+.structural-analysis .hanzi {
+  font-family: var(--cjk-font-stack);
+  font-feature-settings: "kern" 1, "liga" 1;
+}

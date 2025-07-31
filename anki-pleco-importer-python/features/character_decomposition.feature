@@ -163,3 +163,14 @@ Feature: Character decomposition analysis
       | 在      | zai4   | to be at   |
     When I decompose the 3-character word "不存在"
     Then I should get the structural decomposition "不(bù - not) + 存(cún - to exist) + 在(zài - to be at)"
+
+  Scenario: Decompose multicharacter word identifying components from Chinese 2 note type
+    Given I have the following Anki export dictionary with mixed note types:
+      | chinese | pinyin     | definition      | notetype  |
+      | 灵      | ling2      | spirit/soul     | Chinese   |
+      | 魂      | hun2       | soul            | Chinese   |
+      | 伴      | ban4       | companion       | Chinese   |
+      | 侣      | lv3        | companion       | Chinese   |
+      | 伴侣    | ban4lv3    | partner/couple  | Chinese 2 |
+    When I decompose the 4-character word "灵魂伴侣" using the Anki parser
+    Then I should get the structural decomposition "灵 líng spirit/soul + 魂 hún soul + 伴侣 bànlǚ partner/couple"

@@ -1,0 +1,65 @@
+{{#Simplified}}
+<div class="card-container">
+  <!-- Front side repeated for context -->
+  <div class="chinese-header">
+    <div class="chinese-main">
+      {{Simplified}}
+    </div>
+    <div class="chinese-side">
+      {{#Pinyin}}
+      <div class="pinyin-main">
+        {{Pinyin}} {{Pronunciation}}
+      </div>
+      {{/Pinyin}}
+\    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Back side content -->
+  {{#Definition}}
+  <div class="definition-section">
+    <div class="section-title">Definition</div>
+    <div class="definition-content">
+      {{Definition}}
+    </div>
+  </div>
+  {{/Definition}}
+
+  {{#Components}}
+  <div class="components-section">
+    <div class="section-title">Structural Analysis</div>
+    <div class="components-content">
+      {{Components}}
+    </div>
+  </div>
+  {{/Components}}
+
+  {{#Etymology}}
+  <div class="etymology-section">
+    <div class="section-title">Etymology</div>
+    <div class="etymology-content">
+      {{Etymology}}
+    </div>
+  </div>
+  {{/Etymology}}
+
+  {{#Examples}}
+  <div class="examples-section">
+    <div class="section-title">Examples</div>
+    <div class="examples-content">
+      {{Examples}}
+    </div>
+  </div>
+  {{/Examples}}
+
+  {{#SimilarChars}}
+  <div class="similar-section">
+    <div class="section-title">Similar Characters</div>
+    <div class="similar-content">
+      {{SimilarChars}}
+    </div>
+  </div>
+  {{/SimilarChars}}
+</div>
+{{/Simplified}}

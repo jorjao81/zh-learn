@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Horizontal Meaning Tree</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .node text {
+            font-size: 12px;
+        }
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>D3 Horizontal Meaning Tree (东)</h1>
+        <svg width="600" height="400"></svg>
+    </div>
+
+    <script>
+        const treeData = {
+            "name": "A bag tied at both ends (東)",
+            "children": [
+                {
+                    "name": "East (direction)",
+                    "children": [
+                        {
+                            "name": "Host; Master"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const width = 600;
+        const height = 400;
+        const margin = { top: 20, right: 90, bottom: 30, left: 90 };
+
+        const svg = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const treemap = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+
+        let nodes = d3.hierarchy(treeData, d => d.children);
+
+        nodes = treemap(nodes);
+
+        const g = svg.append("g");
+
+        const link = g.selectAll(".link")
+            .data(nodes.descendants().slice(1))
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", d => {
+                return `M${d.y},${d.x}
+                        C${(d.y + d.parent.y) / 2},${d.x}
+                         ${(d.y + d.parent.y) / 2},${d.parent.x}
+                         ${d.parent.y},${d.parent.x}`;
+            });
+
+        const node = g.selectAll(".node")
+            .data(nodes.descendants())
+            .enter().append("g")
+            .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
+            .attr("transform", d => `translate(${d.y},${d.x})`);
+
+        node.append("circle")
+            .attr("r", 10);
+
+        node.append("text")
+            .attr("dy", ".35em")
+            .attr("x", d => d.children ? -13 : 13)
+            .attr("style", "text-anchor", d => d.children ? "end" : "start")
+            .text(d => d.data.name);
+
+    </script>
+</body>
+</html>

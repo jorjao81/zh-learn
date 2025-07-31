@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Character Learning - Original Default Theme</title>
+    <link rel="stylesheet" href="styling.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .character-example {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .example-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">Single Character Learning - Original Default Theme</h1>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 40px;">
+            Examples showing different types of character decomposition in the Original Default theme
+        </p>
+
+        <div class="character-grid">
+            <!-- Semantic + Phonetic Decomposition -->
+            <div class="character-example">
+                <div class="example-title">Semantic + Phonetic Decomposition</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">河</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">hé</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <span class="part-of-speech">noun</span> river; stream
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">黄河</span> (<span class="pinyin">Huáng Hé</span>) - <span class="translation">Yellow River</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">河流</span> (<span class="pinyin">héliú</span>) - <span class="translation">river; stream</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">氵</span>
+                                        <span class="pinyin">shuǐ</span>
+                                        <div class="definition">water radical</div>
+                                    </li>
+                                    <li class="phonetic">
+                                        <span class="hanzi">可</span>
+                                        <span class="pinyin">kě</span>
+                                        <div class="definition">can; able to</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Semantic + Semantic Decomposition -->
+            <div class="character-example">
+                <div class="example-title">Semantic + Semantic Decomposition</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">森</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">sēn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <span class="part-of-speech">adjective</span> dense; thick (of forest)
+                                <br>
+                                <span class="part-of-speech">noun</span> forest
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">森林</span> (<span class="pinyin">sēnlín</span>) - <span class="translation">forest</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">森严</span> (<span class="pinyin">sēnyán</span>) - <span class="translation">strict; tight (security)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">木</span>
+                                        <span class="pinyin">mù</span>
+                                        <div class="definition">tree; wood</div>
+                                    </li>
+                                    <li class="semantic">
+                                        <span class="hanzi">木</span>
+                                        <span class="pinyin">mù</span>
+                                        <div class="definition">tree; wood</div>
+                                    </li>
+                                    <li class="semantic">
+                                        <span class="hanzi">木</span>
+                                        <span class="pinyin">mù</span>
+                                        <div class="definition">tree; wood</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d; font-style: italic;">
+                                Three trees together represent a dense forest
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Primitive Character (Undivisible) -->
+            <div class="character-example">
+                <div class="example-title">Primitive Character (Undivisible)</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">人</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">rén</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <ol>
+                                    <li><span class="part-of-speech">noun</span> person; human being; people</li>
+                                    <li><span class="part-of-speech">noun</span> adult; grown-up</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">中国人</span> (<span class="pinyin">Zhōngguó rén</span>) - <span class="translation">Chinese person</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">人民</span> (<span class="pinyin">rénmín</span>) - <span class="translation">people; the masses</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">个人</span> (<span class="pinyin">gèrén</span>) - <span class="translation">individual; personal</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <div style="text-align: center; color: #7f8c8d; font-style: italic; padding: 15px;">
+                                    <strong>Primitive Character</strong><br>
+                                    This character cannot be further decomposed into meaningful components.
+                                    It represents the basic pictographic form of a person standing.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complex Semantic + Phonetic -->
+            <div class="character-example">
+                <div class="example-title">Complex Semantic + Phonetic</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">請</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">qǐng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <ol>
+                                    <li><span class="part-of-speech">verb</span> to request; to ask; to invite</li>
+                                    <li><span class="part-of-speech">adverb</span> please <span class="usage literary">polite</span></li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">請問</span> (<span class="pinyin">qǐngwèn</span>) - <span class="translation">excuse me; may I ask</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">請坐</span> (<span class="pinyin">qǐng zuò</span>) - <span class="translation">please sit down</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">言</span>
+                                        <span class="pinyin">yán</span>
+                                        <div class="definition">speech radical</div>
+                                    </li>
+                                    <li class="phonetic">
+                                        <span class="hanzi">青</span>
+                                        <span class="pinyin">qīng</span>
+                                        <div class="definition">green; blue</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d; font-style: italic;">
+                                Speech (言) + sound component (青) = polite speech/request
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ideographic Character -->
+            <div class="character-example">
+                <div class="example-title">Ideographic Character</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">上</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">shàng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <ol>
+                                    <li><span class="part-of-speech">noun</span> top; upper part; above</li>
+                                    <li><span class="part-of-speech">verb</span> to go up; to ascend</li>
+                                    <li><span class="part-of-speech">verb</span> to attend (class, work)</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">上課</span> (<span class="pinyin">shàngkè</span>) - <span class="translation">to attend class</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">樓上</span> (<span class="pinyin">lóushàng</span>) - <span class="translation">upstairs</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">上海</span> (<span class="pinyin">Shànghǎi</span>) - <span class="translation">Shanghai</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <div style="text-align: center; color: #7f8c8d; font-style: italic; padding: 15px;">
+                                    <strong>Ideographic Character</strong><br>
+                                    Simple pictograph showing a line above a base line,
+                                    representing the concept of "above" or "on top".
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character with Meaning Tree -->
+            <div class="character-example">
+                <div class="example-title">Character with Meaning Evolution Tree</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">文</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">wén</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" id="meaning-tree-wen">
+                                    <div class="tree-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">文化</span> (<span class="pinyin">wénhuà</span>) - <span class="translation">culture</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">文學</span> (<span class="pinyin">wénxué</span>) - <span class="translation">literature</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">文字</span> (<span class="pinyin">wénzì</span>) - <span class="translation">writing; script</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <div style="text-align: center; color: #7f8c8d; font-style: italic; padding: 15px;">
+                                    <strong>Pictographic Character</strong><br>
+                                    Shows a person with decorative markings or tattoos on their chest,
+                                    representing the concept of decoration and ornamentation.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unknown Components -->
+            <div class="character-example">
+                <div class="example-title">Character with Unknown Components</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">龍</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">lóng</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <span class="part-of-speech">noun</span> dragon <span class="domain">mythology</span>
+                                <br>
+                                <span class="part-of-speech">adjective</span> imperial; royal <span class="usage literary">classical</span>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">中國龍</span> (<span class="pinyin">Zhōngguó lóng</span>) - <span class="translation">Chinese dragon</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">龍年</span> (<span class="pinyin">lóng nián</span>) - <span class="translation">Year of the Dragon</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="unknown">
+                                        <span class="hanzi">立</span>
+                                        <span class="pinyin">lì</span>
+                                        <div class="definition">to stand</div>
+                                    </li>
+                                    <li class="unknown">
+                                        <span class="hanzi">月</span>
+                                        <span class="pinyin">yuè</span>
+                                        <div class="definition">moon; month</div>
+                                    </li>
+                                    <li class="unknown">
+                                        <span class="hanzi">彡</span>
+                                        <span class="pinyin">shān</span>
+                                        <div class="definition">hair radical</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d; font-style: italic;">
+                                Complex pictographic character - component relationships unclear
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character with Meaning Tree - 心 (Heart) -->
+            <div class="character-example">
+                <div class="example-title">Character with Meaning Evolution Tree - 心</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">心</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">xīn</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" id="meaning-tree-xin">
+                                    <div class="tree-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">心情</span> (<span class="pinyin">xīnqíng</span>) - <span class="translation">mood; feeling</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">小心</span> (<span class="pinyin">xiǎoxīn</span>) - <span class="translation">be careful</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">中心</span> (<span class="pinyin">zhōngxīn</span>) - <span class="translation">center; core</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <div style="text-align: center; color: #7f8c8d; font-style: italic; padding: 15px;">
+                                    <strong>Pictographic Character</strong><br>
+                                    Shows the form of a heart organ, representing the physical heart
+                                    and by extension emotions, mind, and center.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character with Meaning Tree - 學 (Learn) -->
+            <div class="character-example">
+                <div class="example-title">Character with Meaning Evolution Tree - 學</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">學</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">xué</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" id="meaning-tree-xue">
+                                    <div class="tree-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">學校</span> (<span class="pinyin">xuéxiào</span>) - <span class="translation">school</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">學生</span> (<span class="pinyin">xuéshēng</span>) - <span class="translation">student</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">科學</span> (<span class="pinyin">kēxué</span>) - <span class="translation">science</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">子</span>
+                                        <span class="pinyin">zǐ</span>
+                                        <div class="definition">child</div>
+                                    </li>
+                                    <li class="semantic">
+                                        <span class="hanzi">冖</span>
+                                        <span class="pinyin">mì</span>
+                                        <div class="definition">cover radical</div>
+                                    </li>
+                                </ul>
+                                <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d; font-style: italic;">
+                                    Child under cover/roof → protected learning environment
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character with Meaning Tree - 道 (Way) -->
+            <div class="character-example">
+                <div class="example-title">Character with Meaning Evolution Tree - 道</div>
+                <div class="card">
+                    <div class="card-container">
+                        <div class="chinese-header">
+                            <div class="chinese-main">道</div>
+                            <div class="chinese-side">
+                                <div class="pinyin-main">dào</div>
+                                <div class="audio-section">[🔊]</div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="definition-section">
+                            <div class="section-title">Definition</div>
+                            <div class="definition-content">
+                                <div class="meaning-tree" id="meaning-tree-dao">
+                                    <div class="tree-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="examples-section">
+                            <div class="section-title">Examples</div>
+                            <div class="examples-content">
+                                <ul>
+                                    <li class="example">
+                                        <span class="hanzi">道路</span> (<span class="pinyin">dàolù</span>) - <span class="translation">road; path</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">知道</span> (<span class="pinyin">zhīdào</span>) - <span class="translation">to know</span>
+                                    </li>
+                                    <li class="example">
+                                        <span class="hanzi">道德</span> (<span class="pinyin">dàodé</span>) - <span class="translation">morality; ethics</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="components-section">
+                            <div class="section-title">Character Analysis</div>
+                            <div class="components-content">
+                                <ul>
+                                    <li class="semantic">
+                                        <span class="hanzi">辶</span>
+                                        <span class="pinyin">chuò</span>
+                                        <div class="definition">walking radical</div>
+                                    </li>
+                                    <li class="phonetic">
+                                        <span class="hanzi">首</span>
+                                        <span class="pinyin">shǒu</span>
+                                        <div class="definition">head; leader</div>
+                                    </li>
+                                </ul>
+                                <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d; font-style: italic;">
+                                    Walking (辶) + head/leader (首) → path guided by leadership
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: #7f8c8d; font-size: 0.9em; margin-top: 40px; padding: 20px; background: white; border-radius: 8px;">
+            <strong>Legend:</strong><br>
+            <span style="background: #34495e; color: white; padding: 1px 4px; border-radius: 4px; font-size: 0.8em;">SEMANTIC</span> = Meaning-related components<br>
+            <span style="background: #34495e; color: white; padding: 1px 4px; border-radius: 4px; font-size: 0.8em;">PHONETIC</span> = Sound-related components<br>
+            <span style="background: #34495e; color: white; padding: 1px 4px; border-radius: 4px; font-size: 0.8em;">UNKNOWN</span> = Unclear relationship
+        </div>
+    </div>
+
+    <script>
+        // D3.js tree drawing function
+        function drawTree(data, selector) {
+            const container = d3.select(selector + " .tree-container");
+            container.selectAll("*").remove(); // Clear any existing content
+
+            const margin = {top: 20, right: 40, bottom: 20, left: 40};
+            const width = 450 - margin.left - margin.right;
+            const height = 250 - margin.bottom - margin.top;
+
+            // Create SVG
+            const svg = container
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create tree layout
+            const tree = d3.tree().size([width, height]);
+            const root = d3.hierarchy(data);
+
+            // Generate the tree
+            tree(root);
+
+            // Add links (connections between nodes)
+            const link = g.selectAll(".link")
+                .data(root.links())
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("d", d3.linkVertical()
+                    .x(d => d.x)
+                    .y(d => d.y));
+
+            // Add nodes
+            const node = g.selectAll(".node")
+                .data(root.descendants())
+                .enter().append("g")
+                .attr("class", d => `node ${d.depth === 0 ? 'root' : 'level-' + d.depth}`)
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+
+            // Add circles for nodes
+            node.append("circle")
+                .attr("r", 6)
+                .style("cursor", "pointer");
+
+            // Add text labels
+            node.append("text")
+                .attr("dy", "0.35em")
+                .attr("x", d => d.children ? -13 : 13)
+                .style("text-anchor", d => d.children ? "end" : "start")
+                .text(d => d.data.name)
+                .style("font-size", "11px")
+                .style("font-weight", d => d.depth === 0 ? "600" : "500");
+
+            // Add hover effects
+            node.on("mouseover", function(event, d) {
+                d3.select(this).select("circle")
+                    .transition()
+                    .duration(200)
+                    .attr("r", 8);
+            })
+            .on("mouseout", function(event, d) {
+                d3.select(this).select("circle")
+                    .transition()
+                    .duration(200)
+                    .attr("r", 6);
+            });
+        }
+
+        // Initialize trees when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const wenTreeData = {
+                name: "body markings",
+                children: [
+                    { name: "linear marks" },
+                    {
+                        name: "mark",
+                        children: [{
+                            name: "script; writing",
+                            children: [{
+                                name: "text; literature",
+                                children: [{
+                                    name: "culture; civilization"
+                                }]
+                            }]
+                        }]
+                    }
+                ]
+            };
+
+            const xinTreeData = {
+                name: "heart (organ)",
+                children: [
+                    {
+                        name: "feelings; emotions",
+                        children: [{
+                            name: "mind; mental state",
+                            children: [{
+                                name: "intention; will"
+                            }]
+                        }]
+                    },
+                    {
+                        name: "center; core",
+                        children: [{
+                            name: "essential part"
+                        }]
+                    }
+                ]
+            };
+
+            const xueTreeData = {
+                name: "imitate; copy",
+                children: [
+                    {
+                        name: "learn; study",
+                        children: [{
+                            name: "acquire knowledge",
+                            children: [{
+                                name: "scholarly discipline",
+                                children: [{
+                                    name: "academic field"
+                                }]
+                            }]
+                        }]
+                    }
+                ]
+            };
+
+            const daoTreeData = {
+                name: "path; road",
+                children: [
+                    {
+                        name: "way; method",
+                        children: [{
+                            name: "principle; law",
+                            children: [{
+                                name: "moral way",
+                                children: [{
+                                    name: "philosophical doctrine"
+                                }]
+                            }]
+                        }]
+                    },
+                    {
+                        name: "speak; say",
+                        children: [{
+                            name: "express; tell"
+                        }]
+                    }
+                ]
+            };
+
+            // Draw all trees
+            drawTree(wenTreeData, "#meaning-tree-wen");
+            drawTree(xinTreeData, "#meaning-tree-xin");
+            drawTree(xueTreeData, "#meaning-tree-xue");
+            drawTree(daoTreeData, "#meaning-tree-dao");
+
+            // Redraw on window resize
+            window.addEventListener('resize', function() {
+                setTimeout(() => {
+                    drawTree(wenTreeData, "#meaning-tree-wen");
+                    drawTree(xinTreeData, "#meaning-tree-xin");
+                    drawTree(xueTreeData, "#meaning-tree-xue");
+                    drawTree(daoTreeData, "#meaning-tree-dao");
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

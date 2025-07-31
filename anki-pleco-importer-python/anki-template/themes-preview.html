@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Learning Anki Themes Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .theme-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .theme-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .theme-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .theme-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card-preview {
+            padding: 20px;
+        }
+
+        .toggle-controls {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .toggle-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .toggle-btn.active {
+            background: #4c51bf;
+        }
+
+        .card-side {
+            display: none;
+        }
+
+        .card-side.active {
+            display: block;
+        }
+
+        .font-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .font-info h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .font-info p {
+            margin: 0;
+            font-size: 0.8em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Theme-specific styles will be loaded dynamically */
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1>Chinese Learning Anki Themes</h1>
+
+        <div class="theme-grid">
+            <!-- Theme 1: Original Default -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">Original Default</div>
+                    <div class="theme-description">Clean modern design with optimized layout</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="original">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">学习</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">xuéxí</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="original">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">学习</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">xuéxí</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">verb</span> to learn; to study
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">学</span> <span class="pinyin">xué</span><span class="definition">to learn</span></li>
+                                            <li><span class="hanzi">习</span> <span class="pinyin">xí</span><span class="definition">to practice</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Hiragino Sans GB, Microsoft YaHei - Modern sans-serif fonts optimized for Chinese characters with clean, readable strokes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 2: Classic Academic -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">Classic Academic</div>
+                    <div class="theme-description">Traditional serif fonts with scholarly appeal</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="academic">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">研究</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yánjiū</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="academic">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">研究</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yánjiū</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> research; study
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">研</span> <span class="pinyin">yán</span><span class="definition">to grind; study</span></li>
+                                            <li><span class="hanzi">究</span> <span class="pinyin">jiū</span><span class="definition">to investigate</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>STSong, SimSun, Songti SC - Traditional Chinese serif fonts that evoke academic texts and classical literature, excellent for formal study.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 3: Modern Minimalist -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">Modern Minimalist</div>
+                    <div class="theme-description">Ultra-clean design with contemporary fonts</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="minimalist">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">设计</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shèjì</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="minimalist">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">设计</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shèjì</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">verb</span> to design; to plan
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">设</span> <span class="pinyin">shè</span><span class="definition">to establish</span></li>
+                                            <li><span class="hanzi">计</span> <span class="pinyin">jì</span><span class="definition">to plan</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Noto Sans CJK SC - Ultra-light weight modern fonts designed for digital interfaces, emphasizing clarity and minimal visual noise.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 4: Traditional Brush -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">Traditional Brush</div>
+                    <div class="theme-description">Calligraphy-inspired with traditional elements</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="brush">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">书法</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shūfǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="brush">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">书法</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">shūfǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> calligraphy; penmanship
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">书</span> <span class="pinyin">shū</span><span class="definition">book; writing</span></li>
+                                            <li><span class="hanzi">法</span> <span class="pinyin">fǎ</span><span class="definition">method; law</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>STKaiti, Kaiti SC, BiauKai - Traditional Chinese brush script fonts that mimic handwritten calligraphy, perfect for cultural immersion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 5: High Contrast Dark -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">High Contrast Dark</div>
+                    <div class="theme-description">Dark theme for better accessibility and focus</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="dark">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">夜晚</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yèwǎn</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="dark">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">夜晚</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yèwǎn</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">noun</span> night; evening
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">夜</span> <span class="pinyin">yè</span><span class="definition">night</span></li>
+                                            <li><span class="hanzi">晚</span> <span class="pinyin">wǎn</span><span class="definition">late; evening</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Microsoft YaHei - Bold weights of modern fonts optimized for high contrast display, excellent for low-light study sessions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 6: Elegant Gradient -->
+            <div class="theme-section">
+                <div class="theme-header">
+                    <div class="theme-name">Elegant Gradient</div>
+                    <div class="theme-description">Sophisticated gradients with modern aesthetics</div>
+                </div>
+                <div class="card-preview">
+                    <div class="toggle-controls">
+                        <button class="toggle-btn active" onclick="showSide(this, 'front')">Front</button>
+                        <button class="toggle-btn" onclick="showSide(this, 'back')">Back</button>
+                    </div>
+
+                    <div class="card-side front active" data-theme="gradient">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">优雅</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yōuyǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <div class="prompt">Think of the meaning...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-side back" data-theme="gradient">
+                        <div class="card">
+                            <div class="card-container">
+                                <div class="chinese-header">
+                                    <div class="chinese-main">优雅</div>
+                                    <div class="chinese-side">
+                                        <div class="pinyin-main">yōuyǎ</div>
+                                        <div class="audio-section">🔊</div>
+                                    </div>
+                                </div>
+                                <hr class="divider">
+
+                                <div class="definition-section">
+                                    <div class="section-title">Definition</div>
+                                    <div class="definition-content">
+                                        <span class="part-of-speech">adjective</span> elegant; graceful
+                                    </div>
+                                </div>
+
+                                <div class="components-section">
+                                    <div class="section-title">Structural Analysis</div>
+                                    <div class="components-content">
+                                        <ul>
+                                            <li><span class="hanzi">优</span> <span class="pinyin">yōu</span><span class="definition">excellent</span></li>
+                                            <li><span class="hanzi">雅</span> <span class="pinyin">yǎ</span><span class="definition">elegant</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="font-info">
+                        <h4>Chinese Font:</h4>
+                        <p>PingFang SC, Source Han Sans CN - Light-weight modern fonts with gradient text effects, creating a sophisticated and contemporary appearance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 12px;">
+            <h3>Font Considerations for Chinese Text</h3>
+            <p style="max-width: 800px; margin: 0 auto; color: #666; line-height: 1.6;">
+                Each theme uses carefully selected Chinese fonts optimized for different contexts:
+                <strong>Sans-serif fonts</strong> (PingFang SC, Noto Sans) provide modern clarity,
+                <strong>Serif fonts</strong> (STSong, SimSun) offer traditional academic appeal,
+                <strong>Brush/Kaiti fonts</strong> (STKaiti, BiauKai) evoke calligraphy and cultural heritage.
+                Font choice significantly affects reading comprehension and aesthetic appeal in Chinese language learning.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showSide(button, side) {
+            const section = button.closest('.theme-section');
+            const frontSide = section.querySelector('.card-side.front');
+            const backSide = section.querySelector('.card-side.back');
+            const buttons = section.querySelectorAll('.toggle-btn');
+
+            // Update button states
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Show/hide card sides
+            if (side === 'front') {
+                frontSide.classList.add('active');
+                backSide.classList.remove('active');
+            } else {
+                frontSide.classList.remove('active');
+                backSide.classList.add('active');
+            }
+        }
+
+        // Load all theme CSS files
+        document.addEventListener('DOMContentLoaded', function() {
+            const themes = [
+                { name: 'original', file: '../styling.css' },
+                { name: 'academic', file: 'themes/classic-academic.css' },
+                { name: 'minimalist', file: 'themes/modern-minimalist.css' },
+                { name: 'brush', file: 'themes/traditional-brush.css' },
+                { name: 'dark', file: 'themes/high-contrast-dark.css' },
+                { name: 'gradient', file: 'themes/elegant-gradient.css' }
+            ];
+
+            // Load each theme with scoped CSS
+            themes.forEach((theme, index) => {
+                fetch(theme.file)
+                    .then(response => response.text())
+                    .then(css => {
+                        // Scope the CSS to the specific theme
+                        const scopedCSS = css.replace(/\.card/g, `.theme-${theme.name} .card`)
+                                            .replace(/\.card-container/g, `.theme-${theme.name} .card-container`)
+                                            .replace(/\.chinese-header/g, `.theme-${theme.name} .chinese-header`)
+                                            .replace(/\.chinese-main/g, `.theme-${theme.name} .chinese-main`)
+                                            .replace(/\.chinese-side/g, `.theme-${theme.name} .chinese-side`)
+                                            .replace(/\.pinyin-main/g, `.theme-${theme.name} .pinyin-main`)
+                                            .replace(/\.audio-section/g, `.theme-${theme.name} .audio-section`)
+                                            .replace(/\.prompt/g, `.theme-${theme.name} .prompt`)
+                                            .replace(/\.divider/g, `.theme-${theme.name} .divider`)
+                                            .replace(/\.section-title/g, `.theme-${theme.name} .section-title`)
+                                            .replace(/\.definition-section/g, `.theme-${theme.name} .definition-section`)
+                                            .replace(/\.examples-section/g, `.theme-${theme.name} .examples-section`)
+                                            .replace(/\.components-section/g, `.theme-${theme.name} .components-section`)
+                                            .replace(/\.similar-section/g, `.theme-${theme.name} .similar-section`)
+                                            .replace(/\.definition-content/g, `.theme-${theme.name} .definition-content`)
+                                            .replace(/\.examples-content/g, `.theme-${theme.name} .examples-content`)
+                                            .replace(/\.components-content/g, `.theme-${theme.name} .components-content`)
+                                            .replace(/\.similar-content/g, `.theme-${theme.name} .similar-content`)
+                                            .replace(/\.part-of-speech/g, `.theme-${theme.name} .part-of-speech`)
+                                            .replace(/\.domain/g, `.theme-${theme.name} .domain`)
+                                            .replace(/\.usage/g, `.theme-${theme.name} .usage`)
+                                            .replace(/\.hanzi/g, `.theme-${theme.name} .hanzi`)
+                                            .replace(/\.pinyin/g, `.theme-${theme.name} .pinyin`)
+                                            .replace(/\.translation/g, `.theme-${theme.name} .translation`)
+                                            .replace(/\.definition/g, `.theme-${theme.name} .definition`)
+                                            .replace(/\.semantic/g, `.theme-${theme.name} .semantic`)
+                                            .replace(/\.phonetic/g, `.theme-${theme.name} .phonetic`)
+                                            .replace(/\.unknown/g, `.theme-${theme.name} .unknown`)
+                                            .replace(/ol/g, `.theme-${theme.name} ol`)
+                                            .replace(/ul/g, `.theme-${theme.name} ul`)
+                                            .replace(/li/g, `.theme-${theme.name} li`);
+
+                        // Create and append style element
+                        const style = document.createElement('style');
+                        style.textContent = scopedCSS;
+                        document.head.appendChild(style);
+                    })
+                    .catch(error => {
+                        console.warn(`Could not load theme ${theme.name}:`, error);
+                    });
+            });
+
+            // Apply theme classes to each section
+            const sections = document.querySelectorAll('.theme-section');
+            const themeNames = ['original', 'academic', 'minimalist', 'brush', 'dark', 'gradient'];
+
+            sections.forEach((section, index) => {
+                if (themeNames[index]) {
+                    section.classList.add(`theme-${themeNames[index]}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

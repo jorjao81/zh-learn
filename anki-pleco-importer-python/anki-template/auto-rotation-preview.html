@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Rotating Anki Themes Preview</title>
+    <link rel="stylesheet" href="auto-rotating-themes.css">
+    <style>
+        /* Preview-specific styles */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .preview-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .preview-header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .preview-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .theme-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .theme-info strong {
+            color: #ffd700;
+        }
+
+        .card-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 600px;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: rgba(255,255,255,0.4);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .theme-selector {
+            margin: 20px 0;
+        }
+
+        .theme-selector select {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .theme-selector select option {
+            background: #333;
+            color: white;
+        }
+
+        .info-panel {
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .info-panel p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .info-panel code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: #d63384;
+        }
+
+        .rotation-schedule {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .schedule-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .schedule-item h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .schedule-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-header">
+        <h1>🎨 Auto-Rotating Anki Themes</h1>
+        <p>Themes change automatically every day for a fresh learning experience</p>
+
+        <div class="theme-info">
+            <strong>Current Theme:</strong> <span id="current-theme">Loading...</span><br>
+            <strong>Day of Year:</strong> <span id="day-of-year">Loading...</span><br>
+            <strong>Next Change:</strong> <span id="next-change">Loading...</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn active" onclick="showCard('front')">Front Card</button>
+        <button class="control-btn" onclick="showCard('back')">Back Card</button>
+
+        <div class="theme-selector">
+            <select id="theme-override" onchange="changeTheme(this.value)">
+                <option value="">Auto (Current Day)</option>
+                <option value="original-default">Original Default</option>
+                <option value="zen-vertical">Zen Vertical</option>
+                <option value="zen-default-hybrid">Zen Default Hybrid</option>
+                <option value="neon-cyberpunk">Neon Cyberpunk</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card-preview">
+        <!-- Front Card -->
+        <div id="front-card" class="card-side active">
+            <div class="card">
+                <div class="card-container">
+                    <div class="chinese-header">
+                        <div class="chinese-main">自动</div>
+                        <div class="chinese-side">
+                            <div class="pinyin-main">zìdòng</div>
+                            <div class="audio-section">🔊</div>
+                        </div>
+                    </div>
+                    <div class="prompt">Think of the meaning...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Card -->
+        <div id="back-card" class="card-side">
+            <div class="card">
+                <div class="card-container">
+                    <div class="chinese-header">
+                        <div class="chinese-main">自动</div>
+                        <div class="chinese-side">
+                            <div class="pinyin-main">zìdòng</div>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="definition-section">
+                        <div class="section-title">Definition</div>
+                        <div class="definition-content">
+                            <span class="part-of-speech">adj</span> automatic; self-acting; spontaneous
+                        </div>
+                    </div>
+
+                    <div class="components-section">
+                        <div class="section-title">Structural Analysis</div>
+                        <div class="components-content">
+                            <ul>
+                                <li><span class="hanzi">自</span> <span class="pinyin">zì</span><span class="definition">self</span></li>
+                                <li><span class="hanzi">动</span> <span class="pinyin">dòng</span><span class="definition">move</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h3>📅 Theme Rotation Schedule</h3>
+        <p>Themes rotate every day based on the day of the year. Here's the current 4-theme cycle:</p>
+
+        <div class="rotation-schedule">
+            <div class="schedule-item">
+                <h4>Original Default</h4>
+                <p>Days 1, 5, 9, 13, 17, 21...</p>
+            </div>
+            <div class="schedule-item">
+                <h4>Zen Vertical</h4>
+                <p>Days 2, 6, 10, 14, 18, 22...</p>
+            </div>
+            <div class="schedule-item">
+                <h4>Zen Default Hybrid</h4>
+                <p>Days 3, 7, 11, 15, 19, 23...</p>
+            </div>
+            <div class="schedule-item">
+                <h4>Neon Cyberpunk</h4>
+                <p>Days 4, 8, 12, 16, 20, 24...</p>
+            </div>
+        </div>
+
+        <h3>⚙️ How to Implement</h3>
+        <p><strong>For Anki Desktop:</strong></p>
+        <ol>
+            <li>Copy <code>auto-rotating-themes.css</code> and <code>theme-rotator.js</code> to your Anki media folder</li>
+            <li>Update your card templates to use <code>front-template-with-rotation.html</code> and <code>back-template-with-rotation.html</code></li>
+            <li>Themes will automatically rotate based on the current date</li>
+        </ol>
+
+        <p><strong>Testing Themes:</strong></p>
+        <ul>
+            <li>Open browser console (F12)</li>
+            <li>Type: <code>setAnkiTheme('zen-vertical')</code> to test a specific theme</li>
+            <li>Type: <code>ankiThemeInfo</code> to see current theme information</li>
+            <li>Use the dropdown above to manually test different themes</li>
+        </ul>
+
+        <h3>🎯 Features</h3>
+        <ul>
+            <li><strong>Automatic Rotation:</strong> Themes change daily without user intervention</li>
+            <li><strong>Consistent Daily Theme:</strong> Same theme for entire day across all study sessions</li>
+            <li><strong>Smooth Transitions:</strong> CSS transitions for seamless theme changes</li>
+            <li><strong>Manual Override:</strong> Test specific themes manually for customization</li>
+            <li><strong>Mobile Responsive:</strong> All themes adapt to different screen sizes</li>
+            <li><strong>Easy Customization:</strong> Add new themes by updating CSS and JavaScript arrays</li>
+        </ul>
+    </div>
+
+    <script src="theme-rotator.js"></script>
+    <script>
+        // Preview-specific JavaScript
+        let currentSide = 'front';
+
+        function showCard(side) {
+            const frontCard = document.getElementById('front-card');
+            const backCard = document.getElementById('back-card');
+            const buttons = document.querySelectorAll('.control-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (side === 'front') {
+                frontCard.style.display = 'block';
+                backCard.style.display = 'none';
+            } else {
+                frontCard.style.display = 'none';
+                backCard.style.display = 'block';
+            }
+
+            currentSide = side;
+        }
+
+        function changeTheme(theme) {
+            if (theme === '') {
+                // Reset to automatic theme
+                location.reload();
+            } else {
+                setAnkiTheme(theme);
+                updateThemeInfo(theme);
+            }
+        }
+
+        function updateThemeInfo(overrideTheme = null) {
+            const info = window.ankiThemeInfo;
+            if (!info) return;
+
+            const currentTheme = overrideTheme || info.currentTheme;
+            document.getElementById('current-theme').textContent = currentTheme.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('day-of-year').textContent = info.dayOfYear;
+            document.getElementById('next-change').textContent = `${info.daysUntilNextTheme} day${info.daysUntilNextTheme !== 1 ? 's' : ''} (${info.nextTheme.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())})`;
+        }
+
+        // Update theme info when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => updateThemeInfo(), 100);
+        });
+
+        // Hide card sides initially except front
+        document.getElementById('back-card').style.display = 'none';
+    </script>
+</body>
+</html>

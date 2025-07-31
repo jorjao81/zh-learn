@@ -184,3 +184,46 @@ class HSKWordLists:
             missing_words=sorted(missing_words),
             coverage_percentage=coverage_percentage,
         )
+
+    def get_character_hsk_level(self, character: str) -> Optional[int]:
+        """
+        Get the HSK level for a given character based on the words it appears in.
+
+        Args:
+            character: Single Chinese character to look up
+
+        Returns:
+            Lowest HSK level where this character appears, or None if not found
+        """
+        if len(character) != 1:
+            return None
+
+        # Check each HSK level from lowest to highest
+        for level in sorted(self.get_available_levels()):
+            level_words = self.get_words_for_level(level)
+            # Check if character appears in any word at this level
+            for word in level_words:
+                if character in word:
+                    return level
+
+        return None
+
+    def create_character_hsk_mapping(self) -> Dict[str, int]:
+        """
+        Create a mapping of characters to their lowest HSK level.
+
+        Returns:
+            Dictionary mapping characters to HSK levels
+        """
+        char_to_level: Dict[str, int] = {}
+
+        # Process levels from lowest to highest so we keep the lowest level
+        for level in sorted(self.get_available_levels()):
+            level_words = self.get_words_for_level(level)
+            for word in level_words:
+                for char in word:
+                    # Only set if not already mapped (to keep lowest level)
+                    if char not in char_to_level:
+                        char_to_level[char] = level
+
+        return char_to_level

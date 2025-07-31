@@ -100,9 +100,7 @@ def convert_numbered_pinyin_to_tones(pinyin: str) -> str:
     return result
 
 
-def get_structural_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> str:
+def get_structural_decomposition(chinese_text: str, anki_dictionary: dict) -> str:
     """Get structural decomposition for Chinese characters using CharacterDecomposer.
 
     Args:
@@ -133,9 +131,37 @@ def get_structural_decomposition(
         return _get_individual_character_definitions(chinese_text)
 
 
-def _get_dictionary_based_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> str:
+def get_structural_decomposition_semantic(chinese_text: str, anki_dictionary: dict) -> str:
+    """Get structural decomposition for Chinese characters using semantic markup.
+
+    Args:
+        chinese_text: Chinese text to decompose
+        anki_dictionary: Optional dictionary from Anki export for word decomposition
+
+    Returns:
+        Formatted string with structural decomposition using semantic HTML markup
+    """
+    # For multi-character words (3+ characters), use dictionary-based decomposition
+    if len(chinese_text) > 2:
+        return _get_dictionary_based_decomposition_semantic(chinese_text, anki_dictionary)
+
+    # For 2-character words, fall back to individual character definitions with semantic markup
+    elif len(chinese_text) == 2:
+        return _get_individual_character_definitions_semantic(chinese_text)
+
+    # For single characters, use proper structural decomposition with semantic markup
+    try:
+        from .character_decomposer import CharacterDecomposer
+
+        decomposer = CharacterDecomposer()
+        result = decomposer.decompose(chinese_text)
+        return decomposer.format_decomposition_semantic(result)
+    except (ImportError, Exception):
+        # Fall back to individual character definitions if decomposer fails
+        return _get_individual_character_definitions_semantic(chinese_text)
+
+
+def _get_dictionary_based_decomposition(chinese_text: str, anki_dictionary: dict) -> str:
     """Decompose multi-character words using Anki dictionary lookup.
 
     Args:
@@ -163,9 +189,34 @@ def _get_dictionary_based_decomposition(
     return _get_individual_character_definitions(chinese_text)
 
 
-def _find_optimal_4_char_decomposition(
-    chinese_text: str, anki_dictionary: dict
-) -> list:
+def _get_dictionary_based_decomposition_semantic(chinese_text: str, anki_dictionary: dict) -> str:
+    """Decompose multi-character words using Anki dictionary lookup with semantic markup.
+
+    Args:
+        chinese_text: Chinese text to decompose (3+ characters)
+        anki_dictionary: Dictionary mapping Chinese words to their pinyin and
+            definitions
+
+    Returns:
+        Formatted string with word decomposition using semantic HTML markup
+    """
+
+    # For 4-character words, prefer 2+2 split
+    if len(chinese_text) == 4:
+        components = _find_optimal_4_char_decomposition(chinese_text, anki_dictionary)
+        if components:
+            return format_components_semantic(components)
+
+    # For other lengths, use greedy longest-match decomposition
+    components = _find_greedy_decomposition(chinese_text, anki_dictionary)
+    if components:
+        return format_components_semantic(components)
+
+    # Fall back to individual character definitions if no matches found
+    return _get_individual_character_definitions_semantic(chinese_text)
+
+
+def _find_optimal_4_char_decomposition(chinese_text: str, anki_dictionary: dict) -> list:
     """Find optimal decomposition for 4-character word preferring 2+2 split."""
     # Try 2+2 split first
     left_part = chinese_text[:2]
@@ -191,9 +242,12 @@ def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list
         best_match = None
         best_length = 0
 
-        for length in range(
-            min(len(chinese_text) - i, 4), 0, -1
-        ):  # Try lengths 4, 3, 2, 1
+        # Special rule: For multi-character words, don't allow matching the entire word as single component
+        max_length = len(chinese_text) - i
+        if len(chinese_text) > 1 and i == 0:  # If this is start of multi-char word
+            max_length = min(max_length, len(chinese_text) - 1)  # Don't match the entire word
+
+        for length in range(min(max_length, 4), 0, -1):  # Try lengths 4, 3, 2, 1
             candidate = chinese_text[i : i + length]
             if candidate in anki_dictionary:
                 best_match = candidate
@@ -201,9 +255,7 @@ def _find_greedy_decomposition(chinese_text: str, anki_dictionary: dict) -> list
                 break
 
         if best_match:
-            components.append(
-                _create_component(best_match, anki_dictionary[best_match])
-            )
+            components.append(_create_component(best_match, anki_dictionary[best_match]))
             i += best_length
         else:
             # No match found, use individual character
@@ -259,13 +311,16 @@ def _create_individual_character_component(char: str) -> dict:
         # Join all definitions with forward slash separator
         combined_definition = "/".join(all_definitions)
 
+        # Clean unwanted patterns from the definition
+        cleaned_definition = clean_character_definition(combined_definition)
+
         # Convert numbered pinyin to toned pinyin for display
         pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
         return {
             "chinese": char,
             "pinyin": pinyin_clean,
-            "definition": combined_definition,
+            "definition": cleaned_definition,
         }
     except Exception:
         return {"chinese": char, "pinyin": "", "definition": ""}
@@ -273,6 +328,19 @@ def _create_individual_character_component(char: str) -> dict:
 
 def _format_components(components: list) -> str:
     """Format components into the final decomposition string."""
+    if not components:
+        return ""
+
+    # Check for single multi-character component which violates our rule
+    if len(components) == 1 and len(components[0]["chinese"]) > 1:
+        # Force decomposition into individual characters
+        chinese_word = components[0]["chinese"]
+        char_components = []
+        for char in chinese_word:
+            char_component = _create_individual_character_component(char)
+            char_components.append(char_component)
+        return _format_components(char_components)
+
     formatted_parts = []
 
     for component in components:
@@ -280,11 +348,60 @@ def _format_components(components: list) -> str:
         pinyin = component["pinyin"]
         definition = component["definition"]
 
-        # Format as: 字(pinyin - meaning)
-        formatted_part = f"{chinese}({pinyin} - {definition})"
+        # Format as: 字 pinyin meaning
+        formatted_part = f"{chinese} {pinyin} {definition}"
         formatted_parts.append(formatted_part)
 
     return " + ".join(formatted_parts)
+
+
+def format_components_semantic(components: list) -> str:
+    """Format word components with semantic HTML markup."""
+    if not components:
+        return ""
+
+    if len(components) == 1:
+        # Single component - check if it's a multi-character word that shouldn't be single
+        component = components[0]
+        chinese = component["chinese"]
+
+        # For multi-character components, this violates our rule - decompose by character
+        if len(chinese) > 1:
+            # Force decomposition into individual characters
+            char_components = []
+            for char in chinese:
+                char_component = _create_individual_character_component(char)
+                char_components.append(char_component)
+            return format_components_semantic(char_components)
+
+        # Single character component is OK
+        pinyin = component["pinyin"]
+        definition = component["definition"]
+
+        result = f'<span class="hanzi">{chinese}</span>'
+        if pinyin:
+            result += f' <span class="pinyin">{pinyin}</span>'
+        if definition:
+            result += f' <span class="definition">{definition}</span>'
+        return result
+
+    # Multiple components - create semantic HTML list
+    component_items = []
+    for component in components:
+        chinese = component["chinese"]
+        pinyin = component["pinyin"]
+        definition = component["definition"]
+
+        component_html = f'<span class="hanzi">{chinese}</span>'
+        if pinyin:
+            component_html += f' <span class="pinyin">{pinyin}</span>'
+        if definition:
+            component_html += f' <span class="definition">{definition}</span>'
+
+        component_items.append(component_html)
+
+    list_items = "</li><li>".join(component_items)
+    return f"<ul><li>{list_items}</li></ul>"
 
 
 def _get_individual_character_definitions(chinese_text: str) -> str:
@@ -337,11 +454,14 @@ def _get_individual_character_definitions(chinese_text: str) -> str:
             # Join all definitions with forward slash separator
             combined_definition = "/".join(all_definitions)
 
+            # Clean unwanted patterns from the definition
+            cleaned_definition = clean_character_definition(combined_definition)
+
             # Convert numbered pinyin to toned pinyin for display
             pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
 
-            # Format as: 字(pinyin - meaning)
-            component = f"{char}({pinyin_clean} - {combined_definition})"
+            # Format as: 字 pinyin meaning
+            component = f"{char} {pinyin_clean} {cleaned_definition}"
             components.append(component)
 
         except Exception:
@@ -350,3 +470,127 @@ def _get_individual_character_definitions(chinese_text: str) -> str:
 
     # Join with + sign
     return " + ".join(components)
+
+
+def _get_individual_character_definitions_semantic(chinese_text: str) -> str:
+    """Get individual character definitions with semantic markup as fallback for structural decomposition.
+
+    Args:
+        chinese_text: Chinese text to get definitions for
+
+    Returns:
+        Formatted string with characters and their meanings using semantic HTML markup
+    """
+    components = []
+
+    # Split text into individual characters
+    for char in chinese_text:
+        # Skip non-Chinese characters
+        if not "\u4e00" <= char <= "\u9fff":
+            continue
+
+        try:
+            # Get pinyin (prefer lowercase/common pronunciation)
+            pinyin_list = _hanzi_dictionary.get_pinyin(char)
+            if not pinyin_list:
+                continue
+
+            # Prefer lowercase pinyin over uppercase (common vs proper name)
+            pinyin = pinyin_list[0]
+            for p in pinyin_list:
+                if p.islower():
+                    pinyin = p
+                    break
+
+            # Get all definitions
+            definitions = _hanzi_dictionary.definition_lookup(char)
+            if not definitions:
+                continue
+
+            # Collect all definitions, excluding surname definitions
+            all_definitions = []
+            for def_item in definitions:
+                definition_text = def_item.get("definition", "")
+                if "surname" not in definition_text.lower() and definition_text:
+                    all_definitions.append(definition_text)
+
+            # If no non-surname definitions found, use the first one
+            if not all_definitions:
+                all_definitions = [definitions[0].get("definition", "")]
+
+            # Join all definitions with forward slash separator
+            combined_definition = "/".join(all_definitions)
+
+            # Clean unwanted patterns from the definition
+            cleaned_definition = clean_character_definition(combined_definition)
+
+            # Convert numbered pinyin to toned pinyin for display
+            pinyin_clean = convert_numbered_pinyin_to_tones(pinyin)
+
+            # Format with semantic markup: 字 (pinyin) - definition
+            component_dict = {"chinese": char, "pinyin": pinyin_clean, "definition": cleaned_definition}
+            components.append(component_dict)
+
+        except Exception:
+            # If any error occurs, skip this character
+            continue
+
+    # Use semantic formatting
+    return format_components_semantic(components)
+
+
+def clean_character_definition(definition: str) -> str:
+    """Clean unwanted patterns from single character definitions.
+
+    Removes patterns like:
+    - CL:場|场[chang3] (classifier patterns)
+    - variant of X[pinyin] (variant patterns)
+    - old variant of X[pinyin] (old variant patterns)
+
+    Args:
+        definition: Raw character definition string
+
+    Returns:
+        Cleaned definition string with unwanted patterns removed
+    """
+    if not definition:
+        return definition
+
+    import re
+
+    # Pattern 1: Remove CL:X|Y[pinyin] patterns (classifier patterns)
+    # Matches: CL:場|场[chang3], CL:個|个[ge4], CL:座[zuo4], etc.
+    cl_pattern = r"/CL:[^/]+"
+    definition = re.sub(cl_pattern, "", definition)
+
+    # Pattern 2: Remove "variant of X[pinyin]" patterns
+    # Matches: variant of 屌[diao3], variant of 莊|庄[zhuang1], variant of 歲|岁[sui4], etc.
+    variant_pattern = r"/variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]"
+    definition = re.sub(variant_pattern, "", definition)
+
+    # Pattern 3: Remove "old variant of X[pinyin]" patterns
+    # Matches: old variant of 鼓[gu3], old variant of 莊|庄[zhuang1], etc.
+    old_variant_pattern = r"/old variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]"
+    definition = re.sub(old_variant_pattern, "", definition)
+
+    # Pattern 4: Remove standalone "variant of X[pinyin]" at the beginning (with or without trailing slash)
+    # Matches: "variant of 棋[qi2]/" or "variant of 莊|庄[zhuang1]" at start of definition
+    start_variant_pattern = r"^variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]/?"
+    definition = re.sub(start_variant_pattern, "", definition)
+
+    # Pattern 5: Remove standalone "old variant of X[pinyin]" at the beginning (with or without trailing slash)
+    # Matches: "old variant of 鼓[gu3]/" or "old variant of 莊|庄[zhuang1]" at start of definition
+    start_old_variant_pattern = r"^old variant of [一-龯]+(?:\|[一-龯]+)?\[[^\]]+\]/?"
+    definition = re.sub(start_old_variant_pattern, "", definition)
+
+    # Clean up any leftover separators and whitespace
+    # Remove leading/trailing slashes
+    definition = definition.strip("/")
+
+    # Remove double slashes created by removals
+    definition = re.sub(r"/+", "/", definition)
+
+    # Remove leading/trailing whitespace
+    definition = definition.strip()
+
+    return definition
