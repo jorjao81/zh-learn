@@ -1,0 +1,4 @@
+{
+  "model": "gpt-5-nano",
+  "prompt": "gpt/prompt.md"
+}

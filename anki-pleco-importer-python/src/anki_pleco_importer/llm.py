@@ -43,6 +43,36 @@ class GptFieldGenerator(FieldGenerator):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 self.prompt = f.read()
 
+            # Load examples from the examples directory if it exists
+            from pathlib import Path
+
+            examples_dir = Path(prompt_path).parent / "examples"
+            if examples_dir.exists():
+                self.prompt = self._load_prompt_with_examples(self.prompt, examples_dir)
+
+    def _load_prompt_with_examples(self, base_prompt: str, examples_dir) -> str:
+        """Load examples from the examples directory and incorporate them into the prompt."""
+
+        examples_text = "\n\nHere are examples of the expected output format:\n\n"
+
+        # Load structural decomposition example
+        structural_example_path = examples_dir / "structural_decomposition.html"
+        if structural_example_path.exists():
+            with open(structural_example_path, "r", encoding="utf-8") as f:
+                structural_content = f.read().strip()
+            examples_text += f"**Example structural_decomposition_html for 忆:**\n```html\n{structural_content}\n```\n\n"
+
+        # Load etymology example
+        etymology_example_path = examples_dir / "etymology.html"
+        if etymology_example_path.exists():
+            with open(etymology_example_path, "r", encoding="utf-8") as f:
+                etymology_content = f.read().strip()
+            examples_text += f"**Example etymology_html for 忆:**\n```html\n{etymology_content}\n```\n\n"
+
+        examples_text += "Please follow these formats exactly, using the same HTML structure and CSS classes.\n"
+
+        return base_prompt + examples_text
+
     def generate(self, chinese: str, pinyin: str) -> FieldGenerationResult:
         import json
 
