@@ -6,6 +6,7 @@ import re
 
 from .anki import AnkiCard
 from .chinese import convert_numbered_pinyin_to_tones, get_structural_decomposition_semantic
+from .llm import FieldGenerator
 from .anki_parser import AnkiExportParser
 from .constants import (
     PARTS_OF_SPEECH,
@@ -745,10 +746,12 @@ def _create_anki_dictionary(anki_parser: AnkiExportParser) -> dict:
     return dictionary
 
 
-def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser) -> AnkiCard:
-    """
-    Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples.
-    """
+def pleco_to_anki(
+    pleco_entry: PlecoEntry,
+    anki_export_parser: AnkiExportParser,
+    field_generator: Optional[FieldGenerator] = None,
+) -> AnkiCard:
+    """Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples."""
     meaning, examples, similar_characters = parse_pleco_definition_semantic(pleco_entry.definition)
 
     anki_dictionary = _create_anki_dictionary(anki_export_parser)
@@ -768,7 +771,13 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
                 # Just the character if not found in dictionary
                 enhanced_similar_characters.append(char)
 
-    structural_decomposition = get_structural_decomposition_semantic(pleco_entry.chinese, anki_dictionary)
+    if field_generator:
+        generated = field_generator.generate(pleco_entry.chinese, pleco_entry.pinyin)
+        structural_decomposition = generated.structural_decomposition
+        etymology = generated.etymology
+    else:
+        structural_decomposition = get_structural_decomposition_semantic(pleco_entry.chinese, anki_dictionary)
+        etymology = None
 
     # Check for existing pronunciation for single characters
     existing_pronunciation = None
@@ -794,6 +803,7 @@ def pleco_to_anki(pleco_entry: PlecoEntry, anki_export_parser: AnkiExportParser)
         examples=examples,
         similar_characters=enhanced_similar_characters,
         structural_decomposition=structural_decomposition,
+        etymology=etymology,
         pronunciation=existing_pronunciation,
         passive=True,
         nohearing=skip_audio,
