@@ -6,7 +6,7 @@ import re
 
 from .anki import AnkiCard
 from .chinese import convert_numbered_pinyin_to_tones, get_structural_decomposition_semantic
-from .llm import FieldGenerator
+from .llm import FieldGenerator, FieldGenerationResult
 from .anki_parser import AnkiExportParser
 from .constants import (
     PARTS_OF_SPEECH,
@@ -750,6 +750,7 @@ def pleco_to_anki(
     pleco_entry: PlecoEntry,
     anki_export_parser: AnkiExportParser,
     field_generator: Optional[FieldGenerator] = None,
+    pregenerated_result: Optional[FieldGenerationResult] = None,
 ) -> AnkiCard:
     """Convert a PlecoEntry to an AnkiCard, optionally enhanced with Anki export examples."""
     meaning, examples, similar_characters = parse_pleco_definition_semantic(pleco_entry.definition)
@@ -771,7 +772,10 @@ def pleco_to_anki(
                 # Just the character if not found in dictionary
                 enhanced_similar_characters.append(char)
 
-    if field_generator:
+    if pregenerated_result:
+        structural_decomposition = pregenerated_result.structural_decomposition
+        etymology = pregenerated_result.etymology
+    elif field_generator:
         generated = field_generator.generate(pleco_entry.chinese, pleco_entry.pinyin)
         structural_decomposition = generated.structural_decomposition
         etymology = generated.etymology

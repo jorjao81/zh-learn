@@ -353,9 +353,15 @@ def convert(
             cards = anki_parser.parse_file(Path("Chinese.txt"))
             print(len(cards))
             field_generator = None
+
+            # Track GPT usage statistics
+            total_tokens = 0
+            total_cost = 0.0
+            gpt_calls = 0
+
             if use_gpt:
                 llm_cfg = load_llm_config(gpt_config, verbose)
-                model_name = gpt_model or llm_cfg.get("model", "gpt-4o-mini")
+                model_name = str(gpt_model or llm_cfg.get("model", "gpt-4o-mini"))
                 field_generator = GptFieldGenerator(
                     model=model_name,
                     api_key=llm_cfg.get("api_key"),
@@ -364,7 +370,20 @@ def convert(
                 )
 
             for i, entry in enumerate(collection, 1):
-                anki_card = pleco_to_anki(entry, anki_parser, field_generator=field_generator)
+                # Generate fields directly to capture token usage if GPT is used
+                field_result = None
+                token_usage = None
+                if field_generator:
+                    field_result = field_generator.generate(entry.chinese, entry.pinyin)
+                    token_usage = field_result.token_usage
+
+                    # Track usage statistics
+                    if token_usage:
+                        total_tokens += token_usage.total_tokens
+                        total_cost += token_usage.cost_usd
+                        gpt_calls += 1
+
+                anki_card = pleco_to_anki(entry, anki_parser, pregenerated_result=field_result)
 
                 # Generate audio if requested and not in dry-run mode and not skipped
                 if audio_generator and not dry_run and not anki_card.nohearing:
@@ -430,6 +449,14 @@ def convert(
                     etymology_box = format_meaning_box(anki_card.etymology)
                     click.echo(etymology_box)
 
+                # Display token usage for this entry if GPT was used
+                if token_usage and verbose:
+                    tokens_text = (
+                        f"Tokens: {token_usage.prompt_tokens}+{token_usage.completion_tokens}"
+                        f"={token_usage.total_tokens}, Cost: ${token_usage.cost_usd:.4f}"
+                    )
+                    click.echo(f"    {click.style('GPT:', fg='white', dim=True)} {tokens_text}")
+
                 click.echo()
 
             # Save results if not in dry-run mode
@@ -478,6 +505,15 @@ def convert(
                         )
                     )
 
+                # Display GPT usage summary
+                if use_gpt and gpt_calls > 0:
+                    click.echo(
+                        click.style(
+                            f"GPT Usage: {gpt_calls} calls, {total_tokens:,} tokens, ${total_cost:.4f} total cost",
+                            fg="blue",
+                        )
+                    )
+
                 # Report skipped words
                 if audio_generator:
                     skipped_words = audio_generator.get_skipped_words()
@@ -518,6 +554,17 @@ def convert(
                             )
                         )
 
+                # Display GPT usage summary for dry-run
+                if use_gpt and gpt_calls > 0:
+                    click.echo(
+                        click.style(
+                            f"Dry run: GPT usage - {gpt_calls} calls, {total_tokens:,} tokens, "
+                            f"${total_cost:.4f} total cost",
+                            fg="blue",
+                        )
+                    )
+
+                if audio and audio_generator:
                     # Report skipped words even in dry-run
                     skipped_words = audio_generator.get_skipped_words()
                     if skipped_words:
