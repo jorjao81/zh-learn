@@ -28,6 +28,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "hanzipy>=1.0.0",
     "requests>=2.25.0",
+    "openai>=1.0.0",
 ]
 
 [project.optional-dependencies]

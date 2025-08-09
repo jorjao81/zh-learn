@@ -17,6 +17,7 @@ from .hsk import HSKWordLists
 from .epub_analyzer import ChineseEPUBAnalyzer, BookAnalysis
 from .anki_parser import AnkiExportParser, AnkiCard
 from .improver import AnkiImprover
+from .llm import GptFieldGenerator
 
 
 def convert_to_html_format(text: str) -> str:
@@ -200,6 +201,21 @@ def load_audio_config(config_file: Optional[str] = None, verbose: bool = False) 
     return config
 
 
+def load_llm_config(config_file: Optional[str] = None, verbose: bool = False) -> Dict[str, Any]:
+    """Load LLM configuration from a JSON file."""
+    if not config_file:
+        return {}
+    try:
+        with open(config_file, "r", encoding="utf-8") as f:
+            cfg = json.load(f)
+        if verbose:
+            click.echo(f"Loaded GPT config from: {config_file}")
+        return cfg
+    except Exception as e:
+        click.echo(f"Warning: Failed to load GPT config {config_file}: {e}", err=True)
+        return {}
+
+
 @click.group()
 @click.version_option()
 def cli() -> None:
@@ -226,6 +242,9 @@ def cli() -> None:
     type=click.Path(),
     help="Directory to copy selected audio files to",
 )
+@click.option("--use-gpt", is_flag=True, help="Use GPT to generate etymology and structural decomposition")
+@click.option("--gpt-config", type=click.Path(exists=True), help="Path to GPT configuration JSON file")
+@click.option("--gpt-model", default=None, help="Override GPT model name")
 @click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def convert(
@@ -235,6 +254,9 @@ def convert(
     audio_config: Optional[str],
     audio_cache_dir: str,
     audio_dest_dir: Optional[str],
+    use_gpt: bool,
+    gpt_config: Optional[str],
+    gpt_model: Optional[str],
     dry_run: bool,
     verbose: bool,
 ) -> None:
@@ -330,9 +352,19 @@ def convert(
             anki_parser = AnkiExportParser()
             cards = anki_parser.parse_file(Path("Chinese.txt"))
             print(len(cards))
+            field_generator = None
+            if use_gpt:
+                llm_cfg = load_llm_config(gpt_config, verbose)
+                model_name = gpt_model or llm_cfg.get("model", "gpt-4o-mini")
+                field_generator = GptFieldGenerator(
+                    model=model_name,
+                    api_key=llm_cfg.get("api_key"),
+                    prompt_path=llm_cfg.get("prompt"),
+                    thinking=llm_cfg.get("thinking"),
+                )
 
             for i, entry in enumerate(collection, 1):
-                anki_card = pleco_to_anki(entry, anki_parser)
+                anki_card = pleco_to_anki(entry, anki_parser, field_generator=field_generator)
 
                 # Generate audio if requested and not in dry-run mode and not skipped
                 if audio_generator and not dry_run and not anki_card.nohearing:
@@ -393,6 +425,11 @@ def convert(
                     component_box = format_meaning_box(anki_card.structural_decomposition)
                     click.echo(component_box)
 
+                if anki_card.etymology:
+                    click.echo(f"    {click.style('Etymology:', fg='cyan', bold=True)}")
+                    etymology_box = format_meaning_box(anki_card.etymology)
+                    click.echo(etymology_box)
+
                 click.echo()
 
             # Save results if not in dry-run mode
@@ -409,6 +446,7 @@ def convert(
                             "examples": format_examples_with_semantic_markup(card.examples),
                             "phonetic_component": card.phonetic_component,
                             "structural_decomposition": card.structural_decomposition,
+                            "etymology": card.etymology,
                             "similar_characters": (
                                 "<br>".join(card.similar_characters) if card.similar_characters else None
                             ),
