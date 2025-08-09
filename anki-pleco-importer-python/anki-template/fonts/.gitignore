@@ -1,0 +1,3 @@
+# Font files are excluded from git due to size
+*.ttf
+*.otf
